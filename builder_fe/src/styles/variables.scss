@@ -1,0 +1,218 @@
+@forward './mixin';
+
+// use js to identify device height
+$device-height: 100%;
+
+// common
+$font-title: 14px;
+$font-size: 13px;
+$scrollbar-global-width: 8px;
+
+// header
+$header-height: 68px;
+$tablet-header-height: 48px;
+$mobile-header-height: 40px;
+
+// navbar
+$navbar-width: 272px;
+$navbar-collapse-width: 69px;
+$tablet-navbar-height: 52px;
+$mobile-navbar-height: 54px;
+
+// left form
+$left-search-width: 281px;
+$more-option-height: 40px;
+$result-refresh-height: 21px;
+
+//header-form-height
+$header-form-height: 80px;
+$main-transition: all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s;
+
+//border radius
+$input-border-radius: 8px;
+$dropdown-border-radius: 12px;
+
+// z-index
+$tooltip-index: 16;
+$modal-index: 15;
+$navbar-index: 13;
+$header-index: 11;
+$dropdown-index: $header-index - 1;
+$global-loading: 11;
+$mobile-tablet-header-index: 8;
+$global-loading-index: 10;
+$pagination-index: 9;
+$position-fixed-index: 7;
+$form-index: 5;
+$other-index: 4;
+$mobile-navbar-index: 7;
+$tablet-navbar-index: 7;
+$swiper-btn-index: 5;
+$tick-property-index: 5;
+$more-option-index: $header-index + 1;
+$new-dev-banner-index: 1;
+$mobile-detail-page-tab-index: 6;
+$search-by-map-index: 15;
+
+// colors
+// Neutral colors
+$neutral-black: #0a0909;
+$neutral-black-900: #3a3939;
+$neutral-black-800: #4c4b4b;
+$neutral-black-700: #5f5e5e;
+$neutral-black-600: #727272;
+$neutral-black-500: #878686;
+$neutral-black-400: #9c9b9b;
+$neutral-black-300: #b1b0b0;
+$neutral-black-200: #c7c6c6;
+$neutral-black-100: #dddddd;
+$neutral-black-50: #f4f3f3;
+
+// text colors
+$text-black: #343434;
+$text-white: #ffffff;
+$text-grey: #878787;
+$text-line: #999b9b;
+$text-hover: #bbbbbb;
+$text-purple: #865dff;
+$neutral-text-mute: #666968; // currency icon color
+
+// background color
+$bg-primary: #4a4646;
+$bg-black: #343434;
+$bg-white: #ffffff;
+$bg-grey: #efefef;
+$bg-lightgrey: #ededed;
+$bg-blue: #ebf1f9;
+$bg-hover: #e2efff;
+$bg-present: #f8f8f8;
+$bg-hover2: #bbbbbb;
+$bg-pastel-red: #ff56561a;
+$bg-disabled-card: #fbfbfb;
+$bg-avatar: #d5d5d5;
+
+// Accent colors
+$green: #1a9c0e;
+$green-100: #e2ffd4;
+$green-200: #56c520;
+$blue: #0085ff;
+$blue-100: #d7f5ff;
+$blue-200: #0e8cb6;
+$blue-300: #c0c7ff;
+$blue-400: #3349f9;
+$red: #ff5656;
+$red-100: #e96200;
+$yellow: #f8d72c;
+$yellow-100: #fff8df;
+$yellow-200: #ffe1b5;
+$yellow-300: #e0b20d;
+$orange: #ec7217;
+$black: #000000;
+$black-100: #292d32;
+$pink: #ffdfdf;
+
+// Table colors
+$table-header-bg: $neutral-black-50;
+
+// Color with alpha
+$red-alpha-07: #f14848b3;
+
+// primary colors
+$primary-color: #19447a;
+$primary-color-700: #3c5e97;
+$primary-color-600: #5272ad;
+$primary-color-500: #6886c3;
+$primary-color-400: #7e9bd9;
+$primary-color-300: #94b0f0;
+$primary-color-200: #aac6ff;
+$primary-color-100: #c1dcff;
+$primary-color-50: #d8f3ff;
+
+// secondary colors:
+$secondary-color-400: #5435d1;
+$secondary-color-300: #865dff;
+$secondary-color-200: #9e72ff;
+$secondary-color-100: #cfbeff;
+$secondary-color-50: #e7b2ff;
+
+$rectangle-1-300: #7a53f3;
+
+// scrollbar
+$scrollbar-track-color: #f7f7f7;
+$scrollbar-thumb-color: #87878780;
+
+//btn-variable:
+$btn-height-medium: 32px;
+$btn-height-large: 52px;
+$btn-height-small: 28px;
+$btn-height-tiny: 20px;
+
+$box-shadow: 0px 0px 20px 0px rgba($black, 0.1);
+
+//border
+$border-color: $text-hover;
+$border: 1px solid $border-color;
+$border-color-grey: $text-line;
+$popup-border: 1px solid rgba($black, 0.1);
+
+//property card witdh:
+$card-width-desktop: 480px;
+$card-width-tablet-mobile: 240px;
+
+// input height
+$input-height: 32px;
+$input-box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+$property-type-header-height: 24px;
+$mobile-property-type-header-height: 56px;
+
+$mt-location-header-height: 24px;
+$location-actions-height: 24px;
+
+// property detail
+$sub-tab-collapsed-height: 76px;
+
+// tasks
+$task-form-height: 78px;
+$task-back-btn-height: 40px;
+$tm-task-back-btn-height: 28px;
+$d-task-tools-height: 30px;
+$d-task-tools-with-back-btn-height: 82px;
+$t-task-tools-height: 98px;
+$t-task-tools-with-back-btn-height: 134px;
+$m-task-tools-height: 82px;
+$m-task-tools-with-back-btn-height: 116px;
+
+// status color task
+$not-started-bg: $primary-color-200;
+$not-started-text: $primary-color;
+$in-progress-bg: #f7c7a2;
+$in-progress-text: $orange;
+$waiting-bg: #f8d72c99;
+$waiting-text: $neutral-black-800;
+$requested-bg: $secondary-color-100;
+$requested-text: $text-purple;
+$accepted-bg: $bg-grey;
+$accepted-text: $green;
+$cancelled-bg: #fcc;
+$cancelled-text: $red;
+$declined-bg: $bg-grey;
+$declined-text: $red;
+$completed-bg: #99dad2;
+$completed-text: #004637;
+$overdue-bg: #ff565666;
+$overdue-text: $red;
+
+// task priority
+$priority-urgent: #ef3743;
+$priority-high: $orange;
+$priority-normal: $blue;
+$priority-low: $primary-color;
+
+// rental status background
+$rental-status-provisional-bg: $yellow-100;
+$rental-status-confirmed-bg: $green-100;
+$rental-status-cancelled-bg: $blue-300;
+// rental status color
+$rental-status-provisional-text: $yellow-300;
+$rental-status-confirmed-text: $green-200;
+$rental-status-cancelled-text: $blue-400;
