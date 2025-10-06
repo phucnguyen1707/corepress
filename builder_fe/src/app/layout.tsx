@@ -1,0 +1,48 @@
+import React from 'react';
+
+import type { Metadata, Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  height: 'device-height',
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+};
+
+export const metadata: Metadata = {
+  title: 'Corepress',
+  description: 'Corepress',
+};
+
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <html lang='en'>
+      <head>
+        {/* fix text underline issue on ios chrome */}
+        <meta
+          name='format-detection'
+          content='telephone=no,date=no,address=no,email=no,url=no'
+        />
+
+        <link
+          rel='preconnect'
+          href='https://fonts.googleapis.com'
+        />
+        <link
+          rel='preconnect'
+          href='https://fonts.gstatic.com'
+          crossOrigin=''
+        />
+        <link
+          href='https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap'
+          rel='stylesheet'
+        />
+        
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+};
+
+export default RootLayout;
