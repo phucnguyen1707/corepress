@@ -1,0 +1,131 @@
+// use js to identify device height
+$device-height: 100%;
+
+// common
+$font-family-lexend-deca: 'Lexend Deca', sans-serif;
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 600;
+// custom font weight
+$font-weight-348: 'wght' 348;
+
+// colors
+// Accent colors
+$black: #000000;
+$orange: #fb8d1a;
+$green: #2da44e;
+$red: #e8083e;
+
+// text colors
+$text-black: #343434;
+$text-black-20: #34343433;
+$text-black-40: #34343466;
+$text-black-60: #34343499;
+$text-red: $red;
+$text-white: #ffffff;
+
+// background color
+$bg-grey: #efefef;
+$bg-grey-presentation: #f8f8f8;
+$bg-white: #ffffff;
+
+// primary colors
+$primary-color: #405095;
+
+// secondary colors:
+$secondary-color: #4b76e2;
+$secondary-color-8: #4b76e214;
+$secondary-color-20: #4b76e233;
+$secondary-color-30: #4b76e24d;
+
+// action accent colors
+$action-accent: #789eff;
+$action-background: #ecf0fe;
+$action-background-60: #ecf0fe99;
+$action-background-80: #ecf0fecc;
+
+$popup-border: 1px solid rgba($black, 0.1);
+$table-bottom-border: #cfcec8;
+
+// drop shadow
+$over-shadow-stroke: 0px 0px 2px rgba($black, 0.25);
+$over-shadow-page: 0px 0px 30px rgba($black, 0.1);
+$over-shadow-button: 0px 0px 20px rgba($black, 0.1);
+$left-shadow: -2px 4px 4px rgba($black, 0.1);
+$mid-shadow: 0px 4px 5px rgba($black, 0.1);
+$right-shadow: 3px 4px 5px rgba($black, 0.1);
+$over-shadow: 0px 0px 30px rgba($primary-color, 0.25), 0px 0px 20px rgba($black, 0.25);
+$shadow-3d: 15px -15px 20px rgba($primary-color, 0.1), -15px 10px 20px rgba($primary-color, 0.25),
+  -3px 4px 15px rgba($black, 0.05);
+
+//transition
+$main-transition: all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s;
+
+//btn-variable:
+$btn-height-large: 38px;
+$btn-height-medium: 25px;
+$btn-height-default: 28px;
+
+$gap: 16px;
+
+// z-index
+$tooltip-index: 16;
+$modal-index: 15;
+$navbar-index: 13;
+$header-index: 11;
+$dropdown-index: $header-index - 1;
+$notification-index: $dropdown-index + 1;
+$global-loading: 11;
+$mobile-tablet-header-index: 8;
+$global-loading-index: 10;
+$pagination-index: 9;
+$position-fixed-index: 7;
+$form-index: 5;
+$other-index: 4;
+$tablet-navbar-index: 7;
+$swiper-container: 0;
+$swiper-btn-index: 5;
+$tick-property-index: 5;
+$more-option-index: $header-index + 1;
+$mobile-navbar-index: $more-option-index + 1;
+$new-dev-banner-index: 1;
+$mobile-detail-page-tab-index: 6;
+$search-by-map-index: 15;
+
+// navbar
+$navbar-width: 272px;
+$navbar-collapse-width: 69px;
+$tablet-navbar-height: 52px;
+$mobile-navbar-height: 54px;
+
+// drawer
+$drawer-width: 334px;
+
+// header
+$header-height: 60px;
+$tablet-header-height: 48px;
+$mobile-header-height: 40px;
+
+// location
+$mt-location-header-height: 24px;
+$location-header-height: 36px;
+$m-location-header-height: 28px;
+
+// property card witdh:
+$card-width-desktop: 480px;
+$card-width-tablet-mobile: 240px;
+$card-width-minimize: 240px;
+$card-height-minimize: 135px;
+
+// table row height task history
+$table-row-height: 48px;
+
+// booking status
+$booking-provisional: #fff07a;
+$booking-confirmed: #41ca5a;
+$booking-noshow: #e96767;
+$booking-historical: #989898;
+
+// padding for scrollbar
+$scrollbar-padding: 8px;

@@ -1,0 +1,220 @@
+@use '@src/styles/customVariables' as *;
+@use '@src/styles/mixin.scss' as *;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: $font-family-lexend-deca !important;
+}
+
+html {
+  color: $text-black;
+  font-size: 13px;
+  font-weight: $font-weight-regular;
+  text-rendering: optimizeSpeed;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%; // prevent font size change on iOS
+  /* for removing the highlight on android & ios (chorm & safari)*/
+}
+
+html,
+body {
+  // fix height issue in firefox
+  height: 100dvh;
+  height: $device-height;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+input,
+textarea {
+  font-size: 16px;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.bold {
+  font-variation-settings: 'wght' 600;
+  font-weight: 600;
+}
+
+// reset antd
+:focus-visible {
+  outline: none;
+}
+
+.separate-line {
+  width: 100%;
+  height: 1px;
+  min-height: 1px;
+  background-color: $text-black-20;
+}
+
+#under-construction {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  .wrapper {
+    width: 400px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .error {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #ff5656;
+  }
+
+  .title {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+  }
+
+  .text {
+    font-size: 14px;
+    line-height: 21px;
+  }
+}
+
+/*responsive*/
+@include desktop {
+  .res-t {
+    display: none !important;
+  }
+
+  .res-m {
+    display: none !important;
+  }
+
+  .res-t-m {
+    display: none !important;
+  }
+}
+
+@include small-desktop {
+  .res-t {
+    display: none !important;
+  }
+
+  .res-m {
+    display: none !important;
+  }
+
+  .res-t-m {
+    display: none !important;
+  }
+}
+
+@include tablet {
+  .res-d {
+    display: none !important;
+  }
+
+  .res-m {
+    display: none !important;
+  }
+}
+
+@include mobile {
+  .res-t {
+    display: none !important;
+  }
+
+  .res-d {
+    display: none !important;
+  }
+
+  .res-d-t {
+    display: none !important;
+  }
+}
+
+// Typography
+.page-title {
+  @include typo-page-title;
+}
+
+.breadcrumbs {
+  @include typo-breadcrumbs;
+}
+
+.pricing {
+  @include typo-pricing;
+}
+
+.body {
+  @include typo-body;
+}
+
+.body-card {
+  @include typo-body-card;
+}
+
+.body-light {
+  @include typo-body-light;
+}
+
+.body-bold {
+  @include typo-body-bold;
+}
+
+.body-link {
+  @include typo-body-link;
+}
+
+.card-label {
+  @include typo-card-label;
+}
+
+.field-label {
+  @include typo-field-label;
+}
+
+.field-label-bold {
+  @include typo-field-label-bold;
+}
+
+.view-property {
+  @include typo-view-property;
+}
+
+.features {
+  @include typo-features;
+}
+
+.card-agency-name {
+  @include typo-card-agency-name;
+}
+
+.icon-label {
+  @include typo-icon-label;
+}
