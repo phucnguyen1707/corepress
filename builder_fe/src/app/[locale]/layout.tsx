@@ -1,6 +1,7 @@
 import React from 'react';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
 import { Locale } from '@/interfaces/common';
+import '@/styles/globals.scss';
 
 type LayoutProps = {
   children: React.ReactNode;
