@@ -1,0 +1,31 @@
+{
+  "name": "core_be",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "db:studio": "drizzle-kit studio",
+    "generate": "bunx drizzle-kit generate",
+    "migrate": "bunx drizzle-kit migrate"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^24.7.0",
+    "drizzle-kit": "^0.31.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.6",
+    "hono": "^4.9.10",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3"
+  }
+}
