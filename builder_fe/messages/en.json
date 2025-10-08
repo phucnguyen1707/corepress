@@ -1,4 +1,12 @@
 {
-  "Common":{},
-  "Home":{}
+  "Login": {
+    "title": "Welcome back",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "button": "Sign In",
+    "noAccount": "Don’t have an account?",
+    "createAccount": "Create one"
+  }
 }
