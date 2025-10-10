@@ -73,37 +73,16 @@ $sm-mobile-width: 400px;
   }
 }
 
-@mixin typo-page-title {
-  font-weight: $font-weight-regular;
-  font-variation-settings: normal;
-  font-size: 24px;
-  line-height: 30px;
-}
-
-@mixin typo-breadcrumbs {
-  font-weight: $font-weight-regular;
-  font-variation-settings: normal;
-  font-size: 14px;
-  line-height: 17.5px;
-}
-
-@mixin typo-pricing {
-  font-weight: $font-weight-bold;
-  font-variation-settings: normal;
-  font-size: 17px;
-  line-height: 21.25px;
+@mixin typo-small {
+  font-variation-settings: $font-weight-348;
+  font-size: 11px;
+  line-height: 13.75px;
 }
 
 @mixin typo-body {
   font-variation-settings: $font-weight-348;
   font-size: 14px;
   line-height: 17.5px;
-}
-
-@mixin typo-body-card {
-  font-variation-settings: $font-weight-348;
-  font-size: 14px;
-  line-height: 16.25px;
 }
 
 @mixin typo-body-light {
@@ -120,53 +99,16 @@ $sm-mobile-width: 400px;
   line-height: 17.5px;
 }
 
-@mixin typo-body-link {
-  font-weight: $font-weight-bold;
-  font-size: 14px;
-  line-height: 17.5px;
-  color: $secondary-color;
-}
-
-@mixin typo-card-label {
+@mixin typo-medium-bold {
   font-weight: $font-weight-bold;
   font-variation-settings: normal;
-  font-size: 14px;
-  line-height: 17.5px;
+  font-size: 17px;
+  line-height: 21.25px;
 }
 
-@mixin typo-field-label {
-  font-variation-settings: $font-weight-348;
-  font-size: 12px;
-  line-height: 15px;
-}
-
-@mixin typo-field-label-bold {
-  font-weight: $font-weight-bold;
+@mixin typo-large {
+  font-weight: $font-weight-regular;
   font-variation-settings: normal;
-  font-size: 12px;
-  line-height: 15px;
-}
-
-@mixin typo-icon-label {
-  font-variation-settings: $font-weight-348;
-  font-size: 11px;
-  line-height: 13.75px;
-}
-
-@mixin typo-view-property {
-  font-weight: $font-weight-regular;
-  font-size: 13px;
-  line-height: 15px;
-}
-
-@mixin typo-card-agency-name {
-  font-weight: $font-weight-regular;
-  font-size: 13px;
-  line-height: 15px;
-}
-
-@mixin typo-features {
-  font-variation-settings: $font-weight-348;
-  font-size: 13px;
-  line-height: 15px;
+  font-size: 24px;
+  line-height: 30px;
 }
