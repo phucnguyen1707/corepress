@@ -154,62 +154,44 @@ img {
 }
 
 // Typography
-.page-title {
-  @include typo-page-title;
+.typo-small {
+  @include typo-small;
 }
 
-.breadcrumbs {
-  @include typo-breadcrumbs;
+.typo {
+  @include typo;
 }
 
-.pricing {
-  @include typo-pricing;
+.typo-light {
+  @include typo-light;
 }
 
-.body {
-  @include typo-body;
+.typo-bold {
+  @include typo-bold;
 }
 
-.body-card {
-  @include typo-body-card;
+.typo-medium {
+  @include typo-medium
 }
 
-.body-light {
-  @include typo-body-light;
+.typo-medium-light {
+  @include typo-medium-light
 }
 
-.body-bold {
-  @include typo-body-bold;
+.typo-medium-bold {
+  @include typo-medium-bold
 }
 
-.body-link {
-  @include typo-body-link;
+.typo-large {
+  @include typo-large
 }
 
-.card-label {
-  @include typo-card-label;
+.typo-large-light {
+  @include typo-large-light
 }
 
-.field-label {
-  @include typo-field-label;
+.typo-large-bold {
+  @include typo-large-bold
 }
 
-.field-label-bold {
-  @include typo-field-label-bold;
-}
 
-.view-property {
-  @include typo-view-property;
-}
-
-.features {
-  @include typo-features;
-}
-
-.card-agency-name {
-  @include typo-card-agency-name;
-}
-
-.icon-label {
-  @include typo-icon-label;
-}

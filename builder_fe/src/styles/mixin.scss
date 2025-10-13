@@ -79,24 +79,38 @@ $sm-mobile-width: 400px;
   line-height: 13.75px;
 }
 
-@mixin typo-body {
+@mixin typo {
   font-variation-settings: $font-weight-348;
   font-size: 14px;
   line-height: 17.5px;
 }
 
-@mixin typo-body-light {
+@mixin typo-light {
   font-weight: $font-weight-light;
   font-variation-settings: normal;
   font-size: 14px;
   line-height: 17.5px;
 }
 
-@mixin typo-body-bold {
+@mixin typo-bold {
   font-weight: $font-weight-bold;
   font-variation-settings: normal;
   font-size: 14px;
   line-height: 17.5px;
+}
+
+@mixin typo-medium {
+  font-weight: $font-weight-348;
+  font-variation-settings: normal;
+  font-size: 17px;
+  line-height: 21.25px;
+}
+
+@mixin typo-medium-light {
+  font-weight: $font-weight-light;
+  font-variation-settings: normal;
+  font-size: 17px;
+  line-height: 21.25px;
 }
 
 @mixin typo-medium-bold {
@@ -107,7 +121,21 @@ $sm-mobile-width: 400px;
 }
 
 @mixin typo-large {
-  font-weight: $font-weight-regular;
+  font-weight: $font-weight-348;
+  font-variation-settings: normal;
+  font-size: 24px;
+  line-height: 30px;
+}
+
+@mixin typo-large-light {
+  font-weight: $font-weight-light;
+  font-variation-settings: normal;
+  font-size: 24px;
+  line-height: 30px;
+}
+
+@mixin typo-large-bold {
+  font-weight: $font-weight-bold;
   font-variation-settings: normal;
   font-size: 24px;
   line-height: 30px;
