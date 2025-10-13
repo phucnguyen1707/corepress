@@ -1,0 +1,13 @@
+@use '@/styles/customVariables' as *;
+
+.core-typo {
+  color: inherit;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &.wrap {
+    text-wrap: wrap;
+    white-space: pre-wrap;
+  }
+}
