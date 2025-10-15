@@ -103,6 +103,42 @@
           }
         }
       }
+
+      .section-content {
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        padding: 8px 12px;
+        color: #222;
+
+        .tree-node {
+          margin-left: 8px;
+        }
+
+        .tree-item {
+          display: flex;
+          align-items: center;
+          padding: 3px 0;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: #f6f6f6;
+          }
+        }
+
+        .tag-name {
+          margin-left: 4px;
+          font-weight: 500;
+          color: #333;
+          word-break: break-word;
+        }
+
+        .tree-children {
+          margin-left: 16px;
+          border-left: 1px solid #ddd;
+          padding-left: 6px;
+        }
+      }
     }
   }
 }
