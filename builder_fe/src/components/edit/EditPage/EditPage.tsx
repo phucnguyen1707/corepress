@@ -45,7 +45,7 @@ export default function LoginPage() {
         children: ['header-02', 'body-03'],
       },
 
-      // HEADER
+      // header section
       'header-02': {
         tag: 'header',
         attribute: { id: 'site-header', class: 'header' },
@@ -115,7 +115,7 @@ export default function LoginPage() {
         children: [],
       },
 
-      // BODY
+      // body section
       'body-03': {
         tag: 'body',
         attribute: { id: 'main', class: 'page-body' },
@@ -144,16 +144,14 @@ export default function LoginPage() {
     },
   };
 
-  // Hàm đệ quy render node
   const renderNode = (nodeId: string): React.ReactNode => {
     const node = mockupData.nodes[nodeId];
     if (!node) return null;
 
     const { tag, attribute, children } = node;
 
-    // 1️⃣ If it's a text node → render its value directly
     if (tag === 'text') {
-      return attribute.value || '';
+      return attribute.value || 'empty value';
     }
 
     if (tag === 'img') {
@@ -165,7 +163,6 @@ export default function LoginPage() {
       );
     }
 
-    // 2️⃣ Otherwise, render children recursively
     const childElements = children?.map((childId: string) => renderNode(childId));
 
     return React.createElement(
