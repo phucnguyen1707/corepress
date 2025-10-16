@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 
 import Typo from '@/components/commons/Typo';
 import { DesktopIcon } from '@/icons/D';
@@ -10,6 +10,7 @@ import { ReturnIcon } from '@/icons/R';
 import { SessionIcon, SettingIcon } from '@/icons/S';
 import { EDevices, ESideBarActive } from '@/interfaces/common';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 
 import './editPage.scss';
 
@@ -23,6 +24,7 @@ interface PageNode {
   tag: string;
   attribute: NodeAttributes;
   children: string[];
+  name?: string;
 }
 
 interface Page {
@@ -50,6 +52,7 @@ export default function LoginPage() {
         tag: 'header',
         attribute: { id: 'site-header', class: 'header' },
         children: ['div-02', 'div-03'],
+        name: 'header',
       },
       'div-02': {
         tag: 'div',
@@ -64,14 +67,16 @@ export default function LoginPage() {
       'logo-01': {
         tag: 'img',
         attribute: {
-          value: 'logo data',
+          value: 'https://i.ibb.co/XrDHM9qq/pexels-thiago-kai-1873845-32394258.jpg',
         },
         children: [],
+        name: 'logo',
       },
       'text-01': {
         tag: 'text',
         attribute: { value: 'MyWebsite' },
         children: [],
+        name: 'title-text',
       },
 
       'div-03': {
@@ -83,36 +88,43 @@ export default function LoginPage() {
         tag: 'ul',
         attribute: { id: '', class: 'menu-list' },
         children: ['li-06', 'li-07', 'li-08'],
+        name: 'menu',
       },
       'li-06': {
         tag: 'li',
         attribute: { class: 'menu-item' },
         children: ['text-02'],
+        name: 'menu-item-01',
       },
       'li-07': {
         tag: 'li',
         attribute: { class: 'menu-item' },
         children: ['text-03'],
+        name: 'menu-item-02',
       },
       'li-08': {
         tag: 'li',
         attribute: { class: 'menu-item' },
         children: ['text-04'],
+        name: 'menu-item-03',
       },
       'text-02': {
         tag: 'text',
         attribute: { value: 'Home' },
         children: [],
+        name: 'menu-item-01-text',
       },
       'text-03': {
         tag: 'text',
         attribute: { value: 'About' },
         children: [],
+        name: 'menu-item-02-text',
       },
       'text-04': {
         tag: 'text',
         attribute: { value: 'Contact' },
         children: [],
+        name: 'menu-item-03-text',
       },
 
       // body section
@@ -144,7 +156,7 @@ export default function LoginPage() {
     },
   };
 
-  const renderNode = (nodeId: string): React.ReactNode => {
+  const renderNode = (nodeId: string): ReactNode => {
     const node = mockupData.nodes[nodeId];
     if (!node) return null;
 
@@ -156,9 +168,12 @@ export default function LoginPage() {
 
     if (tag === 'img') {
       return (
-        <img
-          src={attribute.value}
-          alt={'Logo'}
+        <Image
+          key={nodeId}
+          src={attribute.value || ''}
+          width={100}
+          height={100}
+          alt={tag}
         />
       );
     }
@@ -176,21 +191,30 @@ export default function LoginPage() {
     );
   };
 
-  const renderTree = (rootId: string) => {
+  const renderTree = (rootId: string): ReactNode => {
     const node = mockupData.nodes[rootId];
+    if (!node) return null;
 
-    return (
-      <div className='tree-node'>
-        <div className='tree-item'>
-          <div className='tag-name'>
-            {node.tag}
-            {node.attribute.value && ` ${node.attribute.value}`}
+    const children = node.children.map(childId => renderTree(childId));
+
+    // Case 1: Node has a name → render it + visible children container
+    if (node.name) {
+      return (
+        <div
+          className='tree-item-wrapper'
+          key={rootId}
+        >
+          <div className='tree-item'>
+            <div className='tag-name'>{node.name}</div>
           </div>
-        </div>
 
-        <div className='tree-children'>{node.children.map(childId => renderTree(childId))}</div>
-      </div>
-    );
+          {children.length > 0 && <div className='tree-children'>{children}</div>}
+        </div>
+      );
+    }
+
+    // Case 2: Node has no name → just render its children directly
+    return <>{children}</>;
   };
 
   return (

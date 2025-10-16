@@ -111,7 +111,7 @@
         color: #222;
 
         .tree-node {
-          margin-left: 8px;
+          margin-left: 1px;
         }
 
         .tree-item {
@@ -122,21 +122,20 @@
           transition: background-color 0.2s ease;
 
           &:hover {
-            background-color: #f6f6f6;
+            background-color: $bg-grey-presentation;
           }
         }
 
         .tag-name {
           margin-left: 4px;
           font-weight: 500;
-          color: #333;
+          color: $text-black;
           word-break: break-word;
         }
 
         .tree-children {
-          margin-left: 16px;
-          border-left: 1px solid #ddd;
-          padding-left: 6px;
+          // border-left: 1px solid #ddd;
+          margin-left: 10px;
         }
       }
     }
