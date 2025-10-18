@@ -3,7 +3,7 @@ services:
     image: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
+      POSTGRES_PASSWORD: Ad12345#
       POSTGRES_DB: corepress
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -13,7 +13,7 @@ services:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: 12345
+      PGADMIN_DEFAULT_PASSWORD: Ad12345#
       PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED: "False"
     ports:
       - 5431:80
