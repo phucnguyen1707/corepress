@@ -214,7 +214,7 @@ export default function LoginPage() {
     }
 
     // Case 2: Node has no name → just render its children directly
-    return <>{children}</>;
+    return <div key={rootId}>{children}</div>;
   };
 
   return (

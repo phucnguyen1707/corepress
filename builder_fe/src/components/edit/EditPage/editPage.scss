@@ -108,11 +108,8 @@
         font-family: 'Inter', sans-serif;
         font-size: 13px;
         padding: 8px 12px;
-        color: #222;
-
-        .tree-node {
-          margin-left: 1px;
-        }
+        color: $text-black;
+        width: 100%;
 
         .tree-item {
           display: flex;
@@ -127,8 +124,6 @@
         }
 
         .tag-name {
-          margin-left: 4px;
-          font-weight: 500;
           color: $text-black;
           word-break: break-word;
         }
