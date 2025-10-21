@@ -31,14 +31,15 @@ export const register = async (req: Bun.BunRequest): Promise<Response> => {
 
   const hashPassword = await Bun.password.hash(password);
 
-  const rood_id = crypto.randomUUID();
+  const html_id = crypto.randomUUID();
   const body_id = crypto.randomUUID();
   const main_id = crypto.randomUUID();
 
   const pageData = {
-    rootNodes: rood_id,
+    htmlNode: html_id,
+    mainNode: main_id,
     nodes: {
-      [rood_id]: {
+      [html_id]: {
         attribute: {},
         tag: "html",
         children: [body_id],
