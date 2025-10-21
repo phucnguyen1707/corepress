@@ -15,7 +15,7 @@ export const SessionIcon: FC<SVGProps> = ({ color = 'currentcolor' }) => (
     ></path>
     <path
       fill={color}
-      fill-rule='evenodd'
+      fillRule='evenodd'
       d='M3.5 9.25c0-.966.784-1.75 1.75-1.75h9.5c.966 0 1.75.784 1.75 1.75v1.5c0 .966-.784 1.75-1.75 1.75h-9.5c-.966 0-1.75-.784-1.75-1.75v-1.5Zm1.75-.25c-.138 0-.25.112-.25.25v1.5c0 .138.112.25.25.25h9.5c.138 0 .25-.112.25-.25v-1.5c0-.138-.112-.25-.25-.25h-9.5Z'
     ></path>
     <path

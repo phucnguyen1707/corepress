@@ -1,0 +1,142 @@
+.edit-page {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(241, 241, 241, 1);
+  color: #343434;
+}
+
+.edit-page .icon-size {
+  width: 20px;
+  height: 20px;
+}
+
+.edit-page .header-session {
+  display: flex;
+  padding: 8px 16px;
+  background-color: #ffffff;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.edit-page .header-session .every-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-page .header-session .device-choose {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: 8px;
+  background-color: rgba(241, 241, 241, 1);
+  gap: 8px;
+  padding: 4px;
+}
+
+.edit-page .header-session .device-choose .device-background {
+  margin: 2px 0px;
+  border-radius: 8px;
+  background-color: transparent;
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.edit-page .header-session .device-choose .device-background.active {
+  background-color: #ffffff;
+  transform: scale(1.05);
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.edit-page .header-session .device-choose .device-icon {
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+}
+
+.edit-page .header-session .save-button {
+  color: #ffffff;
+  background-color: #343434;
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.edit-page .body-session {
+  display: flex;
+  width: 100%;
+}
+
+.edit-page .body-session .first-section {
+  width: 25%;
+  height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+}
+
+.edit-page .body-session .first-section .action-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  padding: 0 8px;
+}
+
+.edit-page .body-session .first-section .action-bar .action-item {
+  padding: 10px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
+}
+
+.edit-page .body-session .first-section .action-bar .action-item.active {
+  color: #405095;
+}
+
+.edit-page .body-session .first-section .action-bar .action-item:hover {
+  background-color: rgba(241, 241, 241, 1);
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.edit-page .body-session .first-section .section-content {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 8px 12px;
+  color: #343434;
+  width: 100%;
+}
+
+.edit-page .body-session .first-section .section-content .tree-item {
+  display: flex;
+  align-items: center;
+  padding: 3px 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit-page .body-session .first-section .section-content .tree-item:hover {
+  background-color: #f8f8f8;
+}
+
+.edit-page .body-session .first-section .section-content .tag-name {
+  color: #343434;
+  word-break: break-word;
+}
+
+.edit-page .body-session .first-section .section-content .tree-children {
+  margin-left: 10px;
+}
+
+.edit-page .body-session .second-section {
+  margin: 8px;
+  background: #ffffff;
+  width: 100%;
+  height: 100%;
+}
