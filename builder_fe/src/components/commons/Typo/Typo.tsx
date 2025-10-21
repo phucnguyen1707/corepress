@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './typo.scss';
+import './typo.css';
 
 export type TypoType =
   | 'Typo small'

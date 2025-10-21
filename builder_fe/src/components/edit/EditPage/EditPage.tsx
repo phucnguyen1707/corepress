@@ -9,10 +9,11 @@ import { MobileIcon } from '@/icons/M';
 import { ReturnIcon } from '@/icons/R';
 import { SessionIcon, SettingIcon } from '@/icons/S';
 import { EDevices, ESideBarActive } from '@/interfaces/common';
+import '@/nodeCss/header.css';
+import '@/nodeCss/template.css';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 
-import './editPage.scss';
+import './editPage.css';
 
 interface NodeAttributes {
   id?: string;
@@ -44,7 +45,7 @@ export default function LoginPage() {
       'html-01': {
         tag: 'html',
         attribute: { id: '', class: '' },
-        children: ['header-02', 'body-03'],
+        children: ['header-02', 'template-03'],
       },
 
       // header section
@@ -56,22 +57,16 @@ export default function LoginPage() {
       },
       'div-02': {
         tag: 'div',
-        attribute: { id: 'logo', class: 'header__logo' },
+        attribute: { id: 'logo', class: 'header__content' },
         children: ['h1-04'],
       },
+
       'h1-04': {
         tag: 'h1',
-        attribute: { id: '', class: 'site-title' },
-        children: ['logo-01', 'text-01'],
+        attribute: { id: '', class: 'header__title' },
+        children: ['text-01'],
       },
-      'logo-01': {
-        tag: 'img',
-        attribute: {
-          value: 'https://i.ibb.co/XrDHM9qq/pexels-thiago-kai-1873845-32394258.jpg',
-        },
-        children: [],
-        name: 'logo',
-      },
+
       'text-01': {
         tag: 'text',
         attribute: { value: 'MyWebsite' },
@@ -127,31 +122,58 @@ export default function LoginPage() {
         name: 'menu-item-03-text',
       },
 
-      // body section
-      'body-03': {
-        tag: 'body',
-        attribute: { id: 'main', class: 'page-body' },
+      // template section
+      'template-03': {
+        tag: 'div',
+        attribute: { id: 'main', class: 'template' },
+        children: ['div-04'],
+        name: 'template',
+      },
+      'div-04': {
+        tag: 'div',
+        attribute: { class: 'hero__content' },
+        children: ['div-05', 'div-06'],
+      },
+      'div-05': {
+        tag: 'div',
+        attribute: { class: 'hero__image__container' },
+        children: ['img-06'],
+      },
+      'img-06': {
+        tag: 'img',
+        attribute: {
+          class: 'hero__image',
+          value: 'https://i.ibb.co/XrDHM9qq/pexels-thiago-kai-1873845-32394258.jpg',
+        },
+        children: [],
+        name: 'hero__image',
+      },
+      'div-06': {
+        tag: 'div',
+        attribute: { class: 'hero__text__container' },
         children: ['h2-09', 'p-10'],
       },
       'h2-09': {
         tag: 'h2',
-        attribute: { class: 'welcome-title' },
+        attribute: { class: 'hero__title' },
         children: ['text-05'],
       },
       'text-05': {
         tag: 'text',
         attribute: { value: 'Welcome to My Website!' },
         children: [],
+        name: 'hero__title-text',
       },
       'p-10': {
         tag: 'p',
-        attribute: { class: 'intro' },
+        attribute: { class: 'hero__subtitle' },
         children: ['text-06'],
       },
       'text-06': {
         tag: 'text',
         attribute: { value: 'We are glad to have you here.' },
         children: [],
+        name: 'hero__subtitle-text',
       },
     },
   };
@@ -168,12 +190,10 @@ export default function LoginPage() {
 
     if (tag === 'img') {
       return (
-        <Image
-          key={nodeId}
-          src={attribute.value || ''}
-          width={100}
-          height={100}
-          alt={tag}
+        <img
+          src={attribute.value}
+          alt={node.name}
+          className={attribute.class}
         />
       );
     }
@@ -277,6 +297,8 @@ export default function LoginPage() {
           <div className='section-content'>{renderTree(mockupData.rootNode)}</div>
         </div>
         <div className='second-section'>{renderNode(mockupData.rootNode)}</div>
+
+        <div className='first-section'></div>
       </div>
     </div>
   );

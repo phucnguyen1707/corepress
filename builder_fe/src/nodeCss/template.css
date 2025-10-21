@@ -1,0 +1,53 @@
+.template {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.hero__image__container {
+  display: flex;
+  width: 100%;
+  height: 500px;
+}
+
+.hero__image {
+  object-fit: cover;
+}
+
+.hero__text__container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__title {
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 60px;
+  color: #343434;
+}
+
+.hero__subtitle {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 30px;
+  color: #343434;
+}

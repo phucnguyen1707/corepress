@@ -1,5 +1,3 @@
-@use '@/styles/customVariables' as *;
-
 .core-typo {
   color: inherit;
   display: -webkit-box;
