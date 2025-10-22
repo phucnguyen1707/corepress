@@ -75,27 +75,27 @@ $sm-mobile-width: 400px;
 
 @mixin typo-small {
   font-variation-settings: $font-weight-348;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 13.75px;
 }
 
 @mixin typo {
   font-variation-settings: $font-weight-348;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 17.5px;
 }
 
 @mixin typo-light {
   font-weight: $font-weight-light;
   font-variation-settings: normal;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 17.5px;
 }
 
 @mixin typo-bold {
   font-weight: $font-weight-bold;
   font-variation-settings: normal;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 17.5px;
 }
 

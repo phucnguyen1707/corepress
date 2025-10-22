@@ -1,13 +1,22 @@
 'use client';
 
-import React, { ReactNode, useState } from 'react';
+import React, { JSX, ReactNode, useState } from 'react';
 
 import Typo from '@/components/commons/Typo';
-import { DesktopIcon } from '@/icons/D';
-import { HomeIcon } from '@/icons/H';
-import { MobileIcon } from '@/icons/M';
-import { ReturnIcon } from '@/icons/R';
-import { SessionIcon, SettingIcon } from '@/icons/S';
+import {
+  ArrowRightIcon,
+  DesktopIcon,
+  FooterSessionIcon,
+  HeaderSectionIcon,
+  HomeIcon,
+  MobileIcon,
+  ReturnIcon,
+  SessionIcon,
+  SettingIcon,
+  TemplateSessionIcon,
+  TextSessionIcon,
+} from '@/icons';
+import { LinkSessionIcon, LogoSessionIcon } from '@/icons/L';
 import { EDevices, ESideBarActive } from '@/interfaces/common';
 import '@/nodeCss/header.css';
 import '@/nodeCss/template.css';
@@ -32,6 +41,15 @@ interface Page {
   rootNode: string;
   nodes: Record<string, PageNode>;
 }
+
+const iconsList: Record<string, JSX.Element> = {
+  header: <HeaderSectionIcon />,
+  body: <TemplateSessionIcon />,
+  footer: <FooterSessionIcon />,
+  logo: <LogoSessionIcon />,
+  text: <TextSessionIcon />,
+  menu: <LinkSessionIcon />,
+};
 
 export default function LoginPage() {
   const t = useTranslations('Login');
@@ -71,7 +89,7 @@ export default function LoginPage() {
         tag: 'text',
         attribute: { value: 'MyWebsite' },
         children: [],
-        name: 'title-text',
+        name: 'text',
       },
 
       'div-03': {
@@ -82,44 +100,24 @@ export default function LoginPage() {
       'ul-05': {
         tag: 'ul',
         attribute: { id: '', class: 'menu-list' },
-        children: ['li-06', 'li-07', 'li-08'],
+        children: ['li-06'],
         name: 'menu',
       },
       'li-06': {
         tag: 'li',
-        attribute: { class: 'menu-item' },
+        attribute: { id: '', class: 'menu-item' },
+        children: ['a-07'],
+      },
+      'a-07': {
+        tag: 'a',
+        attribute: { id: '', class: 'menu-link' },
         children: ['text-02'],
-        name: 'menu-item-01',
-      },
-      'li-07': {
-        tag: 'li',
-        attribute: { class: 'menu-item' },
-        children: ['text-03'],
-        name: 'menu-item-02',
-      },
-      'li-08': {
-        tag: 'li',
-        attribute: { class: 'menu-item' },
-        children: ['text-04'],
-        name: 'menu-item-03',
       },
       'text-02': {
         tag: 'text',
         attribute: { value: 'Home' },
         children: [],
-        name: 'menu-item-01-text',
-      },
-      'text-03': {
-        tag: 'text',
-        attribute: { value: 'About' },
-        children: [],
-        name: 'menu-item-02-text',
-      },
-      'text-04': {
-        tag: 'text',
-        attribute: { value: 'Contact' },
-        children: [],
-        name: 'menu-item-03-text',
+        name: 'text',
       },
 
       // template section
@@ -221,11 +219,19 @@ export default function LoginPage() {
     if (node.name) {
       return (
         <div
-          className='tree-item-wrapper'
           key={rootId}
+          className='tree-container'
         >
           <div className='tree-item'>
-            <div className='tag-name'>{node.name}</div>
+            {node.children.length > 0 && (
+              <div className='icon-size'>
+                <ArrowRightIcon color='grey' />
+              </div>
+            )}
+
+            <div className='icon-size'>{iconsList[node.name]}</div>
+
+            <Typo className='tag-name'>{node.name}</Typo>
           </div>
 
           {children.length > 0 && <div className='tree-children'>{children}</div>}
@@ -235,6 +241,32 @@ export default function LoginPage() {
 
     // Case 2: Node has no name → just render its children directly
     return <div key={rootId}>{children}</div>;
+  };
+
+  const renderGroupedSections = () => {
+    const sections = {
+      Header: [] as string[],
+      Template: [] as string[],
+      Footer: [] as string[],
+    };
+
+    // Categorize based on tag or naming pattern
+    Object.entries(mockupData.nodes).forEach(([id, node]) => {
+      if (node.tag === 'header') sections.Header.push(id);
+      else if (node.tag === 'body') sections.Template.push(id);
+      else if (node.tag === 'footer') sections.Footer.push(id);
+    });
+
+    return Object.entries(sections).map(([sectionName, ids]) => (
+      <div
+        key={sectionName}
+        className='section-wrapper'
+      >
+        <Typo type='Typo bold'>{sectionName}</Typo>
+
+        {ids.map(id => renderTree(id))}
+      </div>
+    ));
   };
 
   return (
@@ -294,7 +326,13 @@ export default function LoginPage() {
               <SettingIcon />
             </div>
           </div>
-          <div className='section-content'>{renderTree(mockupData.rootNode)}</div>
+          <div className='section-content'>
+            <div className='page-name'>
+              <Typo type='Typo medium bold'>Website Page</Typo>
+            </div>
+
+            {renderGroupedSections()}
+          </div>
         </div>
         <div className='second-section'>{renderNode(mockupData.rootNode)}</div>
 
