@@ -9,6 +9,8 @@ import {
   FooterSessionIcon,
   HeaderSectionIcon,
   HomeIcon,
+  ImageSessionIcon,
+  LinkSessionIcon,
   MobileIcon,
   ReturnIcon,
   SessionIcon,
@@ -16,8 +18,8 @@ import {
   TemplateSessionIcon,
   TextSessionIcon,
 } from '@/icons';
-import { LinkSessionIcon, LogoSessionIcon } from '@/icons/L';
 import { EDevices, ESideBarActive } from '@/interfaces/common';
+import '@/nodeCss/footer.css';
 import '@/nodeCss/header.css';
 import '@/nodeCss/template.css';
 import { useTranslations } from 'next-intl';
@@ -30,11 +32,22 @@ interface NodeAttributes {
   value?: string;
 }
 
+interface DevAttributes {
+  dataId?: string;
+}
+
+interface BuilderRenderInterface {
+  groupName?: 'header' | 'template' | 'footer';
+  renderName?: string;
+  renderIconName?: string;
+}
+
 interface PageNode {
   tag: string;
   attribute: NodeAttributes;
   children: string[];
-  name?: string;
+  devAttribute?: DevAttributes;
+  builderRender?: BuilderRenderInterface;
 }
 
 interface Page {
@@ -44,9 +57,9 @@ interface Page {
 
 const iconsList: Record<string, JSX.Element> = {
   header: <HeaderSectionIcon />,
-  body: <TemplateSessionIcon />,
+  template: <TemplateSessionIcon />,
   footer: <FooterSessionIcon />,
-  logo: <LogoSessionIcon />,
+  image: <ImageSessionIcon />,
   text: <TextSessionIcon />,
   menu: <LinkSessionIcon />,
 };
@@ -57,121 +70,196 @@ export default function LoginPage() {
   const [device, setDevice] = useState<EDevices>(EDevices.desktop);
   const [activeAction, setActiveAction] = useState<ESideBarActive>(ESideBarActive.session);
 
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+
+  const toggleExpand = (id: string) => {
+    setExpandedNodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) newSet.delete(id);
+      else newSet.add(id);
+      return newSet;
+    });
+  };
+
   const mockupData: Page = {
     rootNode: 'html-01',
     nodes: {
       'html-01': {
         tag: 'html',
         attribute: { id: '', class: '' },
-        children: ['header-02', 'template-03'],
+        children: ['header-02', 'template-09', 'footer-18'],
       },
 
       // header section
       'header-02': {
-        tag: 'header',
-        attribute: { id: 'site-header', class: 'header' },
-        children: ['div-02', 'div-03'],
-        name: 'header',
-      },
-      'div-02': {
         tag: 'div',
-        attribute: { id: 'logo', class: 'header__content' },
-        children: ['h1-04'],
+        attribute: { class: 'header' },
+        children: ['div-03', 'div-05'],
+        builderRender: {
+          groupName: 'header',
+          renderName: 'Header',
+          renderIconName: 'header',
+        },
       },
-
-      'h1-04': {
-        tag: 'h1',
-        attribute: { id: '', class: 'header__title' },
-        children: ['text-01'],
-      },
-
-      'text-01': {
-        tag: 'text',
-        attribute: { value: 'MyWebsite' },
-        children: [],
-        name: 'text',
-      },
-
       'div-03': {
         tag: 'div',
-        attribute: { id: 'menu', class: 'header__menu' },
-        children: ['ul-05'],
-      },
-      'ul-05': {
-        tag: 'ul',
-        attribute: { id: '', class: 'menu-list' },
-        children: ['li-06'],
-        name: 'menu',
-      },
-      'li-06': {
-        tag: 'li',
-        attribute: { id: '', class: 'menu-item' },
-        children: ['a-07'],
-      },
-      'a-07': {
-        tag: 'a',
-        attribute: { id: '', class: 'menu-link' },
-        children: ['text-02'],
-      },
-      'text-02': {
-        tag: 'text',
-        attribute: { value: 'Home' },
-        children: [],
-        name: 'text',
-      },
-
-      // template section
-      'template-03': {
-        tag: 'div',
-        attribute: { id: 'main', class: 'template' },
+        attribute: { class: 'header__content' },
         children: ['div-04'],
-        name: 'template',
+        devAttribute: { dataId: 'div-03' },
       },
       'div-04': {
-        tag: 'div',
-        attribute: { class: 'hero__content' },
-        children: ['div-05', 'div-06'],
+        tag: 'text',
+        attribute: { value: 'MyWebsite', class: 'header__title' },
+        children: [],
+        devAttribute: { dataId: 'div-04' },
+        builderRender: {
+          renderName: 'Header Title',
+          renderIconName: 'text',
+        },
       },
       'div-05': {
         tag: 'div',
-        attribute: { class: 'hero__image__container' },
-        children: ['img-06'],
+        attribute: { class: 'header__menu' },
+        children: ['div-06'],
       },
-      'img-06': {
+      'div-06': {
+        tag: 'div',
+        attribute: { class: 'menu-item' },
+        children: ['a-07'],
+        builderRender: {
+          renderName: 'Header Menu',
+          renderIconName: 'menu',
+        },
+      },
+      'a-07': {
+        tag: 'a',
+        attribute: { class: 'menu-link' },
+        children: ['text-08'],
+      },
+      'text-08': {
+        tag: 'text',
+        attribute: { value: 'Home' },
+        children: [],
+        devAttribute: { dataId: 'text-08' },
+        builderRender: {
+          renderName: 'Header Menu Text',
+          renderIconName: 'text',
+        },
+      },
+
+      // template section
+      'template-09': {
+        tag: 'div',
+        attribute: { class: 'template' },
+        children: ['div-10'],
+        builderRender: {
+          groupName: 'template',
+          renderName: 'Template',
+          renderIconName: 'template',
+        },
+      },
+      'div-10': {
+        tag: 'div',
+        attribute: { class: 'hero__content' },
+        children: ['div-11', 'div-13'],
+      },
+      'div-11': {
+        tag: 'div',
+        attribute: { class: 'hero__image__container' },
+        children: ['img-12'],
+      },
+      'img-12': {
         tag: 'img',
         attribute: {
           class: 'hero__image',
           value: 'https://i.ibb.co/XrDHM9qq/pexels-thiago-kai-1873845-32394258.jpg',
         },
         children: [],
-        name: 'hero__image',
+        devAttribute: { dataId: 'img-12' },
+        builderRender: {
+          renderName: 'Hero Image',
+          renderIconName: 'image',
+        },
       },
-      'div-06': {
+      'div-13': {
         tag: 'div',
         attribute: { class: 'hero__text__container' },
-        children: ['h2-09', 'p-10'],
+        children: ['h2-14', 'p-16'],
       },
-      'h2-09': {
+      'h2-14': {
         tag: 'h2',
         attribute: { class: 'hero__title' },
-        children: ['text-05'],
+        children: ['text-15'],
       },
-      'text-05': {
+      'text-15': {
         tag: 'text',
         attribute: { value: 'Welcome to My Website!' },
         children: [],
-        name: 'hero__title-text',
+        devAttribute: { dataId: 'text-15' },
+        builderRender: {
+          renderName: 'Hero Title',
+          renderIconName: 'text',
+        },
       },
-      'p-10': {
+      'p-16': {
         tag: 'p',
         attribute: { class: 'hero__subtitle' },
-        children: ['text-06'],
+        children: ['text-17'],
       },
-      'text-06': {
+      'text-17': {
         tag: 'text',
         attribute: { value: 'We are glad to have you here.' },
         children: [],
-        name: 'hero__subtitle-text',
+        devAttribute: { dataId: 'text-17' },
+        builderRender: {
+          renderName: 'Hero Subtitle',
+          renderIconName: 'text',
+        },
+      },
+
+      // footer section
+      'footer-18': {
+        tag: 'div',
+        attribute: { class: 'footer' },
+        children: ['div-19', 'div-21'],
+        builderRender: {
+          groupName: 'footer',
+          renderName: 'Footer',
+          renderIconName: 'footer',
+        },
+      },
+      'div-19': {
+        tag: 'div',
+        attribute: { class: 'footer__top' },
+        children: ['text-20'],
+        devAttribute: { dataId: 'div-19' },
+      },
+      'text-20': {
+        tag: 'text',
+        attribute: { value: 'Contact Us' },
+        children: [],
+        devAttribute: { dataId: 'text-20' },
+        builderRender: {
+          renderName: 'Footer Title Text',
+          renderIconName: 'text',
+        },
+      },
+      'div-21': {
+        tag: 'div',
+        attribute: { class: 'footer__bottom' },
+        children: ['text-22'],
+        devAttribute: { dataId: 'div-21' },
+      },
+      'text-22': {
+        tag: 'text',
+        attribute: { value: '© 2025 MyWebsite. All rights reserved.' },
+        children: [],
+        devAttribute: { dataId: 'text-22' },
+        builderRender: {
+          renderName: 'Footer Copyright',
+          renderIconName: 'text',
+        },
       },
     },
   };
@@ -181,6 +269,7 @@ export default function LoginPage() {
     if (!node) return null;
 
     const { tag, attribute, children } = node;
+    const group = node.builderRender?.groupName;
 
     if (tag === 'text') {
       return attribute.value || 'empty value';
@@ -190,20 +279,21 @@ export default function LoginPage() {
       return (
         <img
           src={attribute.value}
-          alt={node.name}
+          alt={node.builderRender?.renderName}
           className={attribute.class}
         />
       );
     }
 
     const childElements = children?.map((childId: string) => renderNode(childId));
+    const isMainSection = group === 'header' || group === 'template' || group === 'footer';
 
     return React.createElement(
       tag,
       {
         key: nodeId,
         id: attribute.id || undefined,
-        className: attribute.class || undefined,
+        className: `${attribute.class || ''} ${isMainSection && hoveredSection === group ? 'hovered-section' : ''}`,
       },
       childElements && childElements.length > 0 ? childElements : null
     );
@@ -213,28 +303,39 @@ export default function LoginPage() {
     const node = mockupData.nodes[rootId];
     if (!node) return null;
 
-    const children = node.children.map(childId => renderTree(childId));
+    const isExpanded = expandedNodes.has(rootId);
+    const hasChildren = node.children.length > 0;
+
+    const children = hasChildren ? node.children.map(childId => renderTree(childId)) : [];
 
     // Case 1: Node has a name → render it + visible children container
-    if (node.name) {
+    if (node.builderRender?.renderName) {
       return (
         <div
           key={rootId}
           className='tree-container'
         >
           <div className='tree-item'>
-            {node.children.length > 0 && (
-              <div className='icon-size'>
+            {hasChildren && (
+              <div
+                className='icon-size'
+                onClick={() => toggleExpand(rootId)}
+                style={{
+                  cursor: 'pointer',
+                  transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+                  transition: 'transform 0.2s',
+                }}
+              >
                 <ArrowRightIcon color='grey' />
               </div>
             )}
 
-            <div className='icon-size'>{iconsList[node.name]}</div>
+            <div className='icon-size'>{iconsList[node.builderRender.renderIconName || 'text']}</div>
 
-            <Typo className='tag-name'>{node.name}</Typo>
+            <Typo className='tag-name'>{node.builderRender.renderName}</Typo>
           </div>
 
-          {children.length > 0 && <div className='tree-children'>{children}</div>}
+          {isExpanded && hasChildren && <div className='tree-children'>{children}</div>}
         </div>
       );
     }
@@ -252,15 +353,18 @@ export default function LoginPage() {
 
     // Categorize based on tag or naming pattern
     Object.entries(mockupData.nodes).forEach(([id, node]) => {
-      if (node.tag === 'header') sections.Header.push(id);
-      else if (node.tag === 'body') sections.Template.push(id);
-      else if (node.tag === 'footer') sections.Footer.push(id);
+      if (node.builderRender?.groupName === 'header') sections.Header.push(id);
+      else if (node.builderRender?.groupName === 'template') sections.Template.push(id);
+      else if (node.builderRender?.groupName === 'footer') sections.Footer.push(id);
     });
 
+    console.log(sections);
     return Object.entries(sections).map(([sectionName, ids]) => (
       <div
         key={sectionName}
         className='section-wrapper'
+        onMouseEnter={() => setHoveredSection(sectionName.toLowerCase())}
+        onMouseLeave={() => setHoveredSection(null)}
       >
         <Typo type='Typo bold'>{sectionName}</Typo>
 

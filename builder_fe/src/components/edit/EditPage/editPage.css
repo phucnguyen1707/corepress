@@ -106,32 +106,45 @@
 }
 
 .edit-page .body-session .first-section .section-content {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  padding: 8px 12px;
   color: #343434;
   width: 100%;
+  border-left: 1px solid rgb(208, 200, 200);
 }
 
-.edit-page .body-session .first-section .section-content .tree-item {
+.edit-page .body-session .first-section .section-content .page-name {
+  padding: 12px;
+  border-bottom: 1px solid rgb(208, 200, 200);
+}
+
+.edit-page .body-session .first-section .section-wrapper {
+  border-bottom: 1px solid rgb(208, 200, 200);
+  padding: 8px 12px;
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.edit-page .body-session .first-section .section-wrapper .tree-item {
   display: flex;
   align-items: center;
-  padding: 3px 0;
+  padding: 4px 8px;
+  gap: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.edit-page .body-session .first-section .section-content .tree-item:hover {
-  background-color: #f8f8f8;
+.edit-page .body-session .first-section .section-wrapper .tree-item:hover {
+  background-color: rgba(241, 241, 241, 1);
+  border-radius: 8px;
 }
 
-.edit-page .body-session .first-section .section-content .tag-name {
+.edit-page .body-session .first-section .section-wrapper .tag-name {
   color: #343434;
   word-break: break-word;
 }
 
-.edit-page .body-session .first-section .section-content .tree-children {
-  margin-left: 10px;
+.edit-page .body-session .first-section .section-wrapper .tree-children {
+  margin-left: 24px;
 }
 
 .edit-page .body-session .second-section {
@@ -139,4 +152,9 @@
   background: #ffffff;
   width: 100%;
   height: 100%;
+}
+
+.hovered-section {
+  outline: 2px solid #007bff; /* blue border */
+  border-radius: 4px;
 }
