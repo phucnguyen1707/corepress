@@ -154,7 +154,7 @@
   height: 100%;
 }
 
-.hovered-section {
+.hovered-node {
   outline: 2px solid #007bff; /* blue border */
   border-radius: 4px;
 }

@@ -22,7 +22,6 @@ import { EDevices, ESideBarActive } from '@/interfaces/common';
 import '@/nodeCss/footer.css';
 import '@/nodeCss/header.css';
 import '@/nodeCss/template.css';
-import { useTranslations } from 'next-intl';
 
 import './editPage.css';
 
@@ -65,14 +64,13 @@ const iconsList: Record<string, JSX.Element> = {
 };
 
 export default function LoginPage() {
-  const t = useTranslations('Login');
-
   const [device, setDevice] = useState<EDevices>(EDevices.desktop);
   const [activeAction, setActiveAction] = useState<ESideBarActive>(ESideBarActive.session);
 
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
-  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
+  console.log(hoveredNodeId);
   const toggleExpand = (id: string) => {
     setExpandedNodes(prev => {
       const newSet = new Set(prev);
@@ -89,6 +87,7 @@ export default function LoginPage() {
         tag: 'html',
         attribute: { id: '', class: '' },
         children: ['header-02', 'template-09', 'footer-18'],
+        devAttribute: { dataId: 'html-01' },
       },
 
       // header section
@@ -96,6 +95,7 @@ export default function LoginPage() {
         tag: 'div',
         attribute: { class: 'header' },
         children: ['div-03', 'div-05'],
+        devAttribute: { dataId: 'header-02' },
         builderRender: {
           groupName: 'header',
           renderName: 'Header',
@@ -122,11 +122,13 @@ export default function LoginPage() {
         tag: 'div',
         attribute: { class: 'header__menu' },
         children: ['div-06'],
+        devAttribute: { dataId: 'div-05' },
       },
       'div-06': {
         tag: 'div',
         attribute: { class: 'menu-item' },
         children: ['a-07'],
+        devAttribute: { dataId: 'div-06' },
         builderRender: {
           renderName: 'Header Menu',
           renderIconName: 'menu',
@@ -136,6 +138,7 @@ export default function LoginPage() {
         tag: 'a',
         attribute: { class: 'menu-link' },
         children: ['text-08'],
+        devAttribute: { dataId: 'a-07' },
       },
       'text-08': {
         tag: 'text',
@@ -153,6 +156,7 @@ export default function LoginPage() {
         tag: 'div',
         attribute: { class: 'template' },
         children: ['div-10'],
+        devAttribute: { dataId: 'template-09' },
         builderRender: {
           groupName: 'template',
           renderName: 'Template',
@@ -163,11 +167,13 @@ export default function LoginPage() {
         tag: 'div',
         attribute: { class: 'hero__content' },
         children: ['div-11', 'div-13'],
+        devAttribute: { dataId: 'div-10' },
       },
       'div-11': {
         tag: 'div',
         attribute: { class: 'hero__image__container' },
         children: ['img-12'],
+        devAttribute: { dataId: 'div-11' },
       },
       'img-12': {
         tag: 'img',
@@ -186,11 +192,13 @@ export default function LoginPage() {
         tag: 'div',
         attribute: { class: 'hero__text__container' },
         children: ['h2-14', 'p-16'],
+        devAttribute: { dataId: 'div-13' },
       },
       'h2-14': {
         tag: 'h2',
         attribute: { class: 'hero__title' },
         children: ['text-15'],
+        devAttribute: { dataId: 'h2-14' },
       },
       'text-15': {
         tag: 'text',
@@ -206,6 +214,7 @@ export default function LoginPage() {
         tag: 'p',
         attribute: { class: 'hero__subtitle' },
         children: ['text-17'],
+        devAttribute: { dataId: 'p-16' },
       },
       'text-17': {
         tag: 'text',
@@ -223,6 +232,7 @@ export default function LoginPage() {
         tag: 'div',
         attribute: { class: 'footer' },
         children: ['div-19', 'div-21'],
+        devAttribute: { dataId: 'footer-18' },
         builderRender: {
           groupName: 'footer',
           renderName: 'Footer',
@@ -269,7 +279,6 @@ export default function LoginPage() {
     if (!node) return null;
 
     const { tag, attribute, children } = node;
-    const group = node.builderRender?.groupName;
 
     if (tag === 'text') {
       return attribute.value || 'empty value';
@@ -286,14 +295,13 @@ export default function LoginPage() {
     }
 
     const childElements = children?.map((childId: string) => renderNode(childId));
-    const isMainSection = group === 'header' || group === 'template' || group === 'footer';
 
     return React.createElement(
       tag,
       {
         key: nodeId,
         id: attribute.id || undefined,
-        className: `${attribute.class || ''} ${isMainSection && hoveredSection === group ? 'hovered-section' : ''}`,
+        className: `${attribute.class || ''} ${hoveredNodeId === nodeId ? 'hovered-node' : ''}`,
       },
       childElements && childElements.length > 0 ? childElements : null
     );
@@ -315,7 +323,11 @@ export default function LoginPage() {
           key={rootId}
           className='tree-container'
         >
-          <div className='tree-item'>
+          <div
+            className='tree-item'
+            onMouseEnter={() => setHoveredNodeId(rootId)}
+            onMouseLeave={() => setHoveredNodeId(null)}
+          >
             {hasChildren && (
               <div
                 className='icon-size'
@@ -358,13 +370,10 @@ export default function LoginPage() {
       else if (node.builderRender?.groupName === 'footer') sections.Footer.push(id);
     });
 
-    console.log(sections);
     return Object.entries(sections).map(([sectionName, ids]) => (
       <div
         key={sectionName}
         className='section-wrapper'
-        onMouseEnter={() => setHoveredSection(sectionName.toLowerCase())}
-        onMouseLeave={() => setHoveredSection(null)}
       >
         <Typo type='Typo bold'>{sectionName}</Typo>
 
