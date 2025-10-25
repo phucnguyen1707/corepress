@@ -74,6 +74,7 @@
   height: 100vh;
   background-color: #ffffff;
   display: flex;
+  overflow-y: auto;
 }
 
 .edit-page .body-session .first-section .action-bar {
@@ -155,6 +156,7 @@
 }
 
 .hovered-node {
-  outline: 2px solid #007bff; /* blue border */
-  border-radius: 4px;
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+  transition: outline 0.2s;
 }

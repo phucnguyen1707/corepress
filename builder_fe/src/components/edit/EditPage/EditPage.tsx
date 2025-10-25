@@ -3,6 +3,7 @@
 import React, { JSX, ReactNode, useState } from 'react';
 
 import Typo from '@/components/commons/Typo';
+import SettingPanel from '@/components/setting';
 import {
   ArrowRightIcon,
   DesktopIcon,
@@ -18,41 +19,12 @@ import {
   TemplateSessionIcon,
   TextSessionIcon,
 } from '@/icons';
-import { EDevices, ESideBarActive } from '@/interfaces/common';
+import { EDevices, ESideBarActive, Page } from '@/interfaces';
 import '@/nodeCss/footer.css';
 import '@/nodeCss/header.css';
 import '@/nodeCss/template.css';
 
 import './editPage.css';
-
-interface NodeAttributes {
-  id?: string;
-  class?: string;
-  value?: string;
-}
-
-interface DevAttributes {
-  dataId?: string;
-}
-
-interface BuilderRenderInterface {
-  groupName?: 'header' | 'template' | 'footer';
-  renderName?: string;
-  renderIconName?: string;
-}
-
-interface PageNode {
-  tag: string;
-  attribute: NodeAttributes;
-  children: string[];
-  devAttribute?: DevAttributes;
-  builderRender?: BuilderRenderInterface;
-}
-
-interface Page {
-  rootNode: string;
-  nodes: Record<string, PageNode>;
-}
 
 const iconsList: Record<string, JSX.Element> = {
   header: <HeaderSectionIcon />,
@@ -69,8 +41,8 @@ export default function LoginPage() {
 
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  console.log(hoveredNodeId);
   const toggleExpand = (id: string) => {
     setExpandedNodes(prev => {
       const newSet = new Set(prev);
@@ -191,7 +163,7 @@ export default function LoginPage() {
       'div-13': {
         tag: 'div',
         attribute: { class: 'hero__text__container' },
-        children: ['h2-14', 'p-16'],
+        children: ['h2-14', 'div-16'],
         devAttribute: { dataId: 'div-13' },
       },
       'h2-14': {
@@ -210,11 +182,11 @@ export default function LoginPage() {
           renderIconName: 'text',
         },
       },
-      'p-16': {
-        tag: 'p',
+      'div-16': {
+        tag: 'div',
         attribute: { class: 'hero__subtitle' },
         children: ['text-17'],
-        devAttribute: { dataId: 'p-16' },
+        devAttribute: { dataId: 'div-16' },
       },
       'text-17': {
         tag: 'text',
@@ -279,17 +251,27 @@ export default function LoginPage() {
     if (!node) return null;
 
     const { tag, attribute, children } = node;
+    const isHovered = hoveredNodeId === node.devAttribute?.dataId;
 
     if (tag === 'text') {
-      return attribute.value || 'empty value';
+      return (
+        <div
+          key={nodeId}
+          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+          data-id={node.devAttribute?.dataId}
+        >
+          {attribute.value || 'empty value'}
+        </div>
+      );
     }
 
     if (tag === 'img') {
       return (
         <img
+          key={nodeId}
           src={attribute.value}
           alt={node.builderRender?.renderName}
-          className={attribute.class}
+          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
         />
       );
     }
@@ -301,9 +283,10 @@ export default function LoginPage() {
       {
         key: nodeId,
         id: attribute.id || undefined,
-        className: `${attribute.class || ''} ${hoveredNodeId === nodeId ? 'hovered-node' : ''}`,
+        'data-id': node.devAttribute?.dataId,
+        className: `${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`,
       },
-      childElements && childElements.length > 0 ? childElements : null
+      childElements?.length ? childElements : null
     );
   };
 
@@ -325,8 +308,9 @@ export default function LoginPage() {
         >
           <div
             className='tree-item'
-            onMouseEnter={() => setHoveredNodeId(rootId)}
+            onMouseEnter={() => setHoveredNodeId(node.devAttribute?.dataId || null)}
             onMouseLeave={() => setHoveredNodeId(null)}
+            onClick={() => setSelectedNode(rootId)}
           >
             {hasChildren && (
               <div
@@ -449,7 +433,10 @@ export default function LoginPage() {
         </div>
         <div className='second-section'>{renderNode(mockupData.rootNode)}</div>
 
-        <div className='first-section'></div>
+        <SettingPanel
+          selectedNode={selectedNode}
+          mockupData={mockupData}
+        />
       </div>
     </div>
   );

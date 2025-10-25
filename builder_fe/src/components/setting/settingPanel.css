@@ -1,0 +1,24 @@
+.setting-section {
+  width: 25%;
+  height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  overflow-y: auto;
+}
+
+.setting-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  padding: 0 16px;
+  gap: 4px;
+}
+
+.setting-icon {
+  height: 80px;
+  width: 80px;
+  color: grey;
+}
