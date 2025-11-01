@@ -5,6 +5,7 @@ import React, { JSX, ReactNode, useState } from 'react';
 import Typo from '@/components/commons/Typo';
 import SettingPanel from '@/components/setting';
 import {
+  AddIcon,
   ArrowRightIcon,
   DesktopIcon,
   FooterSessionIcon,
@@ -360,8 +361,15 @@ export default function LoginPage() {
         className='section-wrapper'
       >
         <Typo type='Typo bold'>{sectionName}</Typo>
-
         {ids.map(id => renderTree(id))}
+
+        <div className='add__section-button'>
+          <div className='icon-size'>
+            <AddIcon />
+          </div>
+
+          <Typo type='Typo small'>Add Section</Typo>
+        </div>
       </div>
     ));
   };

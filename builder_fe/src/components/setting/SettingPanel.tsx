@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { EditIcon, SettingIcon } from '@/icons';
+import { EditIcon, SelectIcon, SettingIcon } from '@/icons';
 import { Page } from '@/interfaces';
 
 import Typo from '../commons/Typo';
@@ -70,16 +70,16 @@ export default function SettingPanel({ mockupData, selectedNode }: SettingPanelP
         {node.tag === 'text' && (
           <div>
             <div className='edit__text-session'>
-              <Typo type='Typo small'>Text Edit</Typo>
+              <Typo type='Typo bold'>Text Edit</Typo>
 
               <textarea
                 className='setting__text-area'
                 value={node.attribute.value || ''}
-                rows={3}
+                rows={2}
               />
             </div>
             <div className='edit__text-session'>
-              <Typo type='Typo small'>Layout Edit</Typo>
+              <Typo type='Typo bold'>Layout Edit</Typo>
 
               <div className='text__edit_layout'>
                 <div className='text__edit_layout-title'>
@@ -94,7 +94,7 @@ export default function SettingPanel({ mockupData, selectedNode }: SettingPanelP
             </div>
 
             <div className='edit__text-session'>
-              <Typo type='Typo small'>Typo Edit</Typo>
+              <Typo type='Typo bold'>Typo Edit</Typo>
 
               <div className='text__edit_layout'>
                 <div className='text__edit_layout-title'>
@@ -114,17 +114,74 @@ export default function SettingPanel({ mockupData, selectedNode }: SettingPanelP
                   <Typo type='Typo small bold'>Font Size</Typo>
                 </div>
 
+                <div className='select__wrapper'>
+                  <select className='select__layout'>
+                    <option
+                      className='option__layout'
+                      value='typo small'
+                    >
+                      Small
+                    </option>
+                    <option
+                      className='option__layout'
+                      value='typo'
+                    >
+                      Normal
+                    </option>
+                    <option
+                      className='option__layout'
+                      value='typo medium'
+                    >
+                      Medium
+                    </option>
+                    <option
+                      className='option__layout'
+                      value='typo large'
+                    >
+                      Large
+                    </option>
+                  </select>
+
+                  <div className='select__icon'>
+                    <SelectIcon />
+                  </div>
+                </div>
+              </div>
+
+              <div className='text__edit_layout'>
+                <div className='text__edit_layout-title'>
+                  <Typo type='Typo small bold'>Font Color</Typo>
+                </div>
+
                 <select>
-                  <option value='typo small'>Small</option>
-                  <option value='typo'>Normal</option>
-                  <option value='typo medium'>Medium</option>
-                  <option value='typo large'>Large</option>
+                  <option value='red'>Red</option>
+                  <option value='blue'>Blue</option>
+                  <option value='black'>Black</option>
+                  <option value='yellow'>Yellow</option>
                 </select>
+              </div>
+
+              <div className='text__edit_layout'>
+                <div className='text__edit_layout-title'>
+                  <Typo type='Typo small bold'>Case</Typo>
+                </div>
+
+                <div className='switch__container'>
+                  <div className='switch__button'>Default</div>
+                  <div className='switch__button-active'>Uppercase</div>
+                </div>
               </div>
             </div>
 
             <div className='edit__text-session'>
-              <Typo type='Typo small'>Appearance Edit</Typo>
+              <Typo type='Typo bold'>Appearance Edit</Typo>
+
+              <div className='text__edit_layout'>
+                <div className='text__edit_layout-title'>
+                  <Typo type='Typo small bold'>Background</Typo>
+                  CheckBox here
+                </div>
+              </div>
             </div>
           </div>
         )}

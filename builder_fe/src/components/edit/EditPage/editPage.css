@@ -5,7 +5,7 @@
   color: #343434;
 }
 
-.edit-page .icon-size {
+.icon-size {
   width: 20px;
   height: 20px;
 }
@@ -123,6 +123,12 @@
   display: flex;
   gap: 8px;
   flex-direction: column;
+}
+
+.edit-page .body-session .first-section .add__section-button {
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 
 .edit-page .body-session .first-section .section-wrapper .tree-item {
