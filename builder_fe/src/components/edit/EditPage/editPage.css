@@ -129,6 +129,17 @@
   display: flex;
   gap: 4px;
   align-items: center;
+  padding-left: 10px;
+}
+
+.edit-page .body-session .first-section .add__section-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.edit-page .body-session .first-section .add_section-text {
+  color: #3b82f6;
+  font-size: 11px;
 }
 
 .edit-page .body-session .first-section .section-wrapper .tree-item {

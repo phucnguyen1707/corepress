@@ -24,7 +24,10 @@ export const AddIcon: FC<SVGProps> = ({ color = 'currentcolor' }) => (
     width='100%'
     height='100%'
   >
-    <path d='M4.25 8a.75.75 0 0 1 .75-.75h2.25v-2.25a.75.75 0 0 1 1.5 0v2.25h2.25a.75.75 0 0 1 0 1.5h-2.25v2.25a.75.75 0 0 1-1.5 0v-2.25h-2.25a.75.75 0 0 1-.75-.75'></path>
+    <path
+      fill={color}
+      d='M4.25 8a.75.75 0 0 1 .75-.75h2.25v-2.25a.75.75 0 0 1 1.5 0v2.25h2.25a.75.75 0 0 1 0 1.5h-2.25v2.25a.75.75 0 0 1-1.5 0v-2.25h-2.25a.75.75 0 0 1-.75-.75'
+    ></path>
     <path
       fill={color}
       fillRule='evenodd'

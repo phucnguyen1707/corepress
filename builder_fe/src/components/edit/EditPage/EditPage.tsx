@@ -3,6 +3,7 @@
 import React, { JSX, ReactNode, useState } from 'react';
 
 import Typo from '@/components/commons/Typo';
+import AddSectionModal from '@/components/modal';
 import SettingPanel from '@/components/setting';
 import {
   AddIcon,
@@ -43,6 +44,9 @@ export default function LoginPage() {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalSectionType, setModalSectionType] = useState<string>('');
 
   const toggleExpand = (id: string) => {
     setExpandedNodes(prev => {
@@ -363,15 +367,49 @@ export default function LoginPage() {
         <Typo type='Typo bold'>{sectionName}</Typo>
         {ids.map(id => renderTree(id))}
 
-        <div className='add__section-button'>
-          <div className='icon-size'>
-            <AddIcon />
+        <div
+          className='add__section-button'
+          onClick={() => {
+            setModalSectionType(sectionName);
+            setIsModalOpen(true);
+          }}
+        >
+          <div className='add__section-icon'>
+            <AddIcon color='#3b82f6' />
           </div>
-
-          <Typo type='Typo small'>Add Section</Typo>
+          <Typo
+            className='add_section-text'
+            type='Typo small'
+          >
+            Add Section
+          </Typo>
         </div>
       </div>
     ));
+  };
+
+  const handleAddSection = (section: { id: string; name: string }, sectionType: string) => {
+    // Generate a new unique ID
+    const newId = `${section.id}-${Date.now()}`;
+
+    // Create a new node based on the section template
+    // You'll need to define templates for each section type
+    const newNode = {
+      tag: 'div',
+      attribute: { class: section.id },
+      children: [],
+      devAttribute: { dataId: newId },
+      builderRender: {
+        groupName: sectionType.toLowerCase(),
+        renderName: section.name,
+        renderIconName: section.id,
+      },
+    };
+
+    // Add the new node to mockupData
+    // You might need to convert mockupData to state
+    // and update it accordingly
+    console.log('Adding section:', section, 'to', sectionType);
   };
 
   return (
@@ -446,6 +484,13 @@ export default function LoginPage() {
           mockupData={mockupData}
         />
       </div>
+
+      <AddSectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddSection={handleAddSection}
+        sectionType={modalSectionType}
+      />
     </div>
   );
 }
