@@ -1,6 +1,9 @@
 import { getUser, login, logout, register } from "./auth";
 import { deleteNode, editNode, getNode, getPage, insertNode } from "./page";
 import { createTable, pg } from "./postgres";
+import dotenv from 'dotenv'
+
+dotenv.config({path:"../.env"})
 
 pg.connect().then(async () => {
   console.log("Postgres connected");
