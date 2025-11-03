@@ -1,9 +1,16 @@
 import { getUser, login, logout, register } from "./auth";
-import { deleteNode, editNode, getNode, getPage, insertNode } from "./page";
+import {
+  addSectionToBody,
+  deleteNode,
+  editNode,
+  getNode,
+  getPage,
+  insertNode,
+} from "./page";
 import { createTable, pg } from "./postgres";
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 
-dotenv.config({path:"../.env"})
+dotenv.config({ path: "../.env" });
 
 pg.connect().then(async () => {
   console.log("Postgres connected");
@@ -48,6 +55,9 @@ pg.connect().then(async () => {
       },
       "/page/:id/node/delete/:nodeId": {
         POST: deleteNode,
+      },
+      "/page/:id/section/add/:section_type/:template_index": {
+        POST: addSectionToBody,
       },
     },
     fetch(_req) {

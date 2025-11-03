@@ -1,4 +1,4 @@
-import { extractUser } from "./helper";
+import { extractUser, html_to_nodes } from "./helper";
 import { pg } from "./postgres";
 
 //! INTERFACE -----------------------------------------------------------------------------
@@ -16,7 +16,7 @@ interface PageData {
   nodes: Record<string, PageNode>;
 }
 
-interface PageNode {
+export interface PageNode {
   attribute: {
     id?: string;
     class?: string;
@@ -235,6 +235,22 @@ export const deleteNode = async (
       )
     )
     WHERE id = ${pageId} AND user_id = ${user.id};`;
+
+  return new Response(null, {
+    status: 200,
+  });
+};
+
+// Add section
+export const addSectionToBody = async (
+  req: Bun.BunRequest<"/page/:id/section/:section_type/add/:template_index">
+): Promise<Response> => {
+  const user = await extractUser(req);
+  if (!user) return new Response(null, { status: 401 });
+
+  const html = await Bun.file("src/templates/header/header1.html").text();
+
+  const nodes = html_to_nodes(html);
 
   return new Response(null, {
     status: 200,
