@@ -33,11 +33,10 @@ export const register = async (req: Bun.BunRequest): Promise<Response> => {
 
   const html_id = crypto.randomUUID();
   const body_id = crypto.randomUUID();
-  const main_id = crypto.randomUUID();
 
   const pageData = {
     htmlNode: html_id,
-    mainNode: main_id,
+    bodyNode: body_id,
     nodes: {
       [html_id]: {
         attribute: {},
@@ -47,11 +46,6 @@ export const register = async (req: Bun.BunRequest): Promise<Response> => {
       [body_id]: {
         attribute: {},
         tag: "body",
-        children: [main_id],
-      },
-      [main_id]: {
-        attribute: {},
-        tag: "main",
         children: [],
       },
     },
