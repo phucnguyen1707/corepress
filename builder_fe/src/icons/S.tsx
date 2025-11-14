@@ -60,3 +60,21 @@ export const SettingIcon: FC<SVGProps> = ({ color = 'currentcolor' }) => (
     ></path>
   </svg>
 );
+
+export const SelectIcon: FC<SVGProps> = ({ color = 'currentcolor' }) => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    viewBox='0 0 16 16'
+    width='100%'
+    height='100%'
+  >
+    <path
+      fill={color}
+      d='M8.884 2.323a1.25 1.25 0 0 0-1.768 0l-2.646 2.647a.749.749 0 1 0 1.06 1.06l2.47-2.47 2.47 2.47a.749.749 0 1 0 1.06-1.06z'
+    ></path>
+    <path
+      fill={color}
+      d='m11.53 11.03-2.646 2.647a1.25 1.25 0 0 1-1.768 0l-2.646-2.647a.749.749 0 1 1 1.06-1.06l2.47 2.47 2.47-2.47a.749.749 0 1 1 1.06 1.06'
+    ></path>
+  </svg>
+);

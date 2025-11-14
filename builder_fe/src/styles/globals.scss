@@ -158,6 +158,10 @@ img {
   @include typo-small;
 }
 
+.typo-small-bold {
+  @include typo-small-bold;
+}
+
 .typo {
   @include typo;
 }
@@ -171,27 +175,25 @@ img {
 }
 
 .typo-medium {
-  @include typo-medium
+  @include typo-medium;
 }
 
 .typo-medium-light {
-  @include typo-medium-light
+  @include typo-medium-light;
 }
 
 .typo-medium-bold {
-  @include typo-medium-bold
+  @include typo-medium-bold;
 }
 
 .typo-large {
-  @include typo-large
+  @include typo-large;
 }
 
 .typo-large-light {
-  @include typo-large-light
+  @include typo-large-light;
 }
 
 .typo-large-bold {
-  @include typo-large-bold
+  @include typo-large-bold;
 }
-
-

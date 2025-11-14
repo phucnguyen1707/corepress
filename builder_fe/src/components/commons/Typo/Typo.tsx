@@ -4,6 +4,7 @@ import './typo.css';
 
 export type TypoType =
   | 'Typo small'
+  | 'Typo small bold'
   | 'Typo'
   | 'Typo light'
   | 'Typo bold'
