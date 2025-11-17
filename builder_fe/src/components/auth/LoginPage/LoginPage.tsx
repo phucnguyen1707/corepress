@@ -32,9 +32,9 @@ export default function LoginPage() {
     try {
       const res = await login(payload);
 
-      console.log(res);
-
-      // router.push(ROUTE_PATH.edit);
+      if (res.status && res.statusText === 'OK') {
+        router.push(ROUTE_PATH.edit);
+      }
     } catch (err: unknown) {
       console.log(err);
       if (axios.isAxiosError(err)) {

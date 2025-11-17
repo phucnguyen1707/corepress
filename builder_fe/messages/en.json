@@ -8,5 +8,21 @@
     "button": "Sign In",
     "noAccount": "Don’t have an account?",
     "createAccount": "Create one"
+  },
+
+  "Register": {
+    "title": "Create your account",
+    "name": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+
+    "namePlaceholder": "Enter your full name",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "button": "Sign Up",
+    "haveAccount": "Already have an account?",
+    "login": "Login"
   }
 }

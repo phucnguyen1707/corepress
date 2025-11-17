@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #343434;
+  background: linear-gradient(135deg, #1e1e1e, #343434);
   color: #fff;
   font-family: 'Inter', sans-serif;
   overflow: hidden;
@@ -13,7 +13,7 @@
 .register-page .register-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.06), transparent 70%);
+  background: rgba(156, 39, 176, 0.08);
   animation: subtleMove 10s ease-in-out infinite alternate;
   filter: blur(90px);
   z-index: 1;
@@ -40,7 +40,7 @@
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
   animation: fadeIn 1.2s ease forwards;
 }
 
@@ -50,7 +50,7 @@
   font-weight: 600;
   letter-spacing: -0.02em;
   margin-bottom: 2rem;
-  background: linear-gradient(180deg, #fff, #aaa);
+  background: linear-gradient(180deg, #fff, #ccc);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -144,6 +144,16 @@
   transition:
     border-color 0.2s,
     color 0.2s;
+}
+
+.register-page .error-message {
+  text-align: center;
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 77, 77, 0.1);
 }
 
 .register-page .register-card .register-footer a:hover {

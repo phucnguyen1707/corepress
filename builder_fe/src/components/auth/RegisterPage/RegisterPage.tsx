@@ -28,6 +28,7 @@ export default function RegisterPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
+    const name = formData.get('name') as string;
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -35,13 +36,13 @@ export default function RegisterPage() {
       return;
     }
 
-    const payload: RegisterUser = { email, password };
+    const payload: RegisterUser = { email, name, password };
     try {
       const res = await register(payload);
 
-      console.log(res);
-
-      router.push(ROUTE_PATH.login);
+      if (res.status && res.statusText === 'OK') {
+        router.push(ROUTE_PATH.login);
+      }
     } catch (err: unknown) {
       console.log(err);
       if (axios.isAxiosError(err)) {
@@ -59,6 +60,16 @@ export default function RegisterPage() {
         <h1>{t('title')}</h1>
 
         <form onSubmit={handleRegister}>
+          <label>
+            {t('name')}
+            <input
+              type='name'
+              name='name'
+              placeholder={t('namePlaceholder')}
+              required
+            />
+          </label>
+
           <label>
             {t('email')}
             <input
