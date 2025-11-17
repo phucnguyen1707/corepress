@@ -16,3 +16,7 @@ export enum ESideBarActive {
   session = 'session',
   setting = 'setting',
 }
+
+export interface ApiError {
+  message: string;
+}

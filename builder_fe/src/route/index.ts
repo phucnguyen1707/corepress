@@ -1,7 +1,7 @@
 export const ROUTE_PATH = {
-
   // auth
   login: '/login/',
+  register: '/register/',
 
   //edit
   edit: '/edit/',

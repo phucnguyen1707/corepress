@@ -2,24 +2,24 @@
 
 import React, { useState } from 'react';
 
-import { login } from '@/axios/auth.service';
-import { LoginUser } from '@/interfaces/auth.interface';
+import { register } from '@/axios/auth.service';
+import { RegisterUser } from '@/interfaces/auth.interface';
 import { useRouter } from '@/navigation';
 import { ROUTE_PATH } from '@/route';
 import axios from 'axios';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-import './loginPage.css';
+import './registerPage.css';
 
-export default function LoginPage() {
-  const t = useTranslations('Login');
+export default function RegisterPage() {
+  const t = useTranslations('Register');
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -27,31 +27,38 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
 
-    const payload: LoginUser = { email, password };
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    const payload: RegisterUser = { email, password };
     try {
-      const res = await login(payload);
+      const res = await register(payload);
 
       console.log(res);
 
-      // router.push(ROUTE_PATH.edit);
+      router.push(ROUTE_PATH.login);
     } catch (err: unknown) {
       console.log(err);
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Login failed');
+        setError(err.response?.data?.message || 'Registration failed');
       } else {
-        setError('Login failed');
+        setError('Registration failed');
       }
       setLoading(false);
     }
   };
   return (
-    <div className='login-page'>
-      <div className='login-bg' />
-      <div className='login-card'>
+    <div className='register-page'>
+      <div className='register-bg' />
+      <div className='register-card'>
         <h1>{t('title')}</h1>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleRegister}>
           <label>
             {t('email')}
             <input
@@ -72,6 +79,16 @@ export default function LoginPage() {
             />
           </label>
 
+          <label>
+            {t('confirmPassword')}
+            <input
+              type='password'
+              name='confirmPassword'
+              placeholder={t('confirmPasswordPlaceholder')}
+              required
+            />
+          </label>
+
           <button
             type='submit'
             disabled={loading}
@@ -82,8 +99,8 @@ export default function LoginPage() {
 
         {error && <p className='error-message'>{error}</p>}
 
-        <p className='login-footer'>
-          {t('noAccount')} <Link href='/register'>{t('createAccount')}</Link>
+        <p className='register-footer'>
+          {t('haveAccount')} <Link href='/login'>{t('login')}</Link>
         </p>
       </div>
     </div>
