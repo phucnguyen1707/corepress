@@ -12,20 +12,63 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: "../.env" });
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+};
+
+function addCorsHeaders(response: Response): Response {
+  const newHeaders = new Headers(response.headers);
+  Object.entries(corsHeaders).forEach(([key, value]) => {
+    newHeaders.set(key, value);
+  });
+  
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
+}
+
+type BunHandler = (req: any) => Response | Promise<Response>;
+type RouteConfig = BunHandler | { [method: string]: BunHandler };
+
+function withCors(handler: BunHandler): BunHandler {
+  return async (req: any) => {
+    const response = await handler(req);
+    return addCorsHeaders(response);
+  };
+}
+
+function wrapRoutesWithCors(routes: Record<string, RouteConfig>): Record<string, RouteConfig> {
+  const wrappedRoutes: Record<string, RouteConfig> = {};
+  
+  for (const [path, config] of Object.entries(routes)) {
+    if (typeof config === "function") {
+      wrappedRoutes[path] = withCors(config);
+    } else {
+      const wrappedMethods: { [method: string]: BunHandler } = {};
+      for (const [method, handler] of Object.entries(config)) {
+        wrappedMethods[method] = withCors(handler);
+      }
+      wrappedRoutes[path] = wrappedMethods;
+    }
+  }
+  
+  return wrappedRoutes;
+}
+
 pg.connect().then(async () => {
   console.log("Postgres connected");
-
   createTable(pg);
 
   const server = Bun.serve({
     port: 8000,
-    routes: {
+    routes: wrapRoutesWithCors({
       //! PING -------------------------
-
-      "/ping": new Response("pong"),
+      "/ping": () => new Response("pong"),
 
       //! AUTH -------------------------
-
       "/auth/register": {
         POST: register,
       },
@@ -40,7 +83,6 @@ pg.connect().then(async () => {
       },
 
       //! PAGE -------------------------
-
       "/page/:id": {
         GET: getPage,
       },
@@ -59,12 +101,26 @@ pg.connect().then(async () => {
       "/page/:id/section/add/:section_type/:template_index": {
         POST: addSectionToBody,
       },
-    },
-    fetch(_req) {
-      return new Response("Not Found", { status: 404 });
+    }),
+    fetch(req) {
+      if (req.method === "OPTIONS") {
+        return new Response(null, {
+          status: 204,
+          headers: corsHeaders,
+        });
+      }
+
+      return new Response("Not Found", { 
+        status: 404,
+        headers: corsHeaders,
+      });
     },
     error(err) {
       console.error(err);
+      return new Response("Internal Server Error", {
+        status: 500,
+        headers: corsHeaders,
+      });
     },
   });
 
