@@ -15,7 +15,7 @@ export const authAxios = axios.create({
 });
 
 export const login = (user: LoginUser) => {
-  return authAxios.post(AUTH_SERVICE_ROUTE.login, user);
+  return authAxios.post(AUTH_SERVICE_ROUTE.login, user, { withCredentials: true });
 };
 
 export const register = (user: RegisterUser) => {
