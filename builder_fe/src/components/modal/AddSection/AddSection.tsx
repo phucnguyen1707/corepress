@@ -100,7 +100,7 @@ const AddSectionModal = ({ isOpen, onClose, onAddSection, sectionType }: AddSect
       return acc;
     },
     // eslint-disable-next-line
-    {} as Record<string, any>
+    {} as Record<string, { id: string; name: string; description: string; icon: string; category: string }[]>
   );
 
   return (
@@ -164,7 +164,7 @@ const AddSectionModal = ({ isOpen, onClose, onAddSection, sectionType }: AddSect
                         key={section.id}
                         className='section-item'
                         onClick={() => {
-                          onAddSection(section, sectionType);
+                          onAddSection(section);
                           onClose();
                         }}
                       >

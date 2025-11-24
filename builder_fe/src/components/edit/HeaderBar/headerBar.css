@@ -1,0 +1,81 @@
+.edit-page .header-session {
+  display: flex;
+  padding: 8px 16px;
+  background-color: #ffffff;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.edit-page .header-session .every-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-page .header-session .device-choose {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: 8px;
+  background-color: rgba(241, 241, 241, 1);
+  gap: 8px;
+  padding: 4px;
+}
+
+.edit-page .header-session .device-choose .device-background {
+  margin: 2px 0px;
+  border-radius: 8px;
+  background-color: transparent;
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.edit-page .header-session .device-choose .device-background.active {
+  background-color: #ffffff;
+  transform: scale(1.05);
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.edit-page .header-session .device-choose .device-icon {
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+}
+
+.edit-page .header-session .save-button {
+  color: #ffffff;
+  background-color: #343434;
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.edit-page .header-session .user-dropdown {
+  position: relative;
+  margin-left: 16px;
+  cursor: pointer;
+}
+
+.edit-page .header-session .user-dropdown .user-selected {
+  padding: 8px 12px;
+  background: #f4f4f4;
+  border-radius: 6px;
+}
+
+.edit-page .header-session .user-dropdown .user-dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  border-radius: 6px;
+  min-width: 180px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.edit-page .header-session .user-dropdown .user-dropdown-menu .user-line {
+  padding: 4px 0;
+}

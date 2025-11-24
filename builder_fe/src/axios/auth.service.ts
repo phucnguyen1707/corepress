@@ -6,6 +6,7 @@ import { SERVICE_ROUTES } from './config';
 export const AUTH_SERVICE_ROUTE = {
   login: 'login',
   register: 'register',
+  userInfo: 'user',
 } as const;
 
 export const authAxios = axios.create({
@@ -20,4 +21,10 @@ export const login = (user: LoginUser) => {
 
 export const register = (user: RegisterUser) => {
   return authAxios.post(AUTH_SERVICE_ROUTE.register, user);
+};
+
+export const userInfo = () => {
+  return authAxios.get(AUTH_SERVICE_ROUTE.userInfo, {
+    withCredentials: true,
+  });
 };

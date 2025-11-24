@@ -32,7 +32,7 @@ export default function LoginPage() {
     try {
       const res = await login(payload);
 
-      if (res.status && res.statusText === 'OK') {
+      if (res.status === 200 && res.statusText === 'OK') {
         router.push(ROUTE_PATH.edit);
       }
     } catch (err: unknown) {

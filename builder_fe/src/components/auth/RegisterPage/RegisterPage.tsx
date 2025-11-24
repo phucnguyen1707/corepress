@@ -40,7 +40,7 @@ export default function RegisterPage() {
     try {
       const res = await register(payload);
 
-      if (res.status && res.statusText === 'OK') {
+      if (res.status === 201 && res.statusText === 'OK') {
         router.push(ROUTE_PATH.login);
       }
     } catch (err: unknown) {
