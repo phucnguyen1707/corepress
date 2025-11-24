@@ -72,10 +72,12 @@ export default function BodySession(props: BodySessionProps) {
 
     // Categorize based on tag or naming pattern
     Object.entries(pageData.nodes).forEach(([id, node]) => {
-      if (node.builderRender?.groupName === 'header') sections.Header.push(id);
-      else if (node.builderRender?.groupName === 'template') sections.Template.push(id);
-      else if (node.builderRender?.groupName === 'footer') sections.Footer.push(id);
+      if (node.dev.builderRender?.groupName === 'header') sections.Header.push(id);
+      else if (node.dev.builderRender?.groupName === 'template') sections.Template.push(id);
+      else if (node.dev.builderRender?.groupName === 'footer') sections.Footer.push(id);
     });
+
+    console.log(sections);
 
     return Object.entries(sections).map(([sectionName, ids]) => (
       <div
@@ -116,7 +118,7 @@ export default function BodySession(props: BodySessionProps) {
     const children = hasChildren ? node.children.map(childId => renderTree(childId)) : [];
 
     // Case 1: Node has a name → render it + visible children container
-    if (node.builderRender?.renderName) {
+    if (node.dev.builderRender?.renderName) {
       return (
         <div
           key={rootId}
@@ -124,7 +126,7 @@ export default function BodySession(props: BodySessionProps) {
         >
           <div
             className='tree-item'
-            onMouseEnter={() => setHoveredNodeId(node.devAttribute?.dataId || null)}
+            onMouseEnter={() => setHoveredNodeId(node.dev.attribute?.dataId || null)}
             onMouseLeave={() => setHoveredNodeId(null)}
             onClick={() => setSelectedNode(rootId)}
           >
@@ -142,9 +144,9 @@ export default function BodySession(props: BodySessionProps) {
               </div>
             )}
 
-            <div className='icon-size'>{iconsList[node.builderRender.renderIconName || 'text']}</div>
+            <div className='icon-size'>{iconsList[node.dev.builderRender.renderIconName || 'text']}</div>
 
-            <Typo className='tag-name'>{node.builderRender.renderName}</Typo>
+            <Typo className='tag-name'>{node.dev.builderRender.renderName}</Typo>
           </div>
 
           {isExpanded && hasChildren && <div className='tree-children'>{children}</div>}
@@ -170,14 +172,14 @@ export default function BodySession(props: BodySessionProps) {
     if (!node) return null;
 
     const { tag, attribute, children } = node;
-    const isHovered = hoveredNodeId === node.devAttribute?.dataId;
+    const isHovered = hoveredNodeId === node.dev.attribute?.dataId;
 
     if (tag === 'text') {
       return (
         <div
           key={nodeId}
           className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
-          data-id={node.devAttribute?.dataId}
+          data-id={node.dev.attribute?.dataId}
         >
           {attribute.value || 'empty value'}
         </div>
@@ -189,7 +191,7 @@ export default function BodySession(props: BodySessionProps) {
         <img
           key={nodeId}
           src={attribute.value}
-          alt={node.builderRender?.renderName}
+          alt={node.dev.builderRender?.renderName}
           className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
         />
       );
@@ -202,7 +204,7 @@ export default function BodySession(props: BodySessionProps) {
       {
         key: nodeId,
         id: attribute.id || undefined,
-        'data-id': node.devAttribute?.dataId,
+        'data-id': node.dev.attribute?.dataId,
         className: `${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`,
       },
       childElements?.length ? childElements : null
@@ -234,12 +236,12 @@ export default function BodySession(props: BodySessionProps) {
           {renderGroupedSections()}
         </div>
       </div>
-      {/* <div className='second-section'>{renderNode(mockupData.rootNode)}</div> */}
+      <div className='second-section'>{renderNode(mockupData.bodyNode)}</div>
 
-      {/* <SettingPanel
+      <SettingPanel
         selectedNode={selectedNode}
         mockupData={mockupData}
-      /> */}
+      />
     </div>
   );
 }

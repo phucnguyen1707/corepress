@@ -20,7 +20,7 @@ export const extractUser = async (req: Bun.BunRequest) => {
 
   const [user]: [User] =
     await pg`SELECT id, name, email FROM users WHERE session = ${session};`;
-
+    
   return user;
 };
 

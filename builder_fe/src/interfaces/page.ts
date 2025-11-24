@@ -18,11 +18,14 @@ interface PageNode {
   tag: string;
   attribute: NodeAttributes;
   children: string[];
-  devAttribute?: DevAttributes;
-  builderRender?: BuilderRenderInterface;
+  dev: {
+    attribute: DevAttributes;
+    builderRender?: BuilderRenderInterface;
+  };
 }
 
 export interface Page {
-  rootNode: string;
+  htmlNode: string;
+  bodyNode: string;
   nodes: Record<string, PageNode>;
 }
