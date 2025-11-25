@@ -1,3 +1,4 @@
+import { INITIAL_PAGE_DATA } from "./constant";
 import { extractUser } from "./helper";
 import { pg } from "./postgres";
 
@@ -34,22 +35,11 @@ export const register = async (req: Bun.BunRequest): Promise<Response> => {
   const html_id = crypto.randomUUID();
   const body_id = crypto.randomUUID();
 
-  const pageData = {
-    htmlNode: html_id,
-    bodyNode: body_id,
-    nodes: {
-      [html_id]: {
-        attribute: {},
-        tag: "html",
-        children: [body_id],
-      },
-      [body_id]: {
-        attribute: {},
-        tag: "body",
-        children: [],
-      },
-    },
-  };
+  const pageData = JSON.parse(
+    JSON.stringify({ ...INITIAL_PAGE_DATA })
+      .replaceAll("placeholder-html-id", html_id)
+      .replaceAll("placeholder-body-id", body_id)
+  );
 
   await pg.begin(async (tx) => {
     const [user] = await tx`

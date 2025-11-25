@@ -1,4 +1,5 @@
 import { getUser, login, logout, register } from "./auth";
+
 import {
   addSectionToBody,
   deleteNode,
@@ -24,7 +25,7 @@ function addCorsHeaders(response: Response): Response {
   Object.entries(corsHeaders).forEach(([key, value]) => {
     newHeaders.set(key, value);
   });
-  
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -42,9 +43,11 @@ function withCors(handler: BunHandler): BunHandler {
   };
 }
 
-function wrapRoutesWithCors(routes: Record<string, RouteConfig>): Record<string, RouteConfig> {
+function wrapRoutesWithCors(
+  routes: Record<string, RouteConfig>
+): Record<string, RouteConfig> {
   const wrappedRoutes: Record<string, RouteConfig> = {};
-  
+
   for (const [path, config] of Object.entries(routes)) {
     if (typeof config === "function") {
       wrappedRoutes[path] = withCors(config);
@@ -56,7 +59,7 @@ function wrapRoutesWithCors(routes: Record<string, RouteConfig>): Record<string,
       wrappedRoutes[path] = wrappedMethods;
     }
   }
-  
+
   return wrappedRoutes;
 }
 
@@ -112,7 +115,7 @@ pg.connect().then(async () => {
         });
       }
 
-      return new Response("Not Found", { 
+      return new Response("Not Found", {
         status: 404,
         headers: corsHeaders,
       });

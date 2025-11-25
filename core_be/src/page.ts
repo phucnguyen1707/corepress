@@ -12,7 +12,8 @@ interface Page {
 }
 
 interface PageData {
-  rootNodes: string;
+  bodyNode: string;
+  htmlNode: string;
   nodes: Record<string, PageNode>;
 }
 
@@ -21,8 +22,18 @@ export interface PageNode {
     id?: string;
     class?: string;
     style?: string;
-    "data-id"?: string;
+    value?: string;
   };
+  dev?: {
+    devAttribute?: {
+      "data-id"?: string;
+    };
+    builderRender?: {
+      renderName?: string;
+      renderIconName?: string;
+      groupName?: string;
+    }
+  }
   tag: string;
   children: string[];
 }
