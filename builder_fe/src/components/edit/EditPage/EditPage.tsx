@@ -281,13 +281,6 @@ export default function EditPage() {
         mockupData={mockupData}
         pageInfo={data?.pages}
       />
-
-      {/* <AddSectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAddSection={handleAddSection}
-        sectionType={modalSectionType}
-      /> */}
     </div>
   );
 }

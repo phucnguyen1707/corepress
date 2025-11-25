@@ -39,8 +39,7 @@ export default function RegisterPage() {
     const payload: RegisterUser = { email, name, password };
     try {
       const res = await register(payload);
-
-      if (res.status === 201 && res.statusText === 'OK') {
+      if (res.status === 201) {
         router.push(ROUTE_PATH.login);
       }
     } catch (err: unknown) {

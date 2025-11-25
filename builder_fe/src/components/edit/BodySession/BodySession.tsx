@@ -4,6 +4,7 @@ import React, { JSX, ReactNode, useEffect, useState } from 'react';
 
 import { page } from '@/axios/page.service';
 import Typo from '@/components/commons/Typo';
+import AddSectionModal from '@/components/modal';
 import SettingPanel from '@/components/setting';
 import {
   AddIcon,
@@ -72,12 +73,11 @@ export default function BodySession(props: BodySessionProps) {
 
     // Categorize based on tag or naming pattern
     Object.entries(pageData.nodes).forEach(([id, node]) => {
+      if (node.tag === 'html' || node.tag === 'body') return;
       if (node.dev.builderRender?.groupName === 'header') sections.Header.push(id);
       else if (node.dev.builderRender?.groupName === 'template') sections.Template.push(id);
       else if (node.dev.builderRender?.groupName === 'footer') sections.Footer.push(id);
     });
-
-    console.log(sections);
 
     return Object.entries(sections).map(([sectionName, ids]) => (
       <div
@@ -241,6 +241,12 @@ export default function BodySession(props: BodySessionProps) {
       <SettingPanel
         selectedNode={selectedNode}
         mockupData={mockupData}
+      />
+
+      <AddSectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        sectionType={modalSectionType}
       />
     </div>
   );

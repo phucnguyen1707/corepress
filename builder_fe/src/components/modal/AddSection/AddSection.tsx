@@ -1,90 +1,36 @@
 import React, { useState } from 'react';
 
 import Typo from '@/components/commons/Typo';
+import { TemplateSessionIcon } from '@/icons';
 
 import './addSection.css';
 
 interface AddSectionModalInterface {
   isOpen: boolean;
   onClose: () => void;
-  onAddSection: (section: unknown) => void;
+  // onAddSection: (section: unknown) => void;
   sectionType: string;
 }
 
-const AddSectionModal = ({ isOpen, onClose, onAddSection, sectionType }: AddSectionModalInterface) => {
+export interface SectionInterface {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  icon: React.ReactNode;
+}
+
+const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterface) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('Sections');
 
-  const sections = [
+  const sections: SectionInterface[] = [
     {
       id: 'hero',
       name: 'Hero',
       description: 'Large banner section',
-      icon: '🎯',
       category: 'Banners',
-    },
-    {
-      id: 'hero-bottom',
-      name: 'Hero: Bottom aligned',
-      description: 'Hero with content at bottom',
-      icon: '🎯',
-      category: 'Banners',
-    },
-    {
-      id: 'hero-marquee',
-      name: 'Hero: Marquee',
-      description: 'Scrolling hero section',
-      icon: '🎯',
-      category: 'Banners',
-    },
-    {
-      id: 'large-logo',
-      name: 'Large logo',
-      description: 'Prominent logo display',
-      icon: '🏢',
-      category: 'Banners',
-    },
-    {
-      id: 'slideshow',
-      name: 'Slideshow',
-      description: 'Image carousel',
-      icon: '🖼️',
-      category: 'Banners',
-    },
-    {
-      id: 'split-showcase',
-      name: 'Split showcase',
-      description: 'Two column layout',
-      icon: '📐',
-      category: 'Banners',
-    },
-    {
-      id: 'collection-spotlight',
-      name: 'Collection links: Spotlight',
-      description: 'Featured collections',
-      icon: '🔗',
-      category: 'Collections',
-    },
-    {
-      id: 'collection-text',
-      name: 'Collection links: Text',
-      description: 'Text-based collection links',
-      icon: '📝',
-      category: 'Collections',
-    },
-    {
-      id: 'collection-bento',
-      name: 'Collection list: Bento',
-      description: 'Grid layout collections',
-      icon: '📦',
-      category: 'Collections',
-    },
-    {
-      id: 'collection-carousel',
-      name: 'Collection list: Carousel',
-      description: 'Scrolling collections',
-      icon: '🎠',
-      category: 'Collections',
+      icon: <TemplateSessionIcon />,
     },
   ];
 
@@ -94,14 +40,10 @@ const AddSectionModal = ({ isOpen, onClose, onAddSection, sectionType }: AddSect
       section.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const groupedSections = filteredSections.reduce(
-    (acc, section) => {
-      (acc[section.category] = acc[section.category] || []).push(section);
-      return acc;
-    },
-    // eslint-disable-next-line
-    {} as Record<string, { id: string; name: string; description: string; icon: string; category: string }[]>
-  );
+  const groupedSections = filteredSections.reduce<Record<string, SectionInterface[]>>((acc, section) => {
+    (acc[section.category] = acc[section.category] || []).push(section);
+    return acc;
+  }, {});
 
   return (
     <>
@@ -122,7 +64,7 @@ const AddSectionModal = ({ isOpen, onClose, onAddSection, sectionType }: AddSect
                 className='close-button'
                 onClick={onClose}
               >
-                X Icon here
+                X
               </button>
             </div>
 
@@ -164,7 +106,6 @@ const AddSectionModal = ({ isOpen, onClose, onAddSection, sectionType }: AddSect
                         key={section.id}
                         className='section-item'
                         onClick={() => {
-                          onAddSection(section);
                           onClose();
                         }}
                       >
@@ -177,6 +118,7 @@ const AddSectionModal = ({ isOpen, onClose, onAddSection, sectionType }: AddSect
               ))}
             </div>
           </div>
+          <div></div>
         </div>
       ) : null}
     </>
