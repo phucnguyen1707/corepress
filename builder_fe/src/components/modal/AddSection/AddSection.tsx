@@ -8,7 +8,6 @@ import './addSection.css';
 interface AddSectionModalInterface {
   isOpen: boolean;
   onClose: () => void;
-  // onAddSection: (section: unknown) => void;
   sectionType: string;
 }
 
@@ -18,11 +17,16 @@ export interface SectionInterface {
   description: string;
   category: string;
   icon: React.ReactNode;
+  html: string;
+  css: string;
 }
 
-const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterface) => {
+const AddSectionModal = ({ isOpen, onClose }: AddSectionModalInterface) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('Sections');
+
+  const [hoverHtml, setHoverHtml] = useState('');
+  const [hoverCss, setHoverCss] = useState('');
 
   const sections: SectionInterface[] = [
     {
@@ -31,6 +35,8 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
       description: 'Large banner section',
       category: 'Banners',
       icon: <TemplateSessionIcon />,
+      html: "<div class='hero-sec'>Hero Preview</div>",
+      css: '.hero-sec { padding: 40px; background: gold; font-size: 28px; }',
     },
   ];
 
@@ -56,18 +62,6 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
             className='modal-content'
             onClick={e => e.stopPropagation()}
           >
-            <div className='modal-header'>
-              <div>
-                <Typo className='modal-title'>Pick session here</Typo>
-              </div>
-              <button
-                className='close-button'
-                onClick={onClose}
-              >
-                X
-              </button>
-            </div>
-
             <div className='modal-search'>
               <input
                 type='text'
@@ -79,18 +73,18 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
             </div>
 
             <div className='modal-tabs'>
-              <button
+              <div
                 className={`tab ${activeTab === 'Sections' ? 'active' : ''}`}
                 onClick={() => setActiveTab('Sections')}
               >
                 Sections
-              </button>
-              <button
+              </div>
+              <div
                 className={`tab ${activeTab === 'Apps' ? 'active' : ''}`}
                 onClick={() => setActiveTab('Apps')}
               >
                 Apps
-              </button>
+              </div>
             </div>
 
             <div className='modal-body'>
@@ -105,8 +99,14 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
                       <button
                         key={section.id}
                         className='section-item'
-                        onClick={() => {
-                          onClose();
+                        onClick={onClose}
+                        onMouseEnter={() => {
+                          setHoverHtml(section.html);
+                          setHoverCss(section.css);
+                        }}
+                        onMouseLeave={() => {
+                          setHoverHtml(hoverHtml);
+                          setHoverCss(hoverCss);
                         }}
                       >
                         <span className='section-icon'>{section.icon}</span>
@@ -118,7 +118,16 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
               ))}
             </div>
           </div>
-          <div></div>
+
+          {/* PREVIEW */}
+          <div className='preview-content'>
+            {hoverCss && <style>{hoverCss}</style>}
+
+            <div
+              className='preview-frame'
+              dangerouslySetInnerHTML={{ __html: hoverHtml }}
+            />
+          </div>
         </div>
       ) : null}
     </>
