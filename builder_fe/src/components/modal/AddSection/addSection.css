@@ -76,6 +76,37 @@
   background-color: white;
 }
 
+.switch__container {
+  display: flex;
+  padding: 5px;
+  gap: 10px;
+  background-color: #d0c8c8;
+  width: 100%;
+  border-radius: 8px;
+  justify-content: space-around;
+}
+
+.switch__button {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.switch__button.active {
+  cursor: pointer;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .modal-body {
   flex: 1;
   overflow-y: auto;

@@ -36,7 +36,7 @@ const AddSectionModal = ({ isOpen, onClose }: AddSectionModalInterface) => {
       category: 'Banners',
       icon: <TemplateSessionIcon />,
       html: "<div class='hero-sec'>Hero Preview</div>",
-      css: '.hero-sec { padding: 40px; background: gold; font-size: 28px; }',
+      css: '.hero-sec { padding: 40px; background: gold; font-size: 28px; width: 100%; text-align: center; }',
     },
   ];
 
@@ -72,15 +72,15 @@ const AddSectionModal = ({ isOpen, onClose }: AddSectionModalInterface) => {
               />
             </div>
 
-            <div className='modal-tabs'>
+            <div className='switch__container'>
               <div
-                className={`tab ${activeTab === 'Sections' ? 'active' : ''}`}
+                className={`switch__button ${activeTab === 'Sections' ? 'active' : ''}`}
                 onClick={() => setActiveTab('Sections')}
               >
                 Sections
               </div>
               <div
-                className={`tab ${activeTab === 'Apps' ? 'active' : ''}`}
+                className={`switch__button ${activeTab === 'Apps' ? 'active' : ''}`}
                 onClick={() => setActiveTab('Apps')}
               >
                 Apps
