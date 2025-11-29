@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
-import Typo from '@/components/commons/Typo';
-import { TemplateSessionIcon } from '@/icons';
+import { allSections } from '@/utils/mockupData';
 
 import './addSection.css';
 
@@ -21,33 +20,23 @@ export interface SectionInterface {
   css: string;
 }
 
-const AddSectionModal = ({ isOpen, onClose }: AddSectionModalInterface) => {
+const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterface) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('Sections');
 
   const [hoverHtml, setHoverHtml] = useState('');
   const [hoverCss, setHoverCss] = useState('');
 
-  const sections: SectionInterface[] = [
-    {
-      id: 'hero',
-      name: 'Hero',
-      description: 'Large banner section',
-      category: 'Banners',
-      icon: <TemplateSessionIcon />,
-      html: "<div class='hero-sec'>Hero Preview</div>",
-      css: '.hero-sec { padding: 40px; background: gold; font-size: 28px; width: 100%; text-align: center; }',
-    },
-  ];
+  const sections = allSections[sectionType.toLocaleLowerCase()] || [];
 
-  const filteredSections = sections.filter(
-    section =>
-      section.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      section.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredSections = sections.filter(section => {
+    const keyword = searchTerm.toLowerCase();
+    return section.name.toLowerCase().includes(keyword) || section.description.toLowerCase().includes(keyword);
+  });
 
   const groupedSections = filteredSections.reduce<Record<string, SectionInterface[]>>((acc, section) => {
-    (acc[section.category] = acc[section.category] || []).push(section);
+    if (!acc[section.category]) acc[section.category] = [];
+    acc[section.category].push(section);
     return acc;
   }, {});
 
@@ -119,7 +108,6 @@ const AddSectionModal = ({ isOpen, onClose }: AddSectionModalInterface) => {
             </div>
           </div>
 
-          {/* PREVIEW */}
           <div className='preview-content'>
             {hoverCss && <style>{hoverCss}</style>}
 
