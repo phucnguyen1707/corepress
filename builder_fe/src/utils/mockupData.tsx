@@ -12,19 +12,20 @@ export const allSections: Record<string, SectionInterface[]> = {
       category: 'Header',
       icon: <TemplateSessionIcon />,
       html: `
-<div class="hdr-announce">
-  <div class="container">
-    <p>Free shipping on orders over $75 — Use code: FREESHIP</p>
-    <button class="announce-close" aria-label="Close">✕</button>
-  </div>
-</div>
-<header class="hdr-main">
-  <div class="container hdr-inner">
-    <div class="logo">Brand</div>
-    <nav class="nav"> <a>Home</a><a>Shop</a><a>Collections</a> </nav>
-    <div class="hdr-actions"><button>Search</button><button>Cart</button></div>
-  </div>
-</header>`,
+          <div class="hdr-announce">
+            <div class="container">
+              <p>Free shipping on orders over $75 — Use code: FREESHIP</p>
+              <button class="announce-close" aria-label="Close">✕</button>
+            </div>
+          </div>
+          <header class="hdr-main">
+            <div class="container hdr-inner">
+              <div class="logo">Brand</div>
+              <nav class="nav"> <a>Home</a><a>Shop</a><a>Collections</a> </nav>
+              <div class="hdr-actions"><button>Search</button><button>Cart</button></div>
+            </div>
+          </header>
+        `,
       css: `
 .hdr-announce { background:#111; color:#fff; font-size:14px; }
 .hdr-announce .container{ display:flex; justify-content:space-between; align-items:center; padding:8px 16px; max-width:1200px; margin:0 auto; }

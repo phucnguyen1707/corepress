@@ -1,7 +1,7 @@
 import { getUser, login, logout, register } from "./auth";
 
 import {
-  addSectionToBody,
+  addSection,
   deleteNode,
   editNode,
   getNode,
@@ -103,8 +103,8 @@ pg.connect().then(async () => {
       "/page/:id/node/delete/:nodeId": {
         POST: deleteNode,
       },
-      "/page/:id/section/add/:section_type/:template_index": {
-        POST: addSectionToBody,
+      "/page/:id/section/add/:section_type/:template_index/node/:node_id": {
+        POST: addSection,
       },
     }),
     fetch(req) {

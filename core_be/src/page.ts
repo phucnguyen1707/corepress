@@ -32,8 +32,8 @@ export interface PageNode {
       renderName?: string;
       renderIconName?: string;
       groupName?: string;
-    }
-  }
+    };
+  };
   tag: string;
   children: string[];
 }
@@ -253,15 +253,43 @@ export const deleteNode = async (
 };
 
 // Add section
-export const addSectionToBody = async (
-  req: Bun.BunRequest<"/page/:id/section/:section_type/add/:template_index">
+export const addSection = async (
+  req: Bun.BunRequest<"/page/:id/section/:section_type/add/:template_index/node/:node_id">
 ): Promise<Response> => {
   const user = await extractUser(req);
   if (!user) return new Response(null, { status: 401 });
 
-  const html = await Bun.file("src/templates/header/header1.html").text();
+  const pageId = req.params.id;
+  const sectionType = req.params.section_type;
+  const templateIndex = req.params.template_index;
+  const nodeId = req.params.node_id;
 
-  const nodes = html_to_nodes(html);
+  switch (sectionType) {
+    case "header":
+      try {
+        const html = await Bun.file(
+          `assets/templates/header/header${templateIndex}.html`
+        ).text();
+        const result = html_to_nodes(html);
+        const nodes = result.nodes;
+        const rootNodes = result.rootNodes;
+
+        await pg`
+          UPDATE pages 
+          SET data = jsonb_set(
+            data || jsonb_build_object('nodes', data->'nodes' || ${nodes}::jsonb),
+            array['nodes', ${nodeId}, 'children']::text[],
+            (data#>array['nodes', ${nodeId}, 'children']::text[] || ${rootNodes}::jsonb)
+          )
+          WHERE id = ${pageId} AND user_id = ${user.id};`;
+      } catch (error) {
+        return new Response("Template not found", { status: 404 });
+      }
+
+      break;
+    default:
+      return new Response(null, { status: 400 });
+  }
 
   return new Response(null, {
     status: 200,

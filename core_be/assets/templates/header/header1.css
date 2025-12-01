@@ -1,0 +1,67 @@
+.header-1 {
+  .hdr-announce {
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+  }
+  .hdr-announce .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .announce-close {
+    background: transparent;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  /* main header */
+  .hdr-main {
+    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .hdr-main .hdr-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .nav {
+    display: flex;
+    gap: 18px;
+  }
+  .nav a {
+    cursor: pointer;
+    font-size: 15px;
+    color: #222;
+  }
+  .hdr-actions button {
+    margin-left: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: #fff;
+    cursor: pointer;
+  }
+
+  /* responsive */
+  @media (max-width: 800px) {
+    .nav {
+      display: none;
+    }
+    .hdr-inner {
+      padding: 14px;
+    }
+  }
+}
