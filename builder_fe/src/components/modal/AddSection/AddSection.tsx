@@ -108,11 +108,11 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
             </div>
           </div>
 
-          <div className='preview-content'>
+          <div className='preview-wrapper'>
             {hoverCss && <style>{hoverCss}</style>}
 
             <div
-              className='preview-frame'
+              className='preview-viewport'
               dangerouslySetInnerHTML={{ __html: hoverHtml }}
             />
           </div>

@@ -12,35 +12,39 @@ export const allSections: Record<string, SectionInterface[]> = {
       category: 'Header',
       icon: <TemplateSessionIcon />,
       html: `
-          <div class="hdr-announce">
-            <div class="container">
-              <p>Free shipping on orders over $75 — Use code: FREESHIP</p>
-              <button class="announce-close" aria-label="Close">✕</button>
-            </div>
+      <div class="header-1">
+        <div class="hdr-announce">
+          <div class="container">
+            <p>Free shipping on orders over $75 — Use code: FREESHIP</p>
+            <button class="announce-close" aria-label="Close">✕</button>
           </div>
-          <header class="hdr-main">
-            <div class="container hdr-inner">
-              <div class="logo">Brand</div>
-              <nav class="nav"> <a>Home</a><a>Shop</a><a>Collections</a> </nav>
-              <div class="hdr-actions"><button>Search</button><button>Cart</button></div>
-            </div>
-          </header>
-        `,
+        </div>
+        <div class="hdr-main">
+          <div class="container hdr-inner">
+            <div class="logo">Brand</div>
+            <nav class="nav"> <a>Home</a><a>Shop</a><a>Collections</a> </nav>
+            <div class="hdr-actions"><button>Search</button><button>Cart</button></div>
+          </div>
+        </div>
+      </div>
+      `,
       css: `
-.hdr-announce { background:#111; color:#fff; font-size:14px; }
-.hdr-announce .container{ display:flex; justify-content:space-between; align-items:center; padding:8px 16px; max-width:1200px; margin:0 auto; }
-.announce-close{ background:transparent; color:#fff; border:none; cursor:pointer; font-size:14px; }
+      .header-1 {display:flex; flex-direction:column; 
+        .hdr-announce { background:#111; color:#fff; font-size:14px; }
+        .hdr-announce .container{ display:flex; justify-content:space-between; align-items:center; padding:8px 16px; max-width:1200px; margin:0 auto; }
+        .announce-close{ background:transparent; color:#fff; border:none; cursor:pointer; font-size:14px; }
 
-/* main header */
-.hdr-main{ background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); }
-.hdr-main .hdr-inner{ display:flex; align-items:center; justify-content:space-between; padding:18px 16px; max-width:1200px; margin:0 auto; }
-.logo{ font-weight:700; font-size:20px; }
-.nav{ display:flex; gap:18px; }
-.nav a{ cursor:pointer; font-size:15px; color:#222; }
-.hdr-actions button{ margin-left:8px; padding:8px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:#fff; cursor:pointer; }
+        /* main header */
+        .hdr-main{ background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); }
+        .hdr-main .hdr-inner{ display:flex; align-items:center; justify-content:space-between; padding:18px 16px; max-width:1200px; margin:0 auto; }
+        .logo{ font-weight:700; font-size:20px; }
+        .nav{ display:flex; gap:18px; }
+        .nav a{ cursor:pointer; font-size:15px; color:#222; }
+        .hdr-actions button{ margin-left:8px; padding:8px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:#fff; cursor:pointer; }
 
-/* responsive */
-@media (max-width:800px){ .nav{ display:none; } .hdr-inner{ padding:14px; } }`,
+        /* responsive */
+        @media (max-width:800px){ .nav{ display:none; } .hdr-inner{ padding:14px; } }
+      }`,
     },
 
     {
@@ -50,23 +54,36 @@ export const allSections: Record<string, SectionInterface[]> = {
       category: 'Header',
       icon: <TemplateSessionIcon />,
       html: `
-<header class="hdr-search">
-  <div class="container hdr-search-inner">
-    <div class="logo">Brand</div>
-    <div class="search-wrap">
-      <input placeholder="Search products, categories..." aria-label="Search"/>
-    </div>
-    <div class="icons"><button>Account</button><button>Cart</button></div>
-  </div>
-</header>`,
-      css: `
-.hdr-search{ background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); }
-.hdr-search-inner{ display:flex; align-items:center; gap:20px; padding:16px; max-width:1200px; margin:0 auto; }
-.search-wrap{ flex:1; }
-.search-wrap input{ width:100%; padding:12px 16px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); }
+      <div class="header-2">
+        <div class="hdr-search-inner">
+          <div class="logo">Brand</div>
 
-/* responsive */
-@media (max-width:700px){ .search-wrap{ display:none; } }`,
+          <div class="search-wrap">
+            <input
+              type="text"
+              placeholder="Search products, categories…"
+              aria-label="Search"
+            />
+          </div>
+
+          <div class="icons">
+            <button class="icon-btn">Account</button>
+            <button class="icon-btn">Cart</button>
+          </div>
+        </div>
+      </div>
+      `,
+      css: `
+      .header-2{background:#fff;border-bottom:1px solid rgba(0,0,0,0.06);position:sticky;top:0;z-index:20;
+        .hdr-search-inner{display:flex;align-items:center;gap:24px;padding:16px 24px;max-width:1280px;margin:0 auto;}
+        .search-wrap{flex:1;display:flex;align-items:center;}
+        .search-wrap input{width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:#fafafa;transition:all .2s ease;}
+        .search-wrap input:focus{outline:none;background:#fff;border-color:rgba(0,0,0,0.2);box-shadow:0 0 0 2px rgba(0,120,255,0.15);}
+        .icons{display:flex;align-items:center;gap:12px;}
+        .icon-btn{padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;font-size:14px;cursor:pointer;transition:all .15s ease;}
+        .icon-btn:hover{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.12);}
+        @media (max-width:700px){.search-wrap{display:none;}}
+      }`,
     },
 
     {
@@ -76,18 +93,32 @@ export const allSections: Record<string, SectionInterface[]> = {
       category: 'Header',
       icon: <TemplateSessionIcon />,
       html: `
-<header class="hdr-stacked">
-  <div class="container hdr-stacked-top">
-    <button class="hamburger" aria-label="Menu">☰</button>
-    <div class="logo">Brand</div>
-    <div class="mini-actions"><button>Search</button><button>Cart</button></div>
-  </div>
-</header>`,
+      <div class="header-3">
+        <div class="hdr-stacked-top">
+          <button class="hamburger" aria-label="Open menu">
+            <span></span><span></span><span></span>
+          </button>
+
+          <div class="logo">Brand</div>
+
+          <div class="mini-actions">
+            <button class="icon-btn">Search</button>
+            <button class="icon-btn">Cart</button>
+          </div>
+        </div>
+      </div>
+      `,
       css: `
-.hdr-stacked{ background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); }
-.hdr-stacked-top{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; max-width:1200px; margin:0 auto; }
-.hamburger{ background:transparent; border:none; font-size:20px; }
-.mini-actions button{ margin-left:8px; }`,
+      .header-3{background:#fff;border-bottom:1px solid rgba(0,0,0,0.06);position:sticky;top:0;z-index:20;
+        .hdr-stacked-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;max-width:1280px;margin:0 auto;gap:12px;}
+        .logo{font-size:20px;font-weight:700;letter-spacing:-0.3px;}
+        .hamburger{width:32px;height:32px;padding:0;display:flex;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;}
+        .hamburger span{display:block;width:22px;height:2px;background:#000;border-radius:2px;transition:all .2s ease;}
+        .mini-actions{display:flex;align-items:center;gap:8px;}
+        .icon-btn{padding:8px 12px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.06);font-size:14px;cursor:pointer;transition:.15s ease;}
+        .icon-btn:hover{background:rgba(0,0,0,0.04);}
+        @media (min-width:700px){.hdr-stacked-top{padding:16px 24px;}.logo{font-size:22px;}.icon-btn{padding:10px 14px;}}
+      }`,
     },
 
     {
@@ -97,27 +128,42 @@ export const allSections: Record<string, SectionInterface[]> = {
       category: 'Header',
       icon: <TemplateSessionIcon />,
       html: `
-<div class="ann-2">
-  <div class="container">Limited time: 10% off new customers</div>
-</div>
-<header class="hdr-large-search">
-  <div class="container center">
-    <div class="logo">Brand</div>
-    <div class="big-search">
-      <input placeholder="Search all products..." />
-      <button>Search</button>
-    </div>
-    <div class="right-icons">Cart</div>
-  </div>
-</header>`,
-      css: `
-.ann-2{ background:#f7f7f8; padding:8px 16px; text-align:center; font-size:14px; }
-.hdr-large-search .center{ display:flex; align-items:center; gap:20px; padding:20px 16px; max-width:1200px; margin:0 auto; }
-.big-search{ flex:1; display:flex; gap:8px; }
-.big-search input{ flex:1; padding:14px 16px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); }
-.big-search button{ padding:12px 18px; border-radius:8px; background:#000; color:#fff; border:none; cursor:pointer; }
+      <div class="header-4">
+        <div class="ann-2">
+          <div class="container">Limited time: 10% off for new customers</div>
+        </div>
 
-@media (max-width:900px){ .big-search{ display:none; } }`,
+        <div class="hdr-large-search">
+          <div class="container center">
+            <div class="logo">Brand</div>
+
+            <div class="big-search">
+              <input placeholder="Search all products..." aria-label="Search" />
+              <button class="search-btn">Search</button>
+            </div>
+
+            <div class="right-icons">
+              <button class="icon-btn">Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      `,
+      css: `
+      .header-4{
+        .ann-2{background:#f7f7f8;padding:8px 16px;text-align:center;font-size:14px;font-weight:500;color:#333;}
+        .hdr-large-search .center{display:flex;align-items:center;gap:20px;padding:20px 16px;max-width:1280px;margin:0 auto;}
+        .logo{font-size:22px;font-weight:700;letter-spacing:-0.3px;}
+        .big-search{flex:1;display:flex;gap:8px;}
+        .big-search input{flex:1;padding:14px 16px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:#fafafa;transition:.2s ease;}
+        .big-search input:focus{outline:none;background:#fff;border-color:rgba(0,0,0,0.2);box-shadow:0 0 0 2px rgba(0,120,255,0.15);}
+        .search-btn{padding:14px 20px;border-radius:8px;background:#000;color:#fff;border:none;font-weight:500;cursor:pointer;transition:.15s ease;}
+        .search-btn:hover{background:#222;}
+        .right-icons{display:flex;align-items:center;}
+        .icon-btn{padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;cursor:pointer;transition:.15s ease;}
+        .icon-btn:hover{background:rgba(0,0,0,0.04);}
+        @media(max-width:900px){.big-search{display:none;}.center{justify-content:space-between;}}
+      }`,
     },
 
     {
@@ -127,30 +173,55 @@ export const allSections: Record<string, SectionInterface[]> = {
       category: 'Header',
       icon: <TemplateSessionIcon />,
       html: `
-<header class="hdr-mega">
-  <div class="container hdr-mega-inner">
-    <div class="logo">Brand</div>
-    <nav class="mega-nav">
-      <div class="nav-item">Shop
-        <div class="mega-panel">
-          <div class="col"><h4>New</h4><a>Item 1</a><a>Item 2</a></div>
-          <div class="col"><h4>Collections</h4><a>Collection A</a><a>Collection B</a></div>
-          <div class="col"><h4>Featured</h4><a>Best Seller</a></div>
+      <div class="header-5">
+        <div class="container hdr-mega-inner">
+          <div class="logo">Brand</div>
+
+          <nav class="mega-nav">
+            <div class="nav-item">Shop
+              <div class="mega-panel">
+                <div class="col">
+                  <h4>New</h4>
+                  <a href="#">Item 1</a>
+                  <a href="#">Item 2</a>
+                </div>
+
+                <div class="col">
+                  <h4>Collections</h4>
+                  <a href="#">Collection A</a>
+                  <a href="#">Collection B</a>
+                </div>
+
+                <div class="col">
+                  <h4>Featured</h4>
+                  <a href="#">Best Seller</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="nav-item">About</div>
+          </nav>
+
+          <div class="right"><button class="icon-btn">Cart</button></div>
         </div>
       </div>
-      <div class="nav-item">About</div>
-    </nav>
-    <div class="right">Cart</div>
-  </div>
-</header>`,
+      `,
       css: `
-.hdr-mega{ background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); }
-.mega-nav{ display:flex; gap:24px; align-items:center; }
-.nav-item{ position:relative; padding:10px 6px; cursor:pointer; }
-.mega-panel{ position:absolute; left:0; top:100%; background:#fff; box-shadow:0 16px 40px rgba(0,0,0,0.08); padding:20px; display:flex; gap:24px; opacity:0; transform:translateY(8px); transition:all .18s ease; pointer-events:none; }
-.nav-item:hover .mega-panel{ opacity:1; transform:translateY(0); pointer-events:auto; }
-.mega-panel .col h4{ margin-bottom:8px; }
-.mega-panel .col a{ display:block; margin-bottom:8px; color:#333; }`,
+      .header-5{background:#fff;border-bottom:1px solid rgba(0,0,0,0.06);position:sticky;top:0;z-index:30;
+        .hdr-mega-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;max-width:1280px;margin:0 auto;}
+        .logo{font-size:22px;font-weight:700;letter-spacing:-.3px;}
+        .mega-nav{display:flex;gap:28px;align-items:center;}
+        .nav-item{position:relative;padding:10px 6px;font-weight:500;color:#222;cursor:pointer;}
+        .nav-item:hover{color:#000;}
+        .mega-panel{position:absolute;left:0;top:100%;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.08);padding:24px 28px;display:flex;gap:40px;border-radius:12px;opacity:0;transform:translateY(12px);transition:all .22s ease;pointer-events:none;min-width:420px;}
+        .nav-item:hover .mega-panel{opacity:1;transform:translateY(0);pointer-events:auto;}
+        .mega-panel .col h4{margin-bottom:10px;font-size:15px;font-weight:600;color:#111;}
+        .mega-panel .col a{display:block;margin-bottom:8px;font-size:14px;color:#444;transition:.15s ease;}
+        .mega-panel .col a:hover{color:#000;}
+        .icon-btn{padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;cursor:pointer;transition:.15s ease;}
+        .icon-btn:hover{background:rgba(0,0,0,0.04);}
+        @media(max-width:900px){.mega-nav{display:none;}}
+      }`,
     },
   ],
 
@@ -164,7 +235,7 @@ export const allSections: Record<string, SectionInterface[]> = {
       category: 'Banners',
       icon: <TemplateSessionIcon />,
       html: `
-<section class="hero-large">
+<div class="template-1">
   <div class="container hero-inner">
     <div class="hero-text">
       <h1>Elevate Your Everyday</h1>
@@ -173,9 +244,9 @@ export const allSections: Record<string, SectionInterface[]> = {
     </div>
     <div class="hero-media" role="img" aria-label="Hero image"></div>
   </div>
-</section>`,
+</div>`,
       css: `
-.hero-large{ padding:64px 16px; background:#fafafa; }
+.template-1 padding:64px 16px; background:#fafafa; }
 .hero-inner{ display:flex; gap:32px; align-items:center; max-width:1200px; margin:0 auto; }
 .hero-text{ max-width:540px; }
 .hero-text h1{ font-size:40px; margin-bottom:14px; }
