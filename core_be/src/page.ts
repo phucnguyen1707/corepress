@@ -24,9 +24,9 @@ export interface PageNode {
     style?: string;
     value?: string;
   };
-  dev?: {
-    devAttribute?: {
-      "data-id"?: string;
+  dev: {
+    attribute: {
+      "data-id": string;
     };
     builderRender?: {
       renderName?: string;
@@ -270,7 +270,7 @@ export const addSection = async (
         const html = await Bun.file(
           `assets/templates/header/header${templateIndex}.html`
         ).text();
-        const result = html_to_nodes(html);
+        const result = html_to_nodes(html, 'header', templateIndex);
         const nodes = result.nodes;
         const rootNodes = result.rootNodes;
 

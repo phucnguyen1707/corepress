@@ -18,6 +18,7 @@ interface PageNode {
   tag: string;
   attribute: NodeAttributes;
   children: string[];
+  text?: string;
   dev: {
     attribute: DevAttributes;
     builderRender?: BuilderRenderInterface;

@@ -24,7 +24,6 @@ import { UserInfoPage } from '@/interfaces/auth.interface';
 import './bodySession.css';
 
 interface BodySessionProps {
-  mockupData: Page;
   pageInfo: UserInfoPage[] | undefined;
 }
 
@@ -38,9 +37,13 @@ const iconsList: Record<string, JSX.Element> = {
 };
 
 export default function BodySession(props: BodySessionProps) {
-  const { mockupData, pageInfo } = props;
+  const { pageInfo } = props;
 
-  const [pageData, setPageData] = useState<Page | null>(null);
+  const [pageData, setPageData] = useState<Page>({
+    bodyNode: '',
+    htmlNode: '',
+    nodes: {},
+  });
   const [activeAction, setActiveAction] = useState<ESideBarActive>(ESideBarActive.session);
   const [modalSectionType, setModalSectionType] = useState<string>('');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
@@ -74,9 +77,9 @@ export default function BodySession(props: BodySessionProps) {
     // Categorize based on tag or naming pattern
     Object.entries(pageData.nodes).forEach(([id, node]) => {
       if (node.tag === 'html' || node.tag === 'body') return;
-      if (node.dev.builderRender?.groupName === 'header') sections.Header.push(id);
-      else if (node.dev.builderRender?.groupName === 'template') sections.Template.push(id);
-      else if (node.dev.builderRender?.groupName === 'footer') sections.Footer.push(id);
+      if (node.dev?.builderRender?.groupName === 'header') sections.Header.push(id);
+      else if (node.dev?.builderRender?.groupName === 'template') sections.Template.push(id);
+      else if (node.dev?.builderRender?.groupName === 'footer') sections.Footer.push(id);
     });
 
     return Object.entries(sections).map(([sectionName, ids]) => (
@@ -109,7 +112,7 @@ export default function BodySession(props: BodySessionProps) {
   };
 
   const renderTree = (rootId: string): ReactNode => {
-    const node = mockupData.nodes[rootId];
+    const node = pageData.nodes[rootId];
     if (!node) return null;
 
     const isExpanded = expandedNodes.has(rootId);
@@ -118,14 +121,16 @@ export default function BodySession(props: BodySessionProps) {
     const children = hasChildren ? node.children.map(childId => renderTree(childId)) : [];
 
     // Case 1: Node has a name → render it + visible children container
-    if (node.dev.builderRender?.renderName) {
+    if (node.dev?.builderRender?.renderName) {
       return (
         <div
           key={rootId}
           className='tree-container'
+          id={rootId}
         >
           <div
             className='tree-item'
+            id={node.dev.attribute?.dataId}
             onMouseEnter={() => setHoveredNodeId(node.dev.attribute?.dataId || null)}
             onMouseLeave={() => setHoveredNodeId(null)}
             onClick={() => setSelectedNode(rootId)}
@@ -168,34 +173,36 @@ export default function BodySession(props: BodySessionProps) {
   };
 
   const renderNode = (nodeId: string): ReactNode => {
-    const node = mockupData.nodes[nodeId];
+    const node = pageData.nodes[nodeId];
+
     if (!node) return null;
 
-    const { tag, attribute, children } = node;
-    const isHovered = hoveredNodeId === node.dev.attribute?.dataId;
+    const { tag, attribute, children, text } = node;
+    const isHovered = hoveredNodeId === node.dev?.attribute?.dataId;
 
-    if (tag === 'text') {
+    if (text) {
       return (
         <div
           key={nodeId}
           className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
           data-id={node.dev.attribute?.dataId}
         >
-          {attribute.value || 'empty value'}
+          {text || 'empty value'}
         </div>
       );
     }
 
-    if (tag === 'img') {
-      return (
-        <img
-          key={nodeId}
-          src={attribute.value}
-          alt={node.dev.builderRender?.renderName}
-          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
-        />
-      );
-    }
+    // if (tag === 'img') {
+    //   return (
+    //     // eslint-disable-next-line
+    //     <img
+    //       key={nodeId}
+    //       src={attribute.value}
+    //       alt={node.dev.builderRender?.renderName}
+    //       className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+    //     />
+    //   );
+    // }
 
     const childElements = children?.map((childId: string) => renderNode(childId));
 
@@ -204,7 +211,7 @@ export default function BodySession(props: BodySessionProps) {
       {
         key: nodeId,
         id: attribute.id || undefined,
-        'data-id': node.dev.attribute?.dataId,
+        'data-id': node.dev?.attribute?.dataId,
         className: `${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`,
       },
       childElements?.length ? childElements : null
@@ -236,11 +243,11 @@ export default function BodySession(props: BodySessionProps) {
           {renderGroupedSections()}
         </div>
       </div>
-      <div className='second-section'>{renderNode(mockupData.bodyNode)}</div>
+      <div className='second-section'>{renderNode(pageData.bodyNode)}</div>
 
       <SettingPanel
         selectedNode={selectedNode}
-        mockupData={mockupData}
+        mockupData={pageData}
       />
 
       <AddSectionModal

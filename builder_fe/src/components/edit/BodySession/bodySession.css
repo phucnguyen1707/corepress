@@ -64,6 +64,7 @@
   gap: 4px;
   align-items: center;
   padding-left: 10px;
+  cursor: pointer;
 }
 
 .edit-page .body-session .first-section .add__section-icon {

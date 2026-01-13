@@ -88,7 +88,6 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
                       <button
                         key={section.id}
                         className='section-item'
-                        onClick={onClose}
                         onMouseEnter={() => {
                           setHoverHtml(section.html);
                           setHoverCss(section.css);
@@ -108,7 +107,10 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
             </div>
           </div>
 
-          <div className='preview-wrapper'>
+          <div
+            className='preview-wrapper'
+            onClick={e => e.stopPropagation()}
+          >
             {hoverCss && <style>{hoverCss}</style>}
 
             <div
