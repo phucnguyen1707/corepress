@@ -1,28 +1,8 @@
-interface NodeAttributes {
-  id?: string;
-  class?: string;
-  value?: string;
-}
-
-interface DevAttributes {
-  dataId?: string;
-}
-
-interface BuilderRenderInterface {
-  groupName?: 'header' | 'template' | 'footer';
-  renderName?: string;
-  renderIconName?: string;
-}
-
 interface PageNode {
   tag: string;
-  attribute: NodeAttributes;
+  attribute: Record<string, string>;
   children: string[];
   text?: string;
-  dev: {
-    attribute: DevAttributes;
-    builderRender?: BuilderRenderInterface;
-  };
 }
 
 export interface Page {

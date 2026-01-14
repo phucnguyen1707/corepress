@@ -32,7 +32,7 @@ export default function SettingPanel({ mockupData, selectedNode }: SettingPanelP
     return (
       <div className='setting__container-layout'>
         <div className='setting__container-name'>
-          <Typo type='Typo medium bold'>{node.dev.builderRender?.renderName}</Typo>
+          <Typo type='Typo medium bold'>{node.attribute?.devName}</Typo>
         </div>
 
         {node.tag === 'img' && (

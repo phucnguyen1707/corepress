@@ -20,6 +20,7 @@ import {
 } from '@/icons';
 import { ESideBarActive, Page } from '@/interfaces';
 import { UserInfoPage } from '@/interfaces/auth.interface';
+import SectionStyleInjector from '@/utils/styleInjector';
 
 import './bodySession.css';
 
@@ -77,9 +78,9 @@ export default function BodySession(props: BodySessionProps) {
     // Categorize based on tag or naming pattern
     Object.entries(pageData.nodes).forEach(([id, node]) => {
       if (node.tag === 'html' || node.tag === 'body') return;
-      if (node.dev?.builderRender?.groupName === 'header') sections.Header.push(id);
-      else if (node.dev?.builderRender?.groupName === 'template') sections.Template.push(id);
-      else if (node.dev?.builderRender?.groupName === 'footer') sections.Footer.push(id);
+      if (node.attribute?.devGroupName === 'header') sections.Header.push(id);
+      else if (node.attribute?.devGroupName === 'template') sections.Template.push(id);
+      else if (node.attribute?.devGroupName === 'footer') sections.Footer.push(id);
     });
 
     return Object.entries(sections).map(([sectionName, ids]) => (
@@ -121,7 +122,7 @@ export default function BodySession(props: BodySessionProps) {
     const children = hasChildren ? node.children.map(childId => renderTree(childId)) : [];
 
     // Case 1: Node has a name → render it + visible children container
-    if (node.dev?.builderRender?.renderName) {
+    if (node.attribute.devName) {
       return (
         <div
           key={rootId}
@@ -130,8 +131,8 @@ export default function BodySession(props: BodySessionProps) {
         >
           <div
             className='tree-item'
-            id={node.dev.attribute?.dataId}
-            onMouseEnter={() => setHoveredNodeId(node.dev.attribute?.dataId || null)}
+            id={node.attribute?.dataId}
+            onMouseEnter={() => setHoveredNodeId(node.attribute?.dataId || null)}
             onMouseLeave={() => setHoveredNodeId(null)}
             onClick={() => setSelectedNode(rootId)}
           >
@@ -149,9 +150,9 @@ export default function BodySession(props: BodySessionProps) {
               </div>
             )}
 
-            <div className='icon-size'>{iconsList[node.dev.builderRender.renderIconName || 'text']}</div>
+            <div className='icon-size'>{iconsList[node.attribute?.devIcon || 'text']}</div>
 
-            <Typo className='tag-name'>{node.dev.builderRender.renderName}</Typo>
+            <Typo className='tag-name'>{node.attribute.devName}</Typo>
           </div>
 
           {isExpanded && hasChildren && <div className='tree-children'>{children}</div>}
@@ -178,31 +179,71 @@ export default function BodySession(props: BodySessionProps) {
     if (!node) return null;
 
     const { tag, attribute, children, text } = node;
-    const isHovered = hoveredNodeId === node.dev?.attribute?.dataId;
+    const isHovered = hoveredNodeId === node.attribute.dataId;
 
     if (text) {
       return (
         <div
           key={nodeId}
           className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
-          data-id={node.dev.attribute?.dataId}
+          data-id={node.attribute.dataId}
         >
           {text || 'empty value'}
         </div>
       );
     }
 
-    // if (tag === 'img') {
-    //   return (
-    //     // eslint-disable-next-line
-    //     <img
-    //       key={nodeId}
-    //       src={attribute.value}
-    //       alt={node.dev.builderRender?.renderName}
-    //       className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
-    //     />
-    //   );
-    // }
+    if (tag === 'svg') {
+      return (
+        <svg
+          key={nodeId}
+          data-id={node.attribute.dataId}
+          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+          viewBox={attribute.viewBox || '0 0 100% 100%'}
+          fill={attribute.fill || 'none'}
+          stroke={attribute.stroke || 'none'}
+          strokeWidth={attribute['stroke-width'] || 2}
+        >
+          {children?.map(childId => renderNode(childId))}
+        </svg>
+      );
+    }
+
+    if (tag === 'circle') {
+      return (
+        <circle
+          key={nodeId}
+          data-id={node.attribute.dataId}
+          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+          cx={attribute.cx || ''}
+          cy={attribute.cy || ''}
+          r={attribute.r || ''}
+        />
+      );
+    }
+
+    if (tag === 'path') {
+      return (
+        <path
+          key={nodeId}
+          data-id={node.attribute.dataId}
+          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+          d={attribute.d || ''}
+        />
+      );
+    }
+
+    if (tag === 'img') {
+      return (
+        // eslint-disable-next-line
+        <img
+          key={nodeId}
+          src={attribute.value}
+          alt={node.attribute.devName || 'image'}
+          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+        />
+      );
+    }
 
     const childElements = children?.map((childId: string) => renderNode(childId));
 
@@ -211,15 +252,25 @@ export default function BodySession(props: BodySessionProps) {
       {
         key: nodeId,
         id: attribute.id || undefined,
-        'data-id': node.dev?.attribute?.dataId,
+        'data-id': node.attribute.dataId,
         className: `${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`,
       },
       childElements?.length ? childElements : null
     );
   };
 
+  const collectSectionIds = () => {
+    const ids = new Set<string>();
+    Object.values(pageData.nodes).forEach(node => {
+      const dataId = node.attribute['data-id'];
+      if (dataId) ids.add(dataId);
+    });
+    return Array.from(ids);
+  };
+
   return (
     <div className='body-session'>
+      <SectionStyleInjector activeDataIds={collectSectionIds()} />
       <div className='first-section'>
         <div className='action-bar'>
           <div

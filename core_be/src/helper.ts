@@ -26,8 +26,6 @@ export const extractUser = async (req: Bun.BunRequest) => {
 
 export function html_to_nodes(
   html: string,
-  type: 'header',
-  templateIndex: string
 ): HtmlToNodesResult {
   const { document } = parseHTML(html);
 
@@ -36,15 +34,10 @@ export function html_to_nodes(
 
   function traverse(node: Element): string {
     const id = randomUUID();
-    let node_data_id = null;
 
     const attrs: Record<string, string> = {};
     for (const attr of Array.from(node.attributes)) {
       attrs[attr.name] = attr.value;
-
-      if (attr?.name === 'data-id') {
-        node_data_id = attr.value
-      }
     }
 
     const children: string[] = [];
@@ -62,23 +55,11 @@ export function html_to_nodes(
 
     const pageNode: PageNode  = {
       tag: node.tagName.toLowerCase(),
-      attribute: attrs,
+      attribute: { ...attrs,
+        dataId: id},
       children,
       ...(text ? { text } : {}),
-      dev: {
-        attribute: {
-          "data-id": id,
-        },
-      },
     };
-
-    if (type === 'header' && node_data_id !== null) {
-      pageNode.dev.builderRender = {
-          groupName: 'header',
-          renderName: `Header ${templateIndex}`,
-          renderIconName: `header`,
-      }
-    }
 
     nodes[id] = pageNode;
     return id;

@@ -18,22 +18,7 @@ interface PageData {
 }
 
 export interface PageNode {
-  attribute: {
-    id?: string;
-    class?: string;
-    style?: string;
-    value?: string;
-  };
-  dev: {
-    attribute: {
-      "data-id": string;
-    };
-    builderRender?: {
-      renderName?: string;
-      renderIconName?: string;
-      groupName?: string;
-    };
-  };
+  attribute: Record<string, string>;
   tag: string;
   children: string[];
 }
@@ -270,7 +255,7 @@ export const addSection = async (
         const html = await Bun.file(
           `assets/templates/header/header${templateIndex}.html`
         ).text();
-        const result = html_to_nodes(html, 'header', templateIndex);
+        const result = html_to_nodes(html);
         const nodes = result.nodes;
         const rootNodes = result.rootNodes;
 
