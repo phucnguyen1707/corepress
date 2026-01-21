@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 
+import { addSection } from '@/axios/page.service';
 import { allSections } from '@/utils/mockupData';
 
 import './addSection.css';
 
 interface AddSectionModalInterface {
   isOpen: boolean;
+  pageId: number | undefined;
   onClose: () => void;
   sectionType: string;
 }
@@ -20,7 +22,7 @@ export interface SectionInterface {
   css: string;
 }
 
-const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterface) => {
+const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0 }: AddSectionModalInterface) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('Sections');
 
@@ -39,6 +41,19 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
     acc[section.category].push(section);
     return acc;
   }, {});
+
+  const handleAddSection = async (section: SectionInterface) => {
+    const sectionType = section.id.split('-')[0];
+    const templateIndex = Number(section.id.split('-')[1]);
+    try {
+      const res = await addSection(pageId, sectionType, templateIndex, 'div-01');
+      if (res.status === 200) {
+        onClose();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -96,6 +111,7 @@ const AddSectionModal = ({ isOpen, onClose, sectionType }: AddSectionModalInterf
                           setHoverHtml(hoverHtml);
                           setHoverCss(hoverCss);
                         }}
+                        onClick={() => handleAddSection(section)}
                       >
                         <span className='section-icon'>{section.icon}</span>
                         <span className='section-name'>{section.name}</span>

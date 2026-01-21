@@ -239,7 +239,7 @@ export const deleteNode = async (
 
 // Add section
 export const addSection = async (
-  req: Bun.BunRequest<"/page/:id/section/:section_type/add/:template_index/node/:node_id">
+  req: Bun.BunRequest<"/page/:id/section/add/:section_type/:template_index/node/:node_id">
 ): Promise<Response> => {
   const user = await extractUser(req);
   if (!user) return new Response(null, { status: 401 });

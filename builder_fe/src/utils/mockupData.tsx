@@ -144,7 +144,7 @@ export const allSections: Record<string, SectionInterface[]> = {
     },
 
     {
-      id: 'header-stacked-logo',
+      id: 'header-3',
       name: 'Header: Stacked (mobile-first)',
       description: 'Compact stacked header for mobile and small screens',
       category: 'Header',
@@ -205,7 +205,7 @@ export const allSections: Record<string, SectionInterface[]> = {
     },
 
     {
-      id: 'header-announcement-search',
+      id: 'header-4',
       name: 'Header: Announcement + Search',
       description: 'Announcement bar + large centered search (good for marketplaces)',
       category: 'Header',
@@ -269,7 +269,7 @@ export const allSections: Record<string, SectionInterface[]> = {
     },
 
     {
-      id: 'header-mega-menu',
+      id: 'header-5',
       name: 'Header: Mega menu (desktop)',
       description: 'Header with hover mega menu area',
       category: 'Header',
@@ -347,7 +347,7 @@ export const allSections: Record<string, SectionInterface[]> = {
   template: [
     // 1 Hero - large
     {
-      id: 'hero-large',
+      id: 'template-1',
       name: 'Hero: Large banner',
       description: 'Classic large hero with text left & image right',
       category: 'Banners',
@@ -413,7 +413,7 @@ export const allSections: Record<string, SectionInterface[]> = {
 
     // 2 Hero - bottom aligned
     {
-      id: 'hero-bottom',
+      id: 'template-2',
       name: 'Hero: Bottom aligned',
       description: 'Hero with content anchored at bottom of image',
       category: 'Banners',
@@ -488,7 +488,7 @@ export const allSections: Record<string, SectionInterface[]> = {
 
     // 3 Hero - marquee
     {
-      id: 'hero-marquee',
+      id: 'template-3',
       name: 'Hero: Marquee',
       description: 'Scrolling marquee headline over a banner',
       category: 'Banners',
@@ -534,7 +534,7 @@ export const allSections: Record<string, SectionInterface[]> = {
 
     // 4 Large logo / Brand showcase
     {
-      id: 'brand-logos',
+      id: 'template-4',
       name: 'Large logo / Brand list',
       description: 'Row of partner or brand logos',
       category: 'Logos',
@@ -579,7 +579,7 @@ export const allSections: Record<string, SectionInterface[]> = {
 
     // 5 Slideshow (simple)
     {
-      id: 'slideshow',
+      id: 'template-5',
       name: 'Slideshow',
       description: 'Auto-rotating slideshow (static demo)',
       category: 'Banners',
@@ -654,7 +654,7 @@ export const allSections: Record<string, SectionInterface[]> = {
   // ---------- FOOTER (5 items) ----------
   footer: [
     {
-      id: 'footer-minimal',
+      id: 'footer-1',
       name: 'Footer: Minimal',
       description: 'Simple centered copyright footer',
       category: 'Footer',
@@ -672,7 +672,7 @@ export const allSections: Record<string, SectionInterface[]> = {
     },
 
     {
-      id: 'footer-3col',
+      id: 'footer-2',
       name: 'Footer: 3 Columns',
       description: 'Classic 3-column footer with links and newsletter',
       category: 'Footer',
@@ -735,7 +735,7 @@ export const allSections: Record<string, SectionInterface[]> = {
     },
 
     {
-      id: 'footer-social',
+      id: 'footer-3',
       name: 'Footer: Social & payments',
       description: 'Footer with social icons and payment logos',
       category: 'Footer',
@@ -773,7 +773,7 @@ export const allSections: Record<string, SectionInterface[]> = {
     },
 
     {
-      id: 'footer-full',
+      id: 'footer-4',
       name: 'Footer: Full (links + newsletter + socials)',
       description: 'Comprehensive footer with many links and newsletter',
       category: 'Footer',
@@ -866,7 +866,7 @@ export const allSections: Record<string, SectionInterface[]> = {
     },
 
     {
-      id: 'footer-payments',
+      id: 'footer-5',
       name: 'Footer: Payments & small print',
       description: 'Payment icons with terms and small print',
       category: 'Footer',

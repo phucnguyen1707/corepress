@@ -262,11 +262,17 @@ export default function BodySession(props: BodySessionProps) {
   const collectSectionIds = () => {
     const ids = new Set<string>();
     Object.values(pageData.nodes).forEach(node => {
-      const dataId = node.attribute['data-id'];
+      const dataId = node.attribute['css-id'];
       if (dataId) ids.add(dataId);
     });
     return Array.from(ids);
   };
+
+  // Object.keys(pageData.nodes).map(id => {
+  //   if (id === pageData.bodyNode) {
+  //     console.log(pageData.nodes[id].children);
+  //   }
+  // });
 
   return (
     <div className='body-session'>
@@ -302,6 +308,7 @@ export default function BodySession(props: BodySessionProps) {
       />
 
       <AddSectionModal
+        pageId={pageInfo?.[0].id}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sectionType={modalSectionType}
