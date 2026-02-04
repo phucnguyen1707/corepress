@@ -183,13 +183,16 @@ export default function BodySession(props: BodySessionProps) {
 
     if (text) {
       return (
-        <div
-          key={nodeId}
-          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
-          data-id={node.attribute.dataId}
-        >
-          {text || 'empty value'}
-        </div>
+        <>
+          <div
+            key={nodeId}
+            className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+            data-id={node.attribute.dataId}
+          >
+            {text || 'empty value'}
+          </div>
+          {children?.map(childId => renderNode(childId))}
+        </>
       );
     }
 
@@ -267,12 +270,6 @@ export default function BodySession(props: BodySessionProps) {
     });
     return Array.from(ids);
   };
-
-  // Object.keys(pageData.nodes).map(id => {
-  //   if (id === pageData.bodyNode) {
-  //     console.log(pageData.nodes[id].children);
-  //   }
-  // });
 
   return (
     <div className='body-session'>
