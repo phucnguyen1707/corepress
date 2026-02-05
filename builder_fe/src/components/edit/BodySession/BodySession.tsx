@@ -11,6 +11,7 @@ import {
   ArrowRightIcon,
   FooterSessionIcon,
   HeaderSectionIcon,
+  IconSessionIcon,
   ImageSessionIcon,
   LinkSessionIcon,
   SessionIcon,
@@ -18,6 +19,8 @@ import {
   TemplateSessionIcon,
   TextSessionIcon,
 } from '@/icons';
+import { ContainerSessionIcon } from '@/icons/C';
+import { PromoSessionIcon } from '@/icons/P';
 import { ESideBarActive, Page } from '@/interfaces';
 import { UserInfoPage } from '@/interfaces/auth.interface';
 import SectionStyleInjector from '@/utils/styleInjector';
@@ -35,6 +38,9 @@ const iconsList: Record<string, JSX.Element> = {
   image: <ImageSessionIcon />,
   text: <TextSessionIcon />,
   menu: <LinkSessionIcon />,
+  icon: <IconSessionIcon />,
+  container: <ContainerSessionIcon />,
+  promo: <PromoSessionIcon />,
 };
 
 export default function BodySession(props: BodySessionProps) {
@@ -52,18 +58,20 @@ export default function BodySession(props: BodySessionProps) {
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchPageData = async () => {
     if (!pageInfo) return;
-    const fetchPageData = async () => {
-      try {
-        const res = await page(pageInfo?.[0].id);
 
-        setPageData(res.data.data);
-      } catch (err) {
-        console.error('Failed to load user info:', err);
-      }
-    };
+    try {
+      const res = await page(pageInfo?.[0].id);
+      setPageData(res.data.data);
+    } catch (err) {
+      console.error('Failed to load page:', err);
+    }
+  };
+
+  useEffect(() => {
     fetchPageData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageInfo]);
 
   const renderGroupedSections = () => {
@@ -117,9 +125,15 @@ export default function BodySession(props: BodySessionProps) {
     if (!node) return null;
 
     const isExpanded = expandedNodes.has(rootId);
+
+    const childrenNoSvgTag = node.children.filter(childId => {
+      const child = pageData.nodes[childId];
+      return child && child.tag !== 'svg';
+    });
+
     const hasChildren = node.children.length > 0;
 
-    const children = hasChildren ? node.children.map(childId => renderTree(childId)) : [];
+    const children = hasChildren ? childrenNoSvgTag.map(childId => renderTree(childId)) : [];
 
     // Case 1: Node has a name → render it + visible children container
     if (node.attribute.devName) {
@@ -136,7 +150,7 @@ export default function BodySession(props: BodySessionProps) {
             onMouseLeave={() => setHoveredNodeId(null)}
             onClick={() => setSelectedNode(rootId)}
           >
-            {hasChildren && (
+            {hasChildren && childrenNoSvgTag.length > 0 && (
               <div
                 className='icon-size'
                 onClick={() => toggleExpand(rootId)}
@@ -300,6 +314,7 @@ export default function BodySession(props: BodySessionProps) {
       <div className='second-section'>{renderNode(pageData.bodyNode)}</div>
 
       <SettingPanel
+        pageId={pageInfo?.[0].id}
         selectedNode={selectedNode}
         mockupData={pageData}
       />
@@ -309,6 +324,7 @@ export default function BodySession(props: BodySessionProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sectionType={modalSectionType}
+        onRefreshData={fetchPageData}
       />
     </div>
   );

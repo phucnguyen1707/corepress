@@ -17,7 +17,7 @@ export const allSections: Record<string, SectionInterface[]> = {
           <div class="container">
             <div class="announce-content">
               <svg class="announce-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <p class="announce-text">Free shipping on orders over $75 — Use code: <span class="code">FREESHIP</span></p>
+              <p class="announce-text">Free shipping on orders over $75 — Use code: <span class="announce-promo">FREESHIP</span></p>
             </div>
             <button class="announce-close" aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -56,7 +56,7 @@ export const allSections: Record<string, SectionInterface[]> = {
         .announce-content{ display:flex; align-items:center; gap:12px; }
         .announce-icon{ width:18px; height:18px; }
         .announce-text{ margin:0; font-weight:500; }
-        .code{ padding:2px 8px; background:rgba(255,255,255,0.2); border-radius:4px; font-weight:700; letter-spacing:0.05em; }
+        .announce-promo{ padding:2px 8px; background:rgba(255,255,255,0.2); border-radius:4px; font-weight:700; letter-spacing:0.05em; }
         .announce-close{ background:transparent; color:#fff; border:none; cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center; border-radius:4px; transition:background 0.2s ease; }
         .announce-close svg{ width:16px; height:16px; }
         .announce-close:hover{ background:rgba(255,255,255,0.15); }

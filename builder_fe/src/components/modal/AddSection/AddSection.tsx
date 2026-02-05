@@ -10,6 +10,7 @@ interface AddSectionModalInterface {
   pageId: number | undefined;
   onClose: () => void;
   sectionType: string;
+  onRefreshData: () => Promise<void>;
 }
 
 export interface SectionInterface {
@@ -22,9 +23,10 @@ export interface SectionInterface {
   css: string;
 }
 
-const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0 }: AddSectionModalInterface) => {
+const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshData }: AddSectionModalInterface) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('Sections');
+  const [isAdding, setIsAdding] = useState(false);
 
   const [hoverHtml, setHoverHtml] = useState('');
   const [hoverCss, setHoverCss] = useState('');
@@ -43,18 +45,25 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0 }: AddSectio
   }, {});
 
   const handleAddSection = async (section: SectionInterface) => {
+    if (isAdding) return;
+
+    setIsAdding(true);
+
     const sectionType = section.id.split('-')[0];
     const templateIndex = Number(section.id.split('-')[1]);
+
     try {
       const res = await addSection(pageId, sectionType, templateIndex, 'div-01');
       if (res.status === 200) {
+        onRefreshData();
         onClose();
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsAdding(false);
     }
   };
-
   return (
     <>
       {isOpen ? (

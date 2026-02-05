@@ -23,9 +23,6 @@ export default function SectionStyleManager({ activeDataIds }: Props) {
 
     activeDataIds.forEach(id => {
       if (injectedIdsRef.current.has(id)) return;
-
-      console.log('activeDataIds:', activeDataIds);
-      console.log('sectionCssMap keys:', Object.keys(sectionCssMap));
       const css = sectionCssMap[id];
       if (!css) return;
 

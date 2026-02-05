@@ -1,4 +1,4 @@
-interface PageNode {
+export interface PageNode {
   tag: string;
   attribute: Record<string, string>;
   children: string[];

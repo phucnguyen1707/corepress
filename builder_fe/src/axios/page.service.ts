@@ -19,3 +19,7 @@ export const addSection = (id: number, sectionType: string, templateIndex: numbe
     { withCredentials: true }
   );
 };
+
+export const editNode = (id: number, nodeId: string, node: object) => {
+  return authAxios.post(`/${id}/node/edit/${nodeId}`, node, { withCredentials: true });
+};

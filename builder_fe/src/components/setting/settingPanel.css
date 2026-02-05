@@ -97,32 +97,6 @@
   text-overflow: ellipsis;
 }
 
-.edit__text-session {
-  padding: 12px;
-  gap: 10px;
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid #d0c8c8;
-}
-
-.setting__text-area {
-  width: 100% !important;
-  border-radius: 8px;
-  border: 1px solid #d0c8c8;
-  padding: 8px;
-}
-
-.text__edit_layout {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.text__edit_layout-title {
-  width: 50%;
-}
-
 .switch__container {
   display: flex;
   padding: 5px;
