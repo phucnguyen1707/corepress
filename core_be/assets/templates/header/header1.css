@@ -7,7 +7,7 @@
 }
 
 .header-1 .hdr-announce {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+ 
   color: #fff;
   font-size: 14px;
   position: relative;
@@ -30,6 +30,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   max-width: 1400px;
   margin: 0 auto;
   position: relative;
@@ -82,18 +83,15 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-.header-1 .hdr-main {
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.header-1 .hdr-main .hdr-inner {
+.header-1 .hdr-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
   max-width: 1400px;
   margin: 0 auto;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .header-1 .logo {

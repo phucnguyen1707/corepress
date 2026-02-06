@@ -24,35 +24,33 @@ export const allSections: Record<string, SectionInterface[]> = {
             </button>
           </div>
         </div>
-        <div class="hdr-main">
-          <div class="container hdr-inner">
-            <div class="logo">
-              <svg class="logo-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-              <span>Brand</span>
-            </div>
-            <nav class="nav">
-              <a class="nav-link">Home</a>
-              <a class="nav-link">Shop</a>
-              <a class="nav-link">Collections</a>
-              <a class="nav-link">About</a>
-            </nav>
-            <div class="hdr-actions">
-              <button class="action-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-              </button>
-              <button class="action-btn cart-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-                <span class="cart-count">2</span>
-              </button>
-            </div>
+        <div class="container hdr-inner">
+          <div class="logo">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span>Brand</span>
+          </div>
+          <nav class="nav">
+            <a class="nav-link">Home</a>
+            <a class="nav-link">Shop</a>
+            <a class="nav-link">Collections</a>
+            <a class="nav-link">About</a>
+          </nav>
+          <div class="hdr-actions">
+            <button class="action-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </button>
+            <button class="action-btn cart-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+              <span class="cart-count">2</span>
+            </button>
           </div>
         </div>
       </div>`,
       css: `
       .header-1{ display:flex; flex-direction:column; position:sticky; top:0; z-index:100; box-shadow:0 4px 12px rgba(0,0,0,0.05); 
-        .hdr-announce{ background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; font-size:14px; position:relative; overflow:hidden; }
+        .hdr-announce{ color:#fff; font-size:14px; position:relative; overflow:hidden; }
         .hdr-announce::before{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent); animation:shimmer 3s infinite; }
-        .hdr-announce .container{ display:flex; justify-content:space-between; align-items:center; padding:12px 24px; max-width:1400px; margin:0 auto; position:relative; z-index:1; }
+        .hdr-announce .container{ background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); display:flex; justify-content:space-between; align-items:center; padding:12px 24px; max-width:1400px; margin:0 auto; position:relative; z-index:1; }
         .announce-content{ display:flex; align-items:center; gap:12px; }
         .announce-icon{ width:18px; height:18px; }
         .announce-text{ margin:0; font-weight:500; }
@@ -60,8 +58,7 @@ export const allSections: Record<string, SectionInterface[]> = {
         .announce-close{ background:transparent; color:#fff; border:none; cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center; border-radius:4px; transition:background 0.2s ease; }
         .announce-close svg{ width:16px; height:16px; }
         .announce-close:hover{ background:rgba(255,255,255,0.15); }
-        .hdr-main{ background:#fff; border-bottom:1px solid rgba(0,0,0,0.08); }
-        .hdr-main .hdr-inner{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; max-width:1400px; margin:0 auto; }
+        .hdr-inner{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; max-width:1400px; margin:0 auto; background:#fff; border-bottom:1px solid rgba(0,0,0,0.08);}
         .logo{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:24px; color:#1a202c; cursor:pointer; }
         .logo-icon{ width:28px; height:28px; color:#667eea; }
         .nav{ display:flex; gap:32px; align-items:center; }

@@ -7,36 +7,47 @@ import { PageNode } from '@/interfaces';
 import './editText.css';
 
 type EditTextProps = {
-  nodeText: string;
   pageId: number;
   selectedNode: string;
   nodeData: PageNode;
+  onRefreshData: () => Promise<void>;
 };
 
 export default function EditText(props: EditTextProps) {
-  const { nodeText, pageId, selectedNode, nodeData } = props;
-  const [textValue, setTextValue] = useState(nodeText || '');
+  const { pageId, selectedNode, nodeData, onRefreshData } = props;
+  const [textValue, setTextValue] = useState(nodeData.text || '');
 
-  console.log(nodeData);
   const handleUpdateText = async () => {
     try {
-      const res = await editNode(pageId, selectedNode, nodeData);
-      console.log(res);
+      const res = await editNode(pageId, selectedNode, {
+        node: {
+          ...nodeData,
+          text: textValue,
+        },
+      });
+
+      if (res.status === 200) {
+        onRefreshData();
+      }
     } catch (err) {
       console.error('Failed edit node:', err);
     }
   };
 
   useEffect(() => {
+    setTextValue(nodeData.text || '');
+  }, [nodeData.text]);
+
+  useEffect(() => {
     const timeout = setTimeout(() => {
-      if (textValue !== nodeText) {
+      if (textValue !== '') {
         handleUpdateText();
       }
     }, 1000);
 
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodeText, textValue]);
+  }, [textValue]);
 
   return (
     <div>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { EditIcon, SettingIcon } from '@/icons';
+import { SettingIcon } from '@/icons';
 import { Page } from '@/interfaces';
 
 import Typo from '../commons/Typo';
@@ -13,9 +13,10 @@ interface SettingPanelProps {
   mockupData: Page;
   selectedNode: string | null;
   pageId: number | undefined;
+  onRefreshData: () => Promise<void>;
 }
 
-export default function SettingPanel({ mockupData, selectedNode, pageId = 0 }: SettingPanelProps) {
+export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onRefreshData }: SettingPanelProps) {
   const renderSettingsPanel = () => {
     if (!selectedNode) {
       return (
@@ -37,44 +38,12 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0 }: S
           <Typo type='Typo medium bold'>{node.attribute?.devName}</Typo>
         </div>
 
-        {node.tag === 'img' && (
-          <div className='setting__image-settings'>
-            <div className='setting__image-preview-title'>
-              <Typo type='Typo small'>Preview</Typo>
-            </div>
-
-            <div className='setting__image-preview'>
-              <img
-                className='image-preview'
-                src={node.attribute.value}
-                alt='Preview'
-              />
-
-              <div className='setting__image-url-overlay'>
-                <div className='overlay__icon'>
-                  <EditIcon />
-                </div>
-                <Typo type='Typo small'>Change</Typo>
-              </div>
-
-              <div className='setting__image-url-container'>
-                <Typo
-                  className='setting__image-url'
-                  type='Typo small'
-                >
-                  {node.attribute.value}
-                </Typo>
-              </div>
-            </div>
-          </div>
-        )}
-
         {node.text && (
           <EditText
             nodeData={node}
-            nodeText={node.text}
             selectedNode={selectedNode}
             pageId={pageId}
+            onRefreshData={onRefreshData}
           />
         )}
       </div>
@@ -83,3 +52,35 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0 }: S
 
   return <div className='setting-section'>{renderSettingsPanel()}</div>;
 }
+
+// {node.tag === 'img' && (
+//   <div className='setting__image-settings'>
+//     <div className='setting__image-preview-title'>
+//       <Typo type='Typo small'>Preview</Typo>
+//     </div>
+
+//     <div className='setting__image-preview'>
+//       <img
+//         className='image-preview'
+//         src={node.attribute.value}
+//         alt='Preview'
+//       />
+
+//       <div className='setting__image-url-overlay'>
+//         <div className='overlay__icon'>
+//           <EditIcon />
+//         </div>
+//         <Typo type='Typo small'>Change</Typo>
+//       </div>
+
+//       <div className='setting__image-url-container'>
+//         <Typo
+//           className='setting__image-url'
+//           type='Typo small'
+//         >
+//           {node.attribute.value}
+//         </Typo>
+//       </div>
+//     </div>
+//   </div>
+// )}

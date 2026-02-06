@@ -317,6 +317,7 @@ export default function BodySession(props: BodySessionProps) {
         pageId={pageInfo?.[0].id}
         selectedNode={selectedNode}
         mockupData={pageData}
+        onRefreshData={fetchPageData}
       />
 
       <AddSectionModal
