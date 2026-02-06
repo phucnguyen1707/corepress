@@ -150,6 +150,8 @@ export const editNode = async (
 
   const { node } = (await req.json()) as EditNodeRequest;
 
+  if (!node) return new Response("Node not found", { status: 400 });
+
   await pg`
     UPDATE pages
     SET data = jsonb_set(
