@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server';
 import { Locale } from './interfaces/common';
 import { localePrefix, locales } from './navigation';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const nextintlRouting = createMiddleware({
     locales,
     localePrefix,

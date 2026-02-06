@@ -1,3 +1,5 @@
+import path from "path";
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const withNextIntl = require('next-intl/plugin')('./i18n.ts');
 
@@ -14,6 +16,10 @@ const nextConfig = {
         hostname: '**', // optional for http sources
       },
     ],
+  },
+  reactCompiler: true,
+  turbopack: {
+    root: path.join(__dirname, '..'),
   },
 };
 
