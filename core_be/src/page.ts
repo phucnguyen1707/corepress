@@ -1,4 +1,4 @@
-import { extractUser, html_to_nodes } from "./helper";
+import { extractUser, html_to_nodes } from "./utils";
 import { pg } from "./postgres";
 
 //! INTERFACE -----------------------------------------------------------------------------
@@ -35,7 +35,7 @@ interface EditNodeRequest {
 
 // GET PAGE
 export const getPage = async (
-  req: Bun.BunRequest<"page/:id">
+  req: Bun.BunRequest<"page/:id">,
 ): Promise<Response> => {
   const user = await extractUser(req);
 
@@ -66,7 +66,7 @@ export const getPage = async (
 
 // GET NODE
 export const getNode = async (
-  req: Bun.BunRequest<"/page/:id/node/:nodeId">
+  req: Bun.BunRequest<"/page/:id/node/:nodeId">,
 ): Promise<Response> => {
   const user = await extractUser(req);
   if (!user) return new Response(null, { status: 401 });
@@ -90,7 +90,7 @@ export const getNode = async (
 
 // INSERT NODE
 export const insertNode = async (
-  req: Bun.BunRequest<"/page/:id/node/insert/:parentId">
+  req: Bun.BunRequest<"/page/:id/node/insert/:parentId">,
 ): Promise<Response> => {
   const user = await extractUser(req);
 
@@ -133,7 +133,7 @@ export const insertNode = async (
 
 // EDIT NODE
 export const editNode = async (
-  req: Bun.BunRequest<"/page/:id/node/edit/:nodeId">
+  req: Bun.BunRequest<"/page/:id/node/edit/:nodeId">,
 ): Promise<Response> => {
   const user = await extractUser(req);
   if (!user) return new Response(null, { status: 401 });
@@ -169,7 +169,7 @@ export const editNode = async (
 
 // DELETE NODE
 export const deleteNode = async (
-  req: Bun.BunRequest<"/page/:id/node/delete/:nodeId">
+  req: Bun.BunRequest<"/page/:id/node/delete/:nodeId">,
 ): Promise<Response> => {
   const user = await extractUser(req);
   if (!user) return new Response(null, { status: 401 });
@@ -209,7 +209,7 @@ export const deleteNode = async (
       (
         SELECT jsonb_object_agg(key, value)
         FROM (
-          SELECT 
+          SELECT
             key,
             CASE
               WHEN value ? 'children' THEN
@@ -221,7 +221,7 @@ export const deleteNode = async (
                     FROM jsonb_array_elements_text(value->'children') AS child_id
                     WHERE child_id NOT IN (SELECT unnest(${pg.array(
                       allIds,
-                      "text"
+                      "text",
                     )}))
                   )
                 )
@@ -241,7 +241,7 @@ export const deleteNode = async (
 
 // Add section
 export const addSection = async (
-  req: Bun.BunRequest<"/page/:id/section/add/:section_type/:template_index/node/:node_id">
+  req: Bun.BunRequest<"/page/:id/section/add/:section_type/:template_index/node/:node_id">,
 ): Promise<Response> => {
   const user = await extractUser(req);
   if (!user) return new Response(null, { status: 401 });
@@ -255,14 +255,14 @@ export const addSection = async (
     case "header":
       try {
         const html = await Bun.file(
-          `assets/templates/header/header${templateIndex}.html`
+          `assets/templates/header/header${templateIndex}.html`,
         ).text();
         const result = html_to_nodes(html);
         const nodes = result.nodes;
         const rootNodes = result.rootNodes;
 
         await pg`
-          UPDATE pages 
+          UPDATE pages
           SET data = jsonb_set(
             data || jsonb_build_object('nodes', data->'nodes' || ${nodes}::jsonb),
             array['nodes', ${nodeId}, 'children']::text[],

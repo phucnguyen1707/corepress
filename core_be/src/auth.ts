@@ -1,6 +1,7 @@
 import { INITIAL_PAGE_DATA } from "./constant";
-import { extractUser } from "./helper";
+import { extractUser } from "./utils";
 import { pg } from "./postgres";
+import * as csstree from "css-tree";
 
 //! INTERFACE -----------------------------------------------------------------------------
 
@@ -38,7 +39,7 @@ export const register = async (req: Bun.BunRequest): Promise<Response> => {
   const pageData = JSON.parse(
     JSON.stringify({ ...INITIAL_PAGE_DATA })
       .replaceAll("placeholder-html-id", html_id)
-      .replaceAll("placeholder-body-id", body_id)
+      .replaceAll("placeholder-body-id", body_id),
   );
 
   await pg.begin(async (tx) => {

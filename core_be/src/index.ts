@@ -44,7 +44,7 @@ function withCors(handler: BunHandler): BunHandler {
 }
 
 function wrapRoutesWithCors(
-  routes: Record<string, RouteConfig>
+  routes: Record<string, RouteConfig>,
 ): Record<string, RouteConfig> {
   const wrappedRoutes: Record<string, RouteConfig> = {};
 

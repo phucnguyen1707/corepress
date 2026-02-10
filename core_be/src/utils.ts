@@ -9,6 +9,11 @@ export interface HtmlToNodesResult {
   rootNodes: string[];
 }
 
+interface CssNode {
+  [key: string]: string | CssNode;
+}
+
+
 export const extractUser = async (req: Bun.BunRequest) => {
   const cookie = req.cookies;
 
@@ -20,13 +25,11 @@ export const extractUser = async (req: Bun.BunRequest) => {
 
   const [user]: [User] =
     await pg`SELECT id, name, email FROM users WHERE session = ${session};`;
-    
+
   return user;
 };
 
-export function html_to_nodes(
-  html: string,
-): HtmlToNodesResult {
+export function html_to_nodes(html: string): HtmlToNodesResult {
   const { document } = parseHTML(html);
 
   const nodes: Record<string, PageNode> = {};
@@ -53,10 +56,9 @@ export function html_to_nodes(
       }
     }
 
-    const pageNode: PageNode  = {
+    const pageNode: PageNode = {
       tag: node.tagName.toLowerCase(),
-      attribute: { ...attrs,
-        dataId: id},
+      attribute: { ...attrs, dataId: id },
       children,
       ...(text ? { text } : {}),
     };
