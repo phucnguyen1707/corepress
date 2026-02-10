@@ -13,7 +13,6 @@ interface CssNode {
   [key: string]: string | CssNode;
 }
 
-
 export const extractUser = async (req: Bun.BunRequest) => {
   const cookie = req.cookies;
 
@@ -72,4 +71,67 @@ export function html_to_nodes(html: string): HtmlToNodesResult {
   }
 
   return { nodes, rootNodes };
+}
+
+export function cssToJson(css: string): CssNode {
+  const cleanCss = css
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\n/g, " ")
+    .replace(/\s\s+/g, " ");
+
+  const root: CssNode = {};
+  const stack: CssNode[] = [root];
+  let buffer = "";
+
+  for (let i = 0; i < cleanCss.length; i++) {
+    const char = cleanCss[i];
+
+    const parent = stack[stack.length - 1]!;
+
+    if (char === "{") {
+      const selector = buffer.trim();
+      
+      if (!parent[selector] || typeof parent[selector] !== 'object') {
+        parent[selector] = {};
+      }
+
+      stack.push(parent[selector]);
+      
+      buffer = "";
+    } 
+    else if (char === "}") {
+      const trimmedBuffer = buffer.trim();
+      if (trimmedBuffer) {
+        const firstColon = trimmedBuffer.indexOf(":");
+        if (firstColon > -1) {
+          const key = trimmedBuffer.slice(0, firstColon).trim();
+          const value = trimmedBuffer.slice(firstColon + 1).trim();
+          parent[key] = value;
+        }
+      }
+      
+      if (stack.length > 1) {
+        stack.pop();
+      }
+      
+      buffer = "";
+    } 
+    else if (char === ";") {
+      const trimmedBuffer = buffer.trim();
+      const firstColon = trimmedBuffer.indexOf(":");
+      
+      if (firstColon > -1) {
+        const key = trimmedBuffer.slice(0, firstColon).trim();
+        const value = trimmedBuffer.slice(firstColon + 1).trim();
+        parent[key] = value;
+      }
+      
+      buffer = "";
+    } 
+    else {
+      buffer += char;
+    }
+  }
+
+  return root;
 }
