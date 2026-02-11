@@ -6,7 +6,9 @@ import {
   editNode,
   getNode,
   getPage,
+  getPageCSS,
   insertNode,
+  updatePageCss,
 } from "./page";
 import { createTable, pg } from "./postgres";
 import dotenv from "dotenv";
@@ -91,8 +93,14 @@ pg.connect().then(async () => {
       "/page/:id": {
         GET: getPage,
       },
+      "/page/:id/css": {
+        GET: getPageCSS,
+      },
       "/page/:id/node/:nodeId": {
         GET: getNode,
+      },
+      "/page/:id/edit/css": {
+        POST: updatePageCss
       },
       "/page/:id/node/insert/:parentId": {
         POST: insertNode,

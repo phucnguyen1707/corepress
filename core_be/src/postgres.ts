@@ -17,6 +17,7 @@ export const createTable = async (pg: SQL) => {
       name TEXT NOT NULL DEFAULT 'New Page',
       user_id INTEGER NOT NULL,
       data JSONB NOT NULL DEFAULT '{}',
+      css JSONB NOT NULL DEFAULT '{}',
       created_at TIMESTAMP NOT NULL DEFAULT NOW(),
       FOREIGN KEY (user_id) REFERENCES users(id)
     );`;

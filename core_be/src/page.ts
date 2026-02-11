@@ -1,4 +1,4 @@
-import { extractUser, html_to_nodes } from "./utils";
+import { cssToJson, extractUser, htmlToNodes } from "./utils";
 import { pg } from "./postgres";
 
 //! INTERFACE -----------------------------------------------------------------------------
@@ -8,6 +8,7 @@ interface Page {
   name: string;
   user_id: number;
   data: PageData;
+  css: CssNode;
   created_at: Date;
 }
 
@@ -22,6 +23,11 @@ export interface PageNode {
   tag: string;
   children: string[];
 }
+
+export interface CssNode {
+  [key: string]: string | number | CssNode;
+}
+
 
 interface InsertNodeRequest {
   node: PageNode;
@@ -62,6 +68,87 @@ export const getPage = async (
       "Content-Type": "application/json",
     },
   });
+};
+
+// GET PAGE CSS
+export const getPageCSS = async (
+  req: Bun.BunRequest<"page/:id/css">,
+): Promise<Response> => {
+  const user = await extractUser(req);
+
+  if (!user) {
+    return new Response(null, { status: 401 });
+  }
+
+  const pageId = req.params.id;
+
+  if (!pageId) {
+    return new Response(null, { status: 400 });
+  }
+
+  const [css]: [CssNode] =
+    await pg`SELECT css FROM pages WHERE id = ${pageId} AND user_id = ${user.id};`;
+
+  if (!css) {
+    return new Response(null, { status: 404 });
+  }
+
+  return new Response(JSON.stringify(css), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+// UPDATE PAGE CSS
+export const updatePageCss = async (
+  req: Bun.BunRequest<"/page/:id/edit/css">
+): Promise<Response> => {
+  const user = await extractUser(req);
+  if (!user) return new Response(null, { status: 401 });
+
+  const pageId = req.params.id;
+
+  if (!pageId) {
+    return new Response(null, { status: 400 });
+  }
+
+  try {
+    const payload = await req.json();
+
+    await pg.begin(async (sql) => {
+      const [page]: [Page] = await sql`
+        SELECT css FROM pages 
+        WHERE id = ${pageId} AND user_id = ${user.id}
+        FOR UPDATE
+      `;
+
+      if (!page) throw new Error("Page not found");
+
+      const currentCss = page.css || {};
+
+      for (const [selector, newStyles] of Object.entries(payload)) {
+        // Get existing styles for this selector (or empty object if new)
+        const existingStyles = (currentCss[selector] || {}) as CssNode;
+
+        // Merge: Old styles + New styles (New overwrites Old only if keys match)
+        currentCss[selector] = { ...existingStyles, ...(newStyles as CssNode) };
+      }
+
+      await sql`
+        UPDATE pages
+        SET css = ${currentCss}::jsonb
+        WHERE id = ${pageId}
+      `;
+    });
+
+    return new Response(null, { status: 200 });
+
+  } catch (error) {
+    console.error("Update failed:", error);
+    return new Response("Error updating CSS", { status: 500 });
+  }
 };
 
 // GET NODE
@@ -257,17 +344,25 @@ export const addSection = async (
         const html = await Bun.file(
           `assets/templates/header/header${templateIndex}.html`,
         ).text();
-        const result = html_to_nodes(html);
+        const result = htmlToNodes(html);
         const nodes = result.nodes;
         const rootNodes = result.rootNodes;
 
+        const css = await Bun.file(
+          `assets/templates/header/header${templateIndex}.css`,
+        ).text();
+
+        const cssNodes = cssToJson(css);
+
         await pg`
           UPDATE pages
-          SET data = jsonb_set(
-            data || jsonb_build_object('nodes', data->'nodes' || ${nodes}::jsonb),
-            array['nodes', ${nodeId}, 'children']::text[],
-            (data#>array['nodes', ${nodeId}, 'children']::text[] || ${rootNodes}::jsonb)
-          )
+          SET 
+            data = jsonb_set(
+              data || jsonb_build_object('nodes', data->'nodes' || ${nodes}::jsonb),
+              array['nodes', ${nodeId}, 'children']::text[],
+              (data#>array['nodes', ${nodeId}, 'children']::text[] || ${rootNodes}::jsonb)
+            ),
+            css = css || ${cssNodes}::jsonb
           WHERE id = ${pageId} AND user_id = ${user.id};`;
       } catch (error) {
         return new Response("Template not found", { status: 404 });

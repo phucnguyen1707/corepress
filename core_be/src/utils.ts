@@ -1,5 +1,5 @@
 import type { User } from "./auth";
-import type { PageNode } from "./page";
+import type { CssNode, PageNode } from "./page";
 import { pg } from "./postgres";
 import { randomUUID } from "crypto";
 import { parseHTML } from "linkedom";
@@ -7,10 +7,6 @@ import { parseHTML } from "linkedom";
 export interface HtmlToNodesResult {
   nodes: Record<string, PageNode>;
   rootNodes: string[];
-}
-
-interface CssNode {
-  [key: string]: string | CssNode;
 }
 
 export const extractUser = async (req: Bun.BunRequest) => {
@@ -28,7 +24,7 @@ export const extractUser = async (req: Bun.BunRequest) => {
   return user;
 };
 
-export function html_to_nodes(html: string): HtmlToNodesResult {
+export function htmlToNodes(html: string): HtmlToNodesResult {
   const { document } = parseHTML(html);
 
   const nodes: Record<string, PageNode> = {};
@@ -106,7 +102,7 @@ export function cssToJson(css: string): CssNode {
         if (firstColon > -1) {
           const key = trimmedBuffer.slice(0, firstColon).trim();
           const value = trimmedBuffer.slice(firstColon + 1).trim();
-          parent[key] = value;
+          parent[key] = Number.isNaN(Number(value)) ? value : Number(value);;
         }
       }
       
@@ -123,7 +119,7 @@ export function cssToJson(css: string): CssNode {
       if (firstColon > -1) {
         const key = trimmedBuffer.slice(0, firstColon).trim();
         const value = trimmedBuffer.slice(firstColon + 1).trim();
-        parent[key] = value;
+        parent[key] = Number.isNaN(Number(value)) ? value : Number(value);;
       }
       
       buffer = "";
