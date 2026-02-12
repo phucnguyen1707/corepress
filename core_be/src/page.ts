@@ -92,7 +92,7 @@ export const getPageCSS = async (
     return new Response(null, { status: 400 });
   }
 
-  const [css]: [CssNode] =
+  const [css] =
     await pg`SELECT css as json FROM pages WHERE id = ${pageId} AND user_id = ${user.id};`;
 
   if (!css) {
@@ -101,7 +101,7 @@ export const getPageCSS = async (
 
   const response = {
     ...css,
-    raw: jsonToCss(css),
+    raw: jsonToCss(css.json).replace(/\n/g, ""),
   };
 
   return new Response(JSON.stringify(response), {
