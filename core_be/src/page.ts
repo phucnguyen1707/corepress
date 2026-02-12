@@ -1,5 +1,12 @@
-import { cssToJson, extractUser, htmlToNodes } from "./utils";
+import {
+  cssToJson,
+  extractUser,
+  htmlToNodes,
+  jsonToCss,
+  scopeCss,
+} from "./utils";
 import { pg } from "./postgres";
+import { nanoid } from "nanoid";
 
 //! INTERFACE -----------------------------------------------------------------------------
 
@@ -27,7 +34,6 @@ export interface PageNode {
 export interface CssNode {
   [key: string]: string | number | CssNode;
 }
-
 
 interface InsertNodeRequest {
   node: PageNode;
@@ -87,13 +93,18 @@ export const getPageCSS = async (
   }
 
   const [css]: [CssNode] =
-    await pg`SELECT css FROM pages WHERE id = ${pageId} AND user_id = ${user.id};`;
+    await pg`SELECT css as json FROM pages WHERE id = ${pageId} AND user_id = ${user.id};`;
 
   if (!css) {
     return new Response(null, { status: 404 });
   }
 
-  return new Response(JSON.stringify(css), {
+  const response = {
+    ...css,
+    raw: jsonToCss(css),
+  };
+
+  return new Response(JSON.stringify(response), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -103,7 +114,7 @@ export const getPageCSS = async (
 
 // UPDATE PAGE CSS
 export const updatePageCss = async (
-  req: Bun.BunRequest<"/page/:id/edit/css">
+  req: Bun.BunRequest<"/page/:id/edit/css">,
 ): Promise<Response> => {
   const user = await extractUser(req);
   if (!user) return new Response(null, { status: 401 });
@@ -144,7 +155,6 @@ export const updatePageCss = async (
     });
 
     return new Response(null, { status: 200 });
-
   } catch (error) {
     console.error("Update failed:", error);
     return new Response("Error updating CSS", { status: 500 });
@@ -338,21 +348,34 @@ export const addSection = async (
   const templateIndex = req.params.template_index;
   const nodeId = req.params.node_id;
 
+  const uniqueScopeId = `s_${nanoid(10)}`;
+
   switch (sectionType) {
     case "header":
       try {
         const html = await Bun.file(
           `assets/templates/header/header${templateIndex}.html`,
         ).text();
-        const result = htmlToNodes(html);
-        const nodes = result.nodes;
-        const rootNodes = result.rootNodes;
 
-        const css = await Bun.file(
+        const resultHTML = htmlToNodes(html);
+        const nodes = resultHTML.nodes;
+        const rootNodes = resultHTML.rootNodes;
+
+        rootNodes.forEach((rootId: string) => {
+          if (nodes[rootId]) {
+            const currentClass = nodes[rootId].attribute["class"] || "";
+            nodes[rootId].attribute["class"] =
+              `${uniqueScopeId} ${currentClass}`.trim();
+          }
+        });
+
+        const cssText = await Bun.file(
           `assets/templates/header/header${templateIndex}.css`,
         ).text();
 
-        const cssNodes = cssToJson(css);
+        const rawCssJson = cssToJson(cssText);
+
+        const scopedCssJson = scopeCss(rawCssJson, uniqueScopeId);
 
         await pg`
           UPDATE pages
@@ -362,10 +385,13 @@ export const addSection = async (
               array['nodes', ${nodeId}, 'children']::text[],
               (data#>array['nodes', ${nodeId}, 'children']::text[] || ${rootNodes}::jsonb)
             ),
-            css = css || ${cssNodes}::jsonb
+            css = css || ${scopedCssJson}::jsonb
           WHERE id = ${pageId} AND user_id = ${user.id};`;
       } catch (error) {
-        return new Response("Template not found", { status: 404 });
+        console.error(error);
+        return new Response("Template not found or Error processing", {
+          status: 404,
+        });
       }
 
       break;

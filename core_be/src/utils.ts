@@ -131,3 +131,44 @@ export function cssToJson(css: string): CssNode {
 
   return root;
 }
+
+export const jsonToCss = (json: CssNode, depth: number = 0): string => {
+  let cssString = "";
+  const indent = "  ".repeat(depth);
+
+  for (const [key, value] of Object.entries(json)) {
+    if (typeof value === "object" && value !== null) {
+      cssString += `${indent}${key} {\n`;
+      cssString += jsonToCss(value as CssNode, depth + 1);
+      cssString += `${indent}}\n`;
+    } 
+    else {
+      cssString += `${indent}${key}: ${value};\n`;
+    }
+  }
+
+  return cssString;
+};
+
+export const scopeCss = (cssJson: any, uniqueClass: string) => {
+  const scoped: any = {};
+  
+  Object.keys(cssJson).forEach((key) => {
+    if (key.startsWith("@media")) {
+      const mediaRules = cssJson[key];
+      const scopedMediaRules: any = {};
+      Object.keys(mediaRules).forEach((subKey) => {
+        scopedMediaRules[`.${uniqueClass}${subKey}`] = mediaRules[subKey];
+      });
+      scoped[key] = scopedMediaRules;
+    } 
+    else if (key.startsWith("@keyframes")) {
+       scoped[key] = cssJson[key]; 
+    }
+    else {
+      scoped[`.${uniqueClass}${key}`] = cssJson[key];
+    }
+  });
+
+  return scoped;
+};
