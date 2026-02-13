@@ -1,14 +1,10 @@
 import { useEffect, useRef } from 'react';
 
-import { sectionCssMap } from './cssData';
-
 interface Props {
-  activeDataIds: string[];
+  rawCss: string;
 }
 
-export default function SectionStyleManager({ activeDataIds }: Props) {
-  const injectedIdsRef = useRef<Set<string>>(new Set());
-
+export default function SectionStyleManager({ rawCss }: Props) {
   useEffect(() => {
     const styleId = '__builder_section_styles__';
     let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
@@ -19,21 +15,10 @@ export default function SectionStyleManager({ activeDataIds }: Props) {
       document.head.appendChild(styleEl);
     }
 
-    let cssToAppend = '';
-
-    activeDataIds.forEach(id => {
-      if (injectedIdsRef.current.has(id)) return;
-      const css = sectionCssMap[id];
-      if (!css) return;
-
-      injectedIdsRef.current.add(id);
-      cssToAppend += `\n/* ${id} */\n${css}\n`;
-    });
-
-    if (cssToAppend) {
-      styleEl.appendChild(document.createTextNode(cssToAppend));
+    if (rawCss) {
+      styleEl.appendChild(document.createTextNode(rawCss));
     }
-  }, [activeDataIds]);
+  }, [rawCss]);
 
   return null;
 }

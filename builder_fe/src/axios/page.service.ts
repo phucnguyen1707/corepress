@@ -12,6 +12,10 @@ export const page = (id: number) => {
   return authAxios.get(`/${id}`, { withCredentials: true });
 };
 
+export const cssPage = (id: number) => {
+  return authAxios.get(`/${id}/css`, { withCredentials: true });
+};
+
 export const addSection = (id: number, sectionType: string, templateIndex: number, nodeId: string) => {
   return authAxios.post(
     `/${id}/section/add/${sectionType}/${templateIndex}/node/${nodeId}`,

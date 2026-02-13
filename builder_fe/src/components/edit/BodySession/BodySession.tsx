@@ -2,7 +2,7 @@
 
 import React, { JSX, ReactNode, useEffect, useState } from 'react';
 
-import { page } from '@/axios/page.service';
+import { cssPage, page } from '@/axios/page.service';
 import Typo from '@/components/commons/Typo';
 import AddSectionModal from '@/components/modal';
 import SettingPanel from '@/components/setting';
@@ -21,7 +21,7 @@ import {
 } from '@/icons';
 import { ContainerSessionIcon } from '@/icons/C';
 import { PromoSessionIcon } from '@/icons/P';
-import { ESideBarActive, Page } from '@/interfaces';
+import { CssData, ESideBarActive, Page } from '@/interfaces';
 import { UserInfoPage } from '@/interfaces/auth.interface';
 import SectionStyleInjector from '@/utils/styleInjector';
 
@@ -51,6 +51,12 @@ export default function BodySession(props: BodySessionProps) {
     htmlNode: '',
     nodes: {},
   });
+
+  const [cssData, setCssData] = useState<CssData>({
+    json: {},
+    raw: '',
+  });
+
   const [activeAction, setActiveAction] = useState<ESideBarActive>(ESideBarActive.session);
   const [modalSectionType, setModalSectionType] = useState<string>('');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
@@ -69,8 +75,20 @@ export default function BodySession(props: BodySessionProps) {
     }
   };
 
+  const fetchCssDataPage = async () => {
+    if (!pageInfo) return;
+
+    try {
+      const res = await cssPage(pageInfo?.[0].id);
+      setCssData(res.data);
+    } catch (err) {
+      console.error('Failed to load css data:', err);
+    }
+  };
+
   useEffect(() => {
     fetchPageData();
+    fetchCssDataPage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageInfo]);
 
@@ -175,7 +193,7 @@ export default function BodySession(props: BodySessionProps) {
     }
 
     // Case 2: Node has no name → just render its children directly
-    return <div key={rootId}>{children}</div>;
+    return <div key={rootId + '-children'}>{children}</div>;
   };
 
   const toggleExpand = (id: string) => {
@@ -200,7 +218,7 @@ export default function BodySession(props: BodySessionProps) {
         <>
           <div
             key={nodeId}
-            className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+            className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
             data-id={node.attribute.dataId}
           >
             {text || 'empty value'}
@@ -215,7 +233,7 @@ export default function BodySession(props: BodySessionProps) {
         <svg
           key={nodeId}
           data-id={node.attribute.dataId}
-          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+          className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
           viewBox={attribute.viewBox || '0 0 100% 100%'}
           fill={attribute.fill || 'none'}
           stroke={attribute.stroke || 'none'}
@@ -231,7 +249,7 @@ export default function BodySession(props: BodySessionProps) {
         <circle
           key={nodeId}
           data-id={node.attribute.dataId}
-          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+          className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
           cx={attribute.cx || ''}
           cy={attribute.cy || ''}
           r={attribute.r || ''}
@@ -244,7 +262,7 @@ export default function BodySession(props: BodySessionProps) {
         <path
           key={nodeId}
           data-id={node.attribute.dataId}
-          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+          className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
           d={attribute.d || ''}
         />
       );
@@ -257,7 +275,7 @@ export default function BodySession(props: BodySessionProps) {
           key={nodeId}
           src={attribute.value}
           alt={node.attribute.devName || 'image'}
-          className={`${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`}
+          className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
         />
       );
     }
@@ -270,24 +288,15 @@ export default function BodySession(props: BodySessionProps) {
         key: nodeId,
         id: attribute.id || undefined,
         'data-id': node.attribute.dataId,
-        className: `${attribute.class || ''} ${isHovered ? 'hovered-node' : ''}`,
+        className: `${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`,
       },
       childElements?.length ? childElements : null
     );
   };
 
-  const collectSectionIds = () => {
-    const ids = new Set<string>();
-    Object.values(pageData.nodes).forEach(node => {
-      const dataId = node.attribute['css-id'];
-      if (dataId) ids.add(dataId);
-    });
-    return Array.from(ids);
-  };
-
   return (
     <div className='body-session'>
-      <SectionStyleInjector activeDataIds={collectSectionIds()} />
+      <SectionStyleInjector rawCss={cssData.raw} />
       <div className='first-section'>
         <div className='action-bar'>
           <div

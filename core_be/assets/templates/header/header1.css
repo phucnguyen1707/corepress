@@ -24,7 +24,7 @@
   animation: shimmer 3s infinite;
 }
 
-.header-1 .hdr-announce .container {
+.header-1 .announce-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -107,6 +107,10 @@
   width: 28px;
   height: 28px;
   color: #667eea;
+}
+
+.header-1 .logo-text {
+
 }
 
 .header-1 .nav {
