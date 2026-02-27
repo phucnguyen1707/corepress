@@ -27,3 +27,7 @@ export const addSection = (id: number, sectionType: string, templateIndex: numbe
 export const editNode = (id: number, nodeId: string, node: object) => {
   return authAxios.post(`/${id}/node/edit/${nodeId}`, node, { withCredentials: true });
 };
+
+export const editCss = (id: number, objectCss: object) => {
+  return authAxios.post(`/${id}/edit/css`, objectCss, { withCredentials: true });
+};

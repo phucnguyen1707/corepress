@@ -4,6 +4,7 @@ export interface PageNode {
   attribute: Record<string, string>;
   children: string[];
   text?: string;
+  style?: React.CSSProperties;
 }
 
 export interface Page {

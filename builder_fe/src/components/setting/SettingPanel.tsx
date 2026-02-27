@@ -10,13 +10,27 @@ import EditText from './EditText/EditText';
 import './settingPanel.css';
 
 interface SettingPanelProps {
-  mockupData: Page;
+  pageData: Page;
   selectedNode: string | null;
   pageId: number | undefined;
   onRefreshData: () => Promise<void>;
+  onUpdateNodeStyle: (nodeId: string, key: string, value: string) => void;
 }
 
-export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onRefreshData }: SettingPanelProps) {
+export default function SettingPanel({
+  pageData,
+  selectedNode,
+  pageId = 0,
+  onRefreshData,
+  onUpdateNodeStyle,
+}: SettingPanelProps) {
+  const [fontSize, setFontSize] = useState('16px');
+  const [fontWeight, setFontWeight] = useState('normal');
+  const [padding, setPadding] = useState('0px');
+  const [margin, setMargin] = useState('0px');
+  const [color, setColor] = useState('#000000');
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+
   const renderSettingsPanel = () => {
     if (!selectedNode) {
       return (
@@ -29,15 +43,8 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onR
       );
     }
 
-    const node = mockupData.nodes[selectedNode];
+    const node = pageData.nodes[selectedNode];
     if (!node) return null;
-
-    const [fontSize, setFontSize] = useState('16px');
-    const [fontWeight, setFontWeight] = useState('normal');
-    const [padding, setPadding] = useState('0px');
-    const [margin, setMargin] = useState('0px');
-    const [color, setColor] = useState('#000000');
-    const [backgroundColor, setBackgroundColor] = useState('#ffffff');
 
     return (
       <div className='setting__container-layout'>
@@ -52,7 +59,12 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onR
               <select
                 className='select__layout'
                 value={fontSize}
-                onChange={e => setFontSize(e.target.value)}
+                onChange={e => {
+                  setFontSize(e.target.value);
+                  if (selectedNode) {
+                    onUpdateNodeStyle(selectedNode, 'fontSize', e.target.value);
+                  }
+                }}
               >
                 <option value='12px'>12px</option>
                 <option value='14px'>14px</option>
@@ -91,7 +103,12 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onR
               <select
                 className='select__layout'
                 value={fontWeight}
-                onChange={e => setFontWeight(e.target.value)}
+                onChange={e => {
+                  setFontWeight(e.target.value);
+                  if (selectedNode) {
+                    onUpdateNodeStyle(selectedNode, 'fontWeight', e.target.value);
+                  }
+                }}
               >
                 <option value='100'>Thin (100)</option>
                 <option value='200'>Extra Light (200)</option>
@@ -128,7 +145,12 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onR
               <select
                 className='select__layout'
                 value={padding}
-                onChange={e => setPadding(e.target.value)}
+                onChange={e => {
+                  setPadding(e.target.value);
+                  if (selectedNode) {
+                    onUpdateNodeStyle(selectedNode, 'padding', e.target.value);
+                  }
+                }}
               >
                 <option value='0px'>0px</option>
                 <option value='4px'>4px</option>
@@ -166,7 +188,12 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onR
               <select
                 className='select__layout'
                 value={margin}
-                onChange={e => setMargin(e.target.value)}
+                onChange={e => {
+                  setMargin(e.target.value);
+                  if (selectedNode) {
+                    onUpdateNodeStyle(selectedNode, 'margin', e.target.value);
+                  }
+                }}
               >
                 <option value='0px'>0px</option>
                 <option value='4px'>4px</option>
@@ -205,7 +232,12 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onR
                 type='color'
                 className='color-picker__input'
                 value={color}
-                onChange={e => setColor(e.target.value)}
+                onChange={e => {
+                  setColor(e.target.value);
+                  if (selectedNode) {
+                    onUpdateNodeStyle(selectedNode, 'color', e.target.value);
+                  }
+                }}
               />
               <div
                 className='color-picker__preview'
@@ -223,7 +255,12 @@ export default function SettingPanel({ mockupData, selectedNode, pageId = 0, onR
                 type='color'
                 className='color-picker__input'
                 value={backgroundColor}
-                onChange={e => setBackgroundColor(e.target.value)}
+                onChange={e => {
+                  setBackgroundColor(e.target.value);
+                  if (selectedNode) {
+                    onUpdateNodeStyle(selectedNode, 'backgroundColor', e.target.value);
+                  }
+                }}
               />
               <div
                 className='color-picker__preview'

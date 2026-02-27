@@ -218,7 +218,8 @@ export default function BodySession(props: BodySessionProps) {
         <>
           <div
             key={nodeId}
-            className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+            className={[attribute.class, isHovered ? 'hovered-node' : ''].filter(Boolean).join(' ')}
+            style={node.style || undefined}
             data-id={node.attribute.dataId}
           >
             {text || 'empty value'}
@@ -234,6 +235,7 @@ export default function BodySession(props: BodySessionProps) {
           key={nodeId}
           data-id={node.attribute.dataId}
           className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+          style={node.style || undefined}
           viewBox={attribute.viewBox || '0 0 100% 100%'}
           fill={attribute.fill || 'none'}
           stroke={attribute.stroke || 'none'}
@@ -250,6 +252,7 @@ export default function BodySession(props: BodySessionProps) {
           key={nodeId}
           data-id={node.attribute.dataId}
           className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+          style={node.style || undefined}
           cx={attribute.cx || ''}
           cy={attribute.cy || ''}
           r={attribute.r || ''}
@@ -263,6 +266,7 @@ export default function BodySession(props: BodySessionProps) {
           key={nodeId}
           data-id={node.attribute.dataId}
           className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+          style={node.style || undefined}
           d={attribute.d || ''}
         />
       );
@@ -276,6 +280,7 @@ export default function BodySession(props: BodySessionProps) {
           src={attribute.value}
           alt={node.attribute.devName || 'image'}
           className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+          style={node.style || undefined}
         />
       );
     }
@@ -289,9 +294,30 @@ export default function BodySession(props: BodySessionProps) {
         id: attribute.id || undefined,
         'data-id': node.attribute.dataId,
         className: `${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`,
+        style: node.style || undefined,
       },
       childElements?.length ? childElements : null
     );
+  };
+
+  const updateNodeStyle = (nodeId: string, key: string, value: string) => {
+    setPageData(prev => {
+      const updatedNodes = {
+        ...prev.nodes,
+        [nodeId]: {
+          ...prev.nodes[nodeId],
+          style: {
+            ...prev.nodes[nodeId].style,
+            [key]: value,
+          },
+        },
+      };
+
+      return {
+        ...prev,
+        nodes: updatedNodes,
+      };
+    });
   };
 
   return (
@@ -325,8 +351,9 @@ export default function BodySession(props: BodySessionProps) {
       <SettingPanel
         pageId={pageInfo?.[0].id}
         selectedNode={selectedNode}
-        mockupData={pageData}
+        pageData={pageData}
         onRefreshData={fetchPageData}
+        onUpdateNodeStyle={updateNodeStyle}
       />
 
       <AddSectionModal
