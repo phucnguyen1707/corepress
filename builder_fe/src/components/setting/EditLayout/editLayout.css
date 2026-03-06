@@ -71,3 +71,31 @@
 .color-picker__wrapper:hover .color-picker__preview {
   transform: scale(1.02);
 }
+
+.padding__edit_layout {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.padding__edit_layout > * {
+  flex: 1;
+}
+
+.padding__input_wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: white;
+  gap: 4px;
+}
+
+.padding__input {
+  width: 40px;
+  border: none;
+  outline: none;
+  text-align: right;
+}

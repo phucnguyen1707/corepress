@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { editNode } from '@/axios/page.service';
 import { SettingIcon } from '@/icons';
 import { Page } from '@/interfaces';
 
 import Typo from '../commons/Typo';
+import EditLayout from './EditLayout/EditLayout';
 import EditText from './EditText/EditText';
 import './settingPanel.css';
 
@@ -24,253 +26,104 @@ export default function SettingPanel({
   onRefreshData,
   onUpdateNodeStyle,
 }: SettingPanelProps) {
+  const node = useMemo(() => {
+    if (!selectedNode) return null;
+    return pageData.nodes?.[selectedNode] || null;
+  }, [pageData.nodes, selectedNode]);
+
   const [fontSize, setFontSize] = useState('16px');
   const [fontWeight, setFontWeight] = useState('normal');
-  const [padding, setPadding] = useState('0px');
-  const [margin, setMargin] = useState('0px');
+  const [padding, setPadding] = useState({
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  });
   const [color, setColor] = useState('#000000');
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
 
-  const renderSettingsPanel = () => {
-    if (!selectedNode) {
-      return (
+  const [textValue, setTextValue] = useState('');
+
+  useEffect(() => {
+    if (node?.text) {
+      setTextValue(node.text);
+    } else {
+      setTextValue('');
+    }
+  }, [node]);
+
+  const handleUpdateText = useCallback(async () => {
+    if (!node || !selectedNode) return;
+
+    try {
+      const res = await editNode(pageId, selectedNode, {
+        node: {
+          ...node,
+          text: textValue,
+        },
+      });
+
+      if (res.status === 200) {
+        await onRefreshData();
+      }
+    } catch (err) {
+      console.error('Failed edit node:', err);
+    }
+  }, [node, selectedNode, pageId, textValue, onRefreshData]);
+
+  useEffect(() => {
+    if (!node) return;
+
+    const timeout = setTimeout(() => {
+      handleUpdateText();
+    }, 800);
+
+    return () => clearTimeout(timeout);
+  }, [textValue, handleUpdateText, node]);
+
+  if (!selectedNode || !node) {
+    return (
+      <div className='setting-section'>
         <div className='setting__container-empty'>
           <div className='setting-icon'>
             <SettingIcon />
           </div>
           <Typo type='Typo medium'>Select an element to edit</Typo>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
-    const node = pageData.nodes[selectedNode];
-    if (!node) return null;
-
-    return (
+  return (
+    <div className='setting-section'>
       <div className='setting__container-layout'>
         <div className='setting__container-name'>
           <Typo type='Typo medium bold'>{node.attribute?.devName}</Typo>
         </div>
 
-        <div className='edit-style__container'>
-          <div className='edit-style__section'>
-            <Typo type='Typo small bold'>Font Size</Typo>
-            <div className='select__wrapper'>
-              <select
-                className='select__layout'
-                value={fontSize}
-                onChange={e => {
-                  setFontSize(e.target.value);
-                  if (selectedNode) {
-                    onUpdateNodeStyle(selectedNode, 'fontSize', e.target.value);
-                  }
-                }}
-              >
-                <option value='12px'>12px</option>
-                <option value='14px'>14px</option>
-                <option value='16px'>16px</option>
-                <option value='18px'>18px</option>
-                <option value='20px'>20px</option>
-                <option value='24px'>24px</option>
-                <option value='28px'>28px</option>
-                <option value='32px'>32px</option>
-                <option value='36px'>36px</option>
-                <option value='40px'>40px</option>
-                <option value='48px'>48px</option>
-              </select>
-              <div className='select__icon'>
-                <svg
-                  width='14'
-                  height='14'
-                  viewBox='0 0 14 14'
-                  fill='none'
-                >
-                  <path
-                    d='M3.5 5.25L7 8.75L10.5 5.25'
-                    stroke='currentColor'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-              </div>
-            </div>
+        {node.text && (
+          <div className='edit__text-session'>
+            <Typo type='Typo bold'>Text Edit</Typo>
+            <textarea
+              className='setting__text-area'
+              value={textValue}
+              rows={2}
+              onChange={e => setTextValue(e.target.value)}
+            />
           </div>
+        )}
 
-          <div className='edit-style__section'>
-            <Typo type='Typo small bold'>Font Weight</Typo>
-            <div className='select__wrapper'>
-              <select
-                className='select__layout'
-                value={fontWeight}
-                onChange={e => {
-                  setFontWeight(e.target.value);
-                  if (selectedNode) {
-                    onUpdateNodeStyle(selectedNode, 'fontWeight', e.target.value);
-                  }
-                }}
-              >
-                <option value='100'>Thin (100)</option>
-                <option value='200'>Extra Light (200)</option>
-                <option value='300'>Light (300)</option>
-                <option value='normal'>Normal (400)</option>
-                <option value='500'>Medium (500)</option>
-                <option value='600'>Semi Bold (600)</option>
-                <option value='bold'>Bold (700)</option>
-                <option value='800'>Extra Bold (800)</option>
-                <option value='900'>Black (900)</option>
-              </select>
-              <div className='select__icon'>
-                <svg
-                  width='14'
-                  height='14'
-                  viewBox='0 0 14 14'
-                  fill='none'
-                >
-                  <path
-                    d='M3.5 5.25L7 8.75L10.5 5.25'
-                    stroke='currentColor'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className='edit-style__section'>
-            <Typo type='Typo small bold'>Padding</Typo>
-            <div className='select__wrapper'>
-              <select
-                className='select__layout'
-                value={padding}
-                onChange={e => {
-                  setPadding(e.target.value);
-                  if (selectedNode) {
-                    onUpdateNodeStyle(selectedNode, 'padding', e.target.value);
-                  }
-                }}
-              >
-                <option value='0px'>0px</option>
-                <option value='4px'>4px</option>
-                <option value='8px'>8px</option>
-                <option value='12px'>12px</option>
-                <option value='16px'>16px</option>
-                <option value='20px'>20px</option>
-                <option value='24px'>24px</option>
-                <option value='32px'>32px</option>
-                <option value='40px'>40px</option>
-                <option value='48px'>48px</option>
-              </select>
-              <div className='select__icon'>
-                <svg
-                  width='14'
-                  height='14'
-                  viewBox='0 0 14 14'
-                  fill='none'
-                >
-                  <path
-                    d='M3.5 5.25L7 8.75L10.5 5.25'
-                    stroke='currentColor'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className='edit-style__section'>
-            <Typo type='Typo small bold'>Margin</Typo>
-            <div className='select__wrapper'>
-              <select
-                className='select__layout'
-                value={margin}
-                onChange={e => {
-                  setMargin(e.target.value);
-                  if (selectedNode) {
-                    onUpdateNodeStyle(selectedNode, 'margin', e.target.value);
-                  }
-                }}
-              >
-                <option value='0px'>0px</option>
-                <option value='4px'>4px</option>
-                <option value='8px'>8px</option>
-                <option value='12px'>12px</option>
-                <option value='16px'>16px</option>
-                <option value='20px'>20px</option>
-                <option value='24px'>24px</option>
-                <option value='32px'>32px</option>
-                <option value='40px'>40px</option>
-                <option value='48px'>48px</option>
-              </select>
-              <div className='select__icon'>
-                <svg
-                  width='14'
-                  height='14'
-                  viewBox='0 0 14 14'
-                  fill='none'
-                >
-                  <path
-                    d='M3.5 5.25L7 8.75L10.5 5.25'
-                    stroke='currentColor'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className='edit-style__section'>
-            <Typo type='Typo small bold'>Font Color</Typo>
-            <div className='color-picker__wrapper'>
-              <input
-                type='color'
-                className='color-picker__input'
-                value={color}
-                onChange={e => {
-                  setColor(e.target.value);
-                  if (selectedNode) {
-                    onUpdateNodeStyle(selectedNode, 'color', e.target.value);
-                  }
-                }}
-              />
-              <div
-                className='color-picker__preview'
-                style={{ backgroundColor: color }}
-              >
-                <span className='color-picker__text'>{color}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className='edit-style__section'>
-            <Typo type='Typo small bold'>Background Color</Typo>
-            <div className='color-picker__wrapper'>
-              <input
-                type='color'
-                className='color-picker__input'
-                value={backgroundColor}
-                onChange={e => {
-                  setBackgroundColor(e.target.value);
-                  if (selectedNode) {
-                    onUpdateNodeStyle(selectedNode, 'backgroundColor', e.target.value);
-                  }
-                }}
-              />
-              <div
-                className='color-picker__preview'
-                style={{ backgroundColor: backgroundColor }}
-              >
-                <span className='color-picker__text'>{backgroundColor}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <EditLayout
+          nodeData={node}
+          selectedNode={selectedNode}
+          pageId={pageId}
+          onRefreshData={onRefreshData}
+          backgroundColor={backgroundColor}
+          padding={padding}
+          setPadding={setPadding}
+          setBackgroundColor={setBackgroundColor}
+          onUpdateNodeStyle={onUpdateNodeStyle}
+        />
 
         {node.text && (
           <EditText
@@ -278,13 +131,14 @@ export default function SettingPanel({
             selectedNode={selectedNode}
             pageId={pageId}
             onRefreshData={onRefreshData}
+            color={color}
+            setColor={setColor}
+            onUpdateNodeStyle={onUpdateNodeStyle}
           />
         )}
       </div>
-    );
-  };
-
-  return <div className='setting-section'>{renderSettingsPanel()}</div>;
+    </div>
+  );
 }
 
 // {node.tag === 'img' && (
