@@ -31,6 +31,16 @@ type EditLayoutProps = {
   onUpdateNodeStyle: (nodeId: string, key: string, value: string) => void;
 };
 
+const paddingConfig = [
+  { key: 'top', label: 'Top' },
+  { key: 'right', label: 'Right' },
+  { key: 'bottom', label: 'Bottom' },
+  { key: 'left', label: 'Left' },
+] as const;
+
+const buildPadding = (p: { top: number; right: number; bottom: number; left: number }) =>
+  `${p.top}px ${p.right}px ${p.bottom}px ${p.left}px`;
+
 export default function EditLayout(props: EditLayoutProps) {
   const {
     pageId,
@@ -90,31 +100,41 @@ export default function EditLayout(props: EditLayoutProps) {
       <div className='edit__text-session'>
         <Typo type='Typo bold'>Padding Edit</Typo>
 
-        <div className='padding__edit_layout'>
-          <div>
-            <Typo type='Typo small bold'>Top</Typo>
-          </div>
+        {paddingConfig.map(item => (
+          <div
+            className='padding__edit_layout'
+            key={item.key}
+          >
+            <div>
+              <Typo type='Typo small bold'>{item.label}</Typo>
+            </div>
 
-          <div>
-            <input
-              type='range'
-              min={0}
-              max={200}
-              value={padding.top}
-              onChange={e => setPadding({ ...padding, top: Number(e.target.value) })}
-              className='padding__slider'
-            />
-          </div>
+            <div>
+              <input
+                type='range'
+                min={0}
+                max={200}
+                value={padding[item.key]}
+                onChange={e => {
+                  const value = Number(e.target.value);
+                  const newPadding = {
+                    ...padding,
+                    [item.key]: value,
+                  };
+                  setPadding(newPadding);
+                  if (selectedNode) {
+                    onUpdateNodeStyle(selectedNode, 'padding', buildPadding(newPadding));
+                  }
+                }}
+                className='padding__slider'
+              />
+            </div>
 
-          <div className='padding__input_wrapper'>
-            <div
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setPadding({ ...padding, top: Number(e.target.value) })
-              }
-              className='padding__input'
-            >{`${padding.top} px`}</div>
+            <div className='padding__input_wrapper'>
+              <div className='padding__input'>{`${padding[item.key]} px`}</div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

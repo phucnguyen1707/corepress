@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { addSection } from '@/axios/page.service';
+import Switch from '@/components/commons/Switch';
 import { allSections } from '@/utils/mockupData';
 
 import './addSection.css';
@@ -85,20 +86,14 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
               />
             </div>
 
-            <div className='switch__container'>
-              <div
-                className={`switch__button ${activeTab === 'Sections' ? 'active' : ''}`}
-                onClick={() => setActiveTab('Sections')}
-              >
-                Sections
-              </div>
-              <div
-                className={`switch__button ${activeTab === 'Apps' ? 'active' : ''}`}
-                onClick={() => setActiveTab('Apps')}
-              >
-                Apps
-              </div>
-            </div>
+            <Switch
+              options={[
+                { label: 'Sections', value: 'Sections' },
+                { label: 'Apps', value: 'Apps' },
+              ]}
+              value={activeTab}
+              onChange={setActiveTab}
+            />
 
             <div className='modal-body'>
               {Object.entries(groupedSections).map(([category, items]) => (

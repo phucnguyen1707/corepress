@@ -43,17 +43,21 @@ export default function SettingPanel({
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
 
   const [textValue, setTextValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     if (node?.text) {
       setTextValue(node.text);
+      setIsTyping(false);
     } else {
       setTextValue('');
+      setIsTyping(false);
     }
-  }, [node]);
+  }, [node?.text]);
 
   const handleUpdateText = useCallback(async () => {
     if (!node || !selectedNode) return;
+    if (textValue === node.text) return;
 
     try {
       const res = await editNode(pageId, selectedNode, {
@@ -69,17 +73,18 @@ export default function SettingPanel({
     } catch (err) {
       console.error('Failed edit node:', err);
     }
-  }, [node, selectedNode, pageId, textValue, onRefreshData]);
+  }, [textValue, node, selectedNode, pageId, onRefreshData]);
 
   useEffect(() => {
-    if (!node) return;
+    if (!node || !isTyping) return;
 
     const timeout = setTimeout(() => {
       handleUpdateText();
+      setIsTyping(false);
     }, 800);
 
     return () => clearTimeout(timeout);
-  }, [textValue, handleUpdateText, node]);
+  }, [textValue, isTyping]);
 
   if (!selectedNode || !node) {
     return (
@@ -108,7 +113,10 @@ export default function SettingPanel({
               className='setting__text-area'
               value={textValue}
               rows={2}
-              onChange={e => setTextValue(e.target.value)}
+              onChange={e => {
+                setTextValue(e.target.value);
+                setIsTyping(true);
+              }}
             />
           </div>
         )}
