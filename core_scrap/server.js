@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // Host the scraped files
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public/web")));
 
 // New API to list all files
 app.get("/api/files", (_req, res) => {
