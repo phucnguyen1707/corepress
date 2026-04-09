@@ -15,12 +15,12 @@ app.use(cors());
 app.use(express.json());
 
 // Host the scraped files
-app.use(express.static(path.join(__dirname, "public/web")));
+app.use(express.static(path.join(__dirname, "web")));
 
 // New API to list all files
 app.get("/api/files", (_req, res) => {
   try {
-    const files = getAllFiles(path.join(__dirname, "public"));
+    const files = getAllFiles(path.join(__dirname, "web"));
     res.json(files);
   } catch (error) {
     res.status(500).json({ error: "Could not list files" });
