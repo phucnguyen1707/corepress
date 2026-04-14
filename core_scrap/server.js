@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 
   const staticPath = path.join(
     __dirname,
-    "tool/static",
+    "web",
     req.path === "/" ? "index.html" : req.path,
   );
   if (!fs.existsSync(staticPath)) return next();
@@ -31,7 +31,6 @@ app.use((req, res, next) => {
   const script = `
   <script>
     window.addEventListener('message', function(event) {
-      console.log('[iframe received]', event.data);
       document.querySelectorAll('img[data-highlighted]').forEach(function(el) {
         el.style.outline = '';
         el.removeAttribute('data-highlighted');
@@ -55,18 +54,16 @@ app.use((req, res, next) => {
   res.send(html);
 });
 
-// Host the scraped files
-app.use(express.static(path.join(__dirname, "tool/static")));
+app.use(express.static(path.join(__dirname, "web")));
 
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
   next();
 });
 
-// New API to list all files
 app.get("/api/files", (_req, res) => {
   try {
-    const files = getAllFiles(path.join(__dirname, "tool/static"));
+    const files = getAllFiles(path.join(__dirname, "web"));
     res.json(files);
   } catch (error) {
     res.status(500).json({ error: "Could not list files" });
@@ -74,6 +71,7 @@ app.get("/api/files", (_req, res) => {
 });
 
 function getAllFiles(dirPath, arrayOfFiles = []) {
+  if (!fs.existsSync(dirPath)) return arrayOfFiles;
   const files = fs.readdirSync(dirPath);
 
   files.forEach((file) => {
@@ -82,10 +80,7 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
     if (fs.statSync(fullPath).isDirectory()) {
       arrayOfFiles = getAllFiles(fullPath, arrayOfFiles);
     } else {
-      let relativePath = path.relative(
-        path.join(__dirname, "public"),
-        fullPath,
-      );
+      let relativePath = path.relative(path.join(__dirname, "public"), fullPath);
       relativePath = relativePath.split(path.sep).join("/");
       arrayOfFiles.push(relativePath);
     }
@@ -94,24 +89,57 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
   return arrayOfFiles;
 }
 
+app.get("/api/scrap-progress", (req, res) => {
+  const folderName = req.query.folder;
+  
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+
+  if (!folderName) {
+    return res.end();
+  }
+
+  const targetDir = path.join(__dirname, "web", folderName);
+  
+  // make sure target dir is exits
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
+
+  // know the file name incoming
+  const watcher = fs.watch(targetDir, { recursive: true }, (eventType, filename) => {
+    if (filename) {
+      // Send real-time data to frontend
+      const data = JSON.stringify({ file: filename });
+      res.write(`data: ${data}\n\n`);
+    }
+  });
+
+  // do this if user refresh page
+  req.on("close", () => {
+    watcher.close();
+  });
+});
+
+
 app.post("/api/scrap", async (req, res) => {
   try {
     const { url, outputDir } = req.body;
 
-    let res = await fetch("http://localhost:8081/scrap", {
+    let fetchResponse = await fetch("http://localhost:8081/scrap", {
       method: "POST",
       body: JSON.stringify({ web_url: url, output_dir: outputDir }),
       headers: {
         "Content-Type": "application/json",
       },
-    })
-      .then((response) => response.text())
-      .catch((error) => {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-      });
+    });
 
-    console.log(res);
+    if (!fetchResponse.ok) throw new Error("Scraper failed to process");
+    
+    const responseText = await fetchResponse.text();
+    console.log(responseText);
 
     res.json({ message: "Website scrapped successfully" });
   } catch (error) {
