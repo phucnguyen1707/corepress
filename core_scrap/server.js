@@ -19,7 +19,11 @@ app.use((req, res, next) => {
     return next();
   }
 
-  const staticPath = path.join(__dirname, "web", req.path === "/" ? "index.html" : req.path);
+  const staticPath = path.join(
+    __dirname,
+    "tool/static",
+    req.path === "/" ? "index.html" : req.path,
+  );
   if (!fs.existsSync(staticPath)) return next();
 
   let html = fs.readFileSync(staticPath, "utf-8");
@@ -45,14 +49,14 @@ app.use((req, res, next) => {
     });
   </script>`;
 
-  html = html.replace('</body>', script + '</body>');
-  res.setHeader('Content-Type', 'text/html');
-  res.setHeader('Cache-Control', 'no-store');
+  html = html.replace("</body>", script + "</body>");
+  res.setHeader("Content-Type", "text/html");
+  res.setHeader("Cache-Control", "no-store");
   res.send(html);
 });
 
 // Host the scraped files
-app.use(express.static(path.join(__dirname, "web")));
+app.use(express.static(path.join(__dirname, "tool/static")));
 
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
@@ -62,7 +66,7 @@ app.use((req, res, next) => {
 // New API to list all files
 app.get("/api/files", (_req, res) => {
   try {
-    const files = getAllFiles(path.join(__dirname, "web"));
+    const files = getAllFiles(path.join(__dirname, "tool/static"));
     res.json(files);
   } catch (error) {
     res.status(500).json({ error: "Could not list files" });
@@ -90,19 +94,24 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
   return arrayOfFiles;
 }
 
-app.post("/api/scrap", (req, res) => {
+app.post("/api/scrap", async (req, res) => {
   try {
     const { url, outputDir } = req.body;
 
-    const output = execSync(
-      `./tool/life-scrap --url ${url} --output-dir ${outputDir}`,
-      {
-        encoding: "utf-8",
-        stdio: "pipe",
+    let res = await fetch("http://localhost:8081/scrap", {
+      method: "POST",
+      body: JSON.stringify({ web_url: url, output_dir: outputDir }),
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+    })
+      .then((response) => response.text())
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+      });
 
-    console.log(output);
+    console.log(res);
 
     res.json({ message: "Website scrapped successfully" });
   } catch (error) {
