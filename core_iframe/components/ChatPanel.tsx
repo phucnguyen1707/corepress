@@ -24,7 +24,14 @@ export function ChatPanel({ contextFiles }: ChatPanelProps) {
 
       <div className="chat-messages">
         {messages.length === 0 && (
-          <p className="chat-empty">Ask anything about your scraped files…</p>
+          <div className="chat-empty">
+            <div className="chat-empty-icon">💬</div>
+            <p className="chat-empty-title">Ask about your files</p>
+            <p className="chat-empty-desc">
+              Ask anything about your scraped website — structure, styles,
+              scripts, or how to modify them.
+            </p>
+          </div>
         )}
 
         {messages.map((msg, i) => (
@@ -55,7 +62,7 @@ export function ChatPanel({ contextFiles }: ChatPanelProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Message Claude…"
+          placeholder="Message Claude..."
           disabled={loading}
         />
         <button

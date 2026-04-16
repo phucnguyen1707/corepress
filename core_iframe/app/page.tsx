@@ -1,11 +1,16 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { useFiles } from '../hooks/useFiles';
 import { useIframeHighlight } from '../hooks/useIframeHighlight';
 import { Sidebar } from '../components/Sidebar';
 import { ScrapeForm } from '../components/ScrapeForm';
 import { ChatPanel } from '../components/ChatPanel';
+import { IframeToolbar, DEVICE_WIDTHS } from '../components/IframeToolbar';
+import { FileDetailPanel } from '../components/FileDetailPanel';
+import type { FileInfo } from '../components/Sidebar';
+
+const IFRAME_SRC = 'http://localhost:3001';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -13,9 +18,15 @@ export default function Home() {
   const [chatOpen, setChatOpen] = useState(false);
   // eslint-disable-next-line react-hooks/purity
   const [reloadKey, setReloadKey] = useState(Date.now());
+  const [zoom, setZoom] = useState(1);
+  const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>(
+    'desktop'
+  );
+  const [disabledFiles, setDisabledFiles] = useState<Set<string>>(new Set());
+  const [detailFile, setDetailFile] = useState<FileInfo | null>(null);
 
-  const { files, groupedFiles, fetchFiles } = useFiles();
-  const { iframeRef, injectScript, postHighlight } = useIframeHighlight();
+  const { files, filePaths, fetchFiles } = useFiles();
+  const { iframeRef, injectScript, toggleFile } = useIframeHighlight();
 
   const isEmpty = files.length === 0;
   const scrapeFormVisible = isEmpty || showScrapeForm;
@@ -26,22 +37,67 @@ export default function Home() {
     setShowScrapeForm(false);
   };
 
+  const handleZoomIn = () => setZoom((z) => Math.min(z + 0.1, 2));
+  const handleZoomOut = () => setZoom((z) => Math.max(z - 0.1, 0.25));
+  const handleZoomReset = () => setZoom(1);
+  const handleReload = () => setReloadKey(Date.now());
+
+  const handleToggleFile = useCallback(
+    (file: string, currentlyDisabled: boolean) => {
+      const enabled = currentlyDisabled;
+      setDisabledFiles((prev) => {
+        const next = new Set(prev);
+        if (enabled) {
+          next.delete(file);
+        } else {
+          next.add(file);
+        }
+        return next;
+      });
+      toggleFile(file, enabled);
+    },
+    [toggleFile]
+  );
+
   useEffect(() => {
     setMounted(true);
     fetchFiles();
   }, [fetchFiles]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (detailFile) setDetailFile(null);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === '=') {
+        e.preventDefault();
+        handleZoomIn();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === '-') {
+        e.preventDefault();
+        handleZoomOut();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [detailFile]);
+
+  const deviceWidth = DEVICE_WIDTHS[device];
+
   return (
     <div className="app-container">
       <Sidebar
-        groupedFiles={groupedFiles}
-        onFileClick={postHighlight}
+        files={files}
+        onFileDetail={(file) => setDetailFile(file)}
+        onToggleFile={handleToggleFile}
+        disabledFiles={disabledFiles}
         onAddSite={() => setShowScrapeForm(true)}
         onToggleChat={() => setChatOpen((p) => !p)}
         chatOpen={chatOpen}
       />
 
-      <main className="preview-area" style={{ position: 'relative' }}>
+      <main className="preview-area">
         {scrapeFormVisible && (
           <ScrapeForm
             dismissible={!isEmpty}
@@ -51,16 +107,55 @@ export default function Home() {
         )}
 
         {mounted && !scrapeFormVisible && (
-          <iframe
-            key={reloadKey}
-            ref={iframeRef}
-            src="http://localhost:3001"
-            onLoad={injectScript}
-          />
+          <>
+            <IframeToolbar
+              zoom={zoom}
+              onZoomIn={handleZoomIn}
+              onZoomOut={handleZoomOut}
+              onZoomReset={handleZoomReset}
+              onReload={handleReload}
+              device={device}
+              onDeviceChange={setDevice}
+              iframeSrc={IFRAME_SRC}
+            />
+            <div className="iframe-wrapper">
+              <div
+                className="iframe-device-frame"
+                style={{
+                  width: deviceWidth,
+                  maxWidth: '100%',
+                  margin: device !== 'desktop' ? '0 auto' : undefined,
+                  height: '100%',
+                }}
+              >
+                <iframe
+                  key={reloadKey}
+                  ref={iframeRef}
+                  src={IFRAME_SRC}
+                  onLoad={injectScript}
+                  style={{
+                    transform: `scale(${zoom})`,
+                    transformOrigin: 'top left',
+                    width: `${100 / zoom}%`,
+                    height: `${100 / zoom}%`,
+                    minWidth: '100%',
+                    minHeight: '100%',
+                  }}
+                />
+              </div>
+            </div>
+          </>
         )}
       </main>
 
-      {chatOpen && <ChatPanel contextFiles={files} />}
+      {chatOpen && <ChatPanel contextFiles={filePaths} />}
+
+      {detailFile && (
+        <FileDetailPanel
+          file={detailFile}
+          onClose={() => setDetailFile(null)}
+        />
+      )}
     </div>
   );
 }
