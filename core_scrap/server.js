@@ -98,37 +98,40 @@ app.get("/api/files", (_req, res) => {
 
     const walkDir = (dir) => {
       if (!fs.existsSync(dir)) return;
+      
       const entries = fs.readdirSync(dir, { withFileTypes: true });
+      
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
+        
         if (entry.isDirectory()) {
           walkDir(fullPath);
         } else if (entry.isFile()) {
           const relativePath = path
             .relative(webDir, fullPath)
             .replace(/\\/g, "/");
-          files.push(relativePath);
+
+          // Check if the file is enabled in your fileState map
+          const isEnabled = fileState.has(relativePath)
+            ? fileState.get(relativePath)
+            : true;
+
+          // Push BOTH the path and the state as a combined object
+          files.push({
+            path: relativePath,
+            enabled: isEnabled
+          });
         }
       }
     };
 
     walkDir(webDir);
 
-    // Admin dashboard expects { path: enabled } object
-    if (_req.query.format === "admin") {
-      const response = {};
-      for (const filePath of files) {
-        const isEnabled = fileState.has(filePath)
-          ? fileState.get(filePath)
-          : true;
-        response[filePath] = isEnabled;
-      }
-      return res.json(response);
-    }
-
-    // core_iframe expects an array of path strings
+    // Return the combined array to the frontend
     res.json(files);
+    
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Could not list files" });
   }
 });
@@ -242,17 +245,8 @@ app.get("/web/{*filepath}", (req, res) => {
   res.send(fs.readFileSync(fullPath));
 });
 
-// GET /admin - Serve the admin dashboard
-app.get("/admin", (req, res) => {
-  const adminHtml = fs.readFileSync(
-    path.join(__dirname, "src", "admin.html"),
-    "utf-8"
-  );
-  res.type("html").send(adminHtml);
-});
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
-  console.log(`Dashboard available at http://localhost:${PORT}/admin`);
 });

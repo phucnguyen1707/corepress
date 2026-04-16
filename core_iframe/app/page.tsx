@@ -22,10 +22,15 @@ export default function Home() {
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>(
     'desktop'
   );
-  const [disabledFiles, setDisabledFiles] = useState<Set<string>>(new Set());
+  const [disabledFiles, setDisabledFiles] = useState<boolean>(false);
+  const [localEnabledStates, setLocalEnabledStates] = useState<
+    Record<string, boolean>
+  >({});
+
   const [detailFile, setDetailFile] = useState<FileInfo | null>(null);
 
   const { files, filePaths, fetchFiles } = useFiles();
+
   const { iframeRef, injectScript, toggleFile } = useIframeHighlight();
 
   const isEmpty = files.length === 0;
@@ -33,6 +38,7 @@ export default function Home() {
 
   const handleScrapeSuccess = () => {
     fetchFiles();
+    setLocalEnabledStates({});
     setReloadKey(Date.now());
     setShowScrapeForm(false);
   };
@@ -45,16 +51,9 @@ export default function Home() {
   const handleToggleFile = useCallback(
     (file: string, currentlyDisabled: boolean) => {
       const enabled = currentlyDisabled;
-      setDisabledFiles((prev) => {
-        const next = new Set(prev);
-        if (enabled) {
-          next.delete(file);
-        } else {
-          next.add(file);
-        }
-        return next;
-      });
+      setDisabledFiles(enabled);
       toggleFile(file, enabled);
+      setReloadKey(Date.now());
     },
     [toggleFile]
   );
@@ -89,6 +88,7 @@ export default function Home() {
     <div className="app-container">
       <Sidebar
         files={files}
+        localEnabledStates={localEnabledStates}
         onFileDetail={(file) => setDetailFile(file)}
         onToggleFile={handleToggleFile}
         disabledFiles={disabledFiles}

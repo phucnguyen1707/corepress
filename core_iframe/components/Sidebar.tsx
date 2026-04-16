@@ -6,11 +6,31 @@ const CATEGORIES: {
   color: string;
   extensions: string[];
 }[] = [
-  { key: 'html', label: 'HTML', color: '#e44d26', extensions: ['.html', '.htm'] },
+  {
+    key: 'html',
+    label: 'HTML',
+    color: '#e44d26',
+    extensions: ['.html', '.htm'],
+  },
   { key: 'css', label: 'CSS', color: '#264de4', extensions: ['.css'] },
-  { key: 'js', label: 'JavaScript', color: '#f7df1e', extensions: ['.js', '.mjs'] },
-  { key: 'images', label: 'Images', color: '#3fb950', extensions: ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico'] },
-  { key: 'fonts', label: 'Fonts', color: '#a371f7', extensions: ['.woff', '.woff2', '.ttf', '.eot', '.otf'] },
+  {
+    key: 'js',
+    label: 'JavaScript',
+    color: '#f7df1e',
+    extensions: ['.js', '.mjs'],
+  },
+  {
+    key: 'images',
+    label: 'Images',
+    color: '#3fb950',
+    extensions: ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico'],
+  },
+  {
+    key: 'fonts',
+    label: 'Fonts',
+    color: '#a371f7',
+    extensions: ['.woff', '.woff2', '.ttf', '.eot', '.otf'],
+  },
 ];
 
 function categorizeFile(file: string): string {
@@ -35,13 +55,15 @@ export interface FileInfo {
   path: string;
   size: number;
   sourcePath: string;
+  enabled: boolean;
 }
 
 interface SidebarProps {
   files: FileInfo[];
+  localEnabledStates: Record<string, boolean>;
   onFileDetail: (file: FileInfo) => void;
   onToggleFile: (file: string, enabled: boolean) => void;
-  disabledFiles: Set<string>;
+  disabledFiles: boolean;
   onAddSite: () => void;
   onToggleChat: () => void;
   chatOpen: boolean;
@@ -49,9 +71,9 @@ interface SidebarProps {
 
 export function Sidebar({
   files,
+  localEnabledStates,
   onFileDetail,
   onToggleFile,
-  disabledFiles,
   onAddSite,
   onToggleChat,
   chatOpen,
@@ -123,12 +145,13 @@ export function Sidebar({
               {isOpen && (
                 <ul className="file-items">
                   {catFiles.map((file) => {
-                    const disabled = disabledFiles.has(file.path);
                     const fileName = file.path.split('/').pop() || '';
+                    const isEnabled =
+                      localEnabledStates[file.path] ?? file.enabled;
                     return (
                       <li
                         key={file.path}
-                        className={`file-item ${disabled ? 'file-disabled' : ''}`}
+                        className={`file-item ${isEnabled ? '' : 'file-disabled'}`}
                       >
                         {canToggle && (
                           <label
@@ -137,8 +160,10 @@ export function Sidebar({
                           >
                             <input
                               type="checkbox"
-                              checked={!disabled}
-                              onChange={() => onToggleFile(file.path, disabled)}
+                              checked={isEnabled}
+                              onChange={() =>
+                                onToggleFile(file.path, !isEnabled)
+                              }
                             />
                             <span className="toggle-slider" />
                           </label>
