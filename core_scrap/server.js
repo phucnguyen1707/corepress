@@ -78,7 +78,18 @@ app.use((req, res, next) => {
   res.send(html);
 });
 
-// Serve static files from web/
+// Serve static files from web/, but block disabled files
+app.use((req, res, next) => {
+  const filePath = req.path.replace(/^\//, "");
+  if (!filePath || !fileState.has(filePath) || fileState.get(filePath)) {
+    return next();
+  }
+  // File is disabled — return empty/transparent content
+  const fullPath = path.join(__dirname, "web", filePath);
+  res.set("Content-Type", mime.lookup(fullPath) || "application/octet-stream");
+  return res.status(200).send("");
+});
+
 app.use(express.static(path.join(__dirname, "web")));
 
 app.use((req, res, next) => {
@@ -221,28 +232,6 @@ app.post("/api/scrap", async (req, res) => {
     console.error(error);
     res.status(500).json({ error: error.message });
   }
-});
-
-// GET /web/* - Serve web files with interception (disabled files return empty)
-app.get("/web/{*filepath}", (req, res) => {
-  const filePath = Array.isArray(req.params.filepath)
-    ? req.params.filepath.join("/")
-    : req.params.filepath;
-  const isEnabled = fileState.has(filePath) ? fileState.get(filePath) : true;
-  const fullPath = path.join(__dirname, "web", filePath);
-  const mimeType = mime.lookup(fullPath) || "application/octet-stream";
-
-  if (!isEnabled) {
-    res.set("Content-Type", mimeType);
-    return res.status(200).send("");
-  }
-
-  if (!fs.existsSync(fullPath)) {
-    return res.sendStatus(404);
-  }
-
-  res.set("Content-Type", mimeType);
-  res.send(fs.readFileSync(fullPath));
 });
 
 

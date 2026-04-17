@@ -60,10 +60,8 @@ export interface FileInfo {
 
 interface SidebarProps {
   files: FileInfo[];
-  localEnabledStates: Record<string, boolean>;
   onFileDetail: (file: FileInfo) => void;
   onToggleFile: (file: string, enabled: boolean) => void;
-  disabledFiles: boolean;
   onAddSite: () => void;
   onToggleChat: () => void;
   chatOpen: boolean;
@@ -71,7 +69,6 @@ interface SidebarProps {
 
 export function Sidebar({
   files,
-  localEnabledStates,
   onFileDetail,
   onToggleFile,
   onAddSite,
@@ -146,8 +143,7 @@ export function Sidebar({
                 <ul className="file-items">
                   {catFiles.map((file) => {
                     const fileName = file.path.split('/').pop() || '';
-                    const isEnabled =
-                      localEnabledStates[file.path] ?? file.enabled;
+                    const isEnabled = file.enabled;
                     return (
                       <li
                         key={file.path}
@@ -161,8 +157,8 @@ export function Sidebar({
                             <input
                               type="checkbox"
                               checked={isEnabled}
-                              onChange={() =>
-                                onToggleFile(file.path, !isEnabled)
+                              onChange={(e) =>
+                                onToggleFile(file.path, e.target.checked)
                               }
                             />
                             <span className="toggle-slider" />

@@ -22,10 +22,6 @@ export default function Home() {
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>(
     'desktop'
   );
-  const [disabledFiles, setDisabledFiles] = useState<boolean>(false);
-  const [localEnabledStates, setLocalEnabledStates] = useState<
-    Record<string, boolean>
-  >({});
 
   const [detailFile, setDetailFile] = useState<FileInfo | null>(null);
 
@@ -38,7 +34,6 @@ export default function Home() {
 
   const handleScrapeSuccess = () => {
     fetchFiles();
-    setLocalEnabledStates({});
     setReloadKey(Date.now());
     setShowScrapeForm(false);
   };
@@ -49,13 +44,12 @@ export default function Home() {
   const handleReload = () => setReloadKey(Date.now());
 
   const handleToggleFile = useCallback(
-    (file: string, currentlyDisabled: boolean) => {
-      const enabled = currentlyDisabled;
-      setDisabledFiles(enabled);
-      toggleFile(file, enabled);
+    async (filePath: string, statusFile: boolean) => {
+      await toggleFile(filePath, statusFile);
+      await fetchFiles();
       setReloadKey(Date.now());
     },
-    [toggleFile]
+    [toggleFile, fetchFiles]
   );
 
   useEffect(() => {
@@ -88,10 +82,8 @@ export default function Home() {
     <div className="app-container">
       <Sidebar
         files={files}
-        localEnabledStates={localEnabledStates}
         onFileDetail={(file) => setDetailFile(file)}
         onToggleFile={handleToggleFile}
-        disabledFiles={disabledFiles}
         onAddSite={() => setShowScrapeForm(true)}
         onToggleChat={() => setChatOpen((p) => !p)}
         chatOpen={chatOpen}
