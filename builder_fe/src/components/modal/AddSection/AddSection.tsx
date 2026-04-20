@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { addSection } from '@/axios/page.service';
+import { addSection, aiGenerateSection } from '@/axios/page.service';
 import Switch from '@/components/commons/Switch';
 import { allSections } from '@/utils/mockupData';
 
@@ -31,6 +31,10 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
 
   const [hoverHtml, setHoverHtml] = useState('');
   const [hoverCss, setHoverCss] = useState('');
+
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
 
   const sections = allSections[sectionType.toLocaleLowerCase()] || [];
 
@@ -65,6 +69,33 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
       setIsAdding(false);
     }
   };
+
+  const handleGenerateAi = async () => {
+    if (aiLoading || !aiPrompt.trim()) return;
+
+    setAiLoading(true);
+    setAiError('');
+
+    try {
+      const res = await aiGenerateSection(pageId, {
+        prompt: aiPrompt.trim(),
+        sectionType: sectionType.toLocaleLowerCase(),
+        nodeId: 'div-01',
+      });
+      if (res.status === 200) {
+        await onRefreshData();
+        setAiPrompt('');
+        onClose();
+      } else {
+        setAiError('Generation failed. Please try again.');
+      }
+    } catch (error: any) {
+      const msg = error?.response?.data || error?.message || 'Generation failed';
+      setAiError(String(msg));
+    } finally {
+      setAiLoading(false);
+    }
+  };
   return (
     <>
       {isOpen ? (
@@ -89,6 +120,7 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
             <Switch
               options={[
                 { label: 'Sections', value: 'Sections' },
+                { label: 'AI', value: 'AI' },
                 { label: 'Apps', value: 'Apps' },
               ]}
               value={activeTab}
@@ -96,34 +128,67 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
             />
 
             <div className='modal-body'>
-              {Object.entries(groupedSections).map(([category, items]) => (
-                <div
-                  key={category}
-                  className='section-group'
-                >
-                  <h3 className='category-title'>{category}</h3>
-                  <div className='section-list'>
-                    {items.map(section => (
-                      <button
-                        key={section.id}
-                        className='section-item'
-                        onMouseEnter={() => {
-                          setHoverHtml(section.html);
-                          setHoverCss(section.css);
-                        }}
-                        onMouseLeave={() => {
-                          setHoverHtml(hoverHtml);
-                          setHoverCss(hoverCss);
-                        }}
-                        onClick={() => handleAddSection(section)}
-                      >
-                        <span className='section-icon'>{section.icon}</span>
-                        <span className='section-name'>{section.name}</span>
-                      </button>
-                    ))}
+              {activeTab === 'Sections' &&
+                Object.entries(groupedSections).map(([category, items]) => (
+                  <div
+                    key={category}
+                    className='section-group'
+                  >
+                    <h3 className='category-title'>{category}</h3>
+                    <div className='section-list'>
+                      {items.map(section => (
+                        <button
+                          key={section.id}
+                          className='section-item'
+                          onMouseEnter={() => {
+                            setHoverHtml(section.html);
+                            setHoverCss(section.css);
+                          }}
+                          onClick={() => handleAddSection(section)}
+                        >
+                          <span className='section-icon'>{section.icon}</span>
+                          <span className='section-name'>{section.name}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
+                ))}
+
+              {activeTab === 'AI' && (
+                <div className='ai-panel'>
+                  <h3 className='category-title'>Generate with AI</h3>
+                  <p className='ai-hint'>
+                    Describe the {sectionType.toLowerCase()} you want. Keep it specific — mention style,
+                    colors, and what it should contain.
+                  </p>
+                  <textarea
+                    className='ai-textarea'
+                    placeholder={`e.g. a modern ${sectionType.toLowerCase()} with a gradient background, bold heading, and a call-to-action button`}
+                    value={aiPrompt}
+                    onChange={e => setAiPrompt(e.target.value)}
+                    rows={6}
+                    maxLength={1000}
+                    disabled={aiLoading}
+                  />
+                  <div className='ai-meta'>
+                    <span>{aiPrompt.length} / 1000</span>
+                  </div>
+                  {aiError && <div className='ai-error'>{aiError}</div>}
+                  <button
+                    className='ai-generate-btn'
+                    onClick={handleGenerateAi}
+                    disabled={aiLoading || !aiPrompt.trim()}
+                  >
+                    {aiLoading ? 'Generating…' : 'Generate'}
+                  </button>
                 </div>
-              ))}
+              )}
+
+              {activeTab === 'Apps' && (
+                <div className='ai-panel'>
+                  <p className='ai-hint'>Apps coming soon.</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -131,12 +196,32 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
             className='preview-wrapper'
             onClick={e => e.stopPropagation()}
           >
-            {hoverCss && <style>{hoverCss}</style>}
-
-            <div
-              className='preview-viewport'
-              dangerouslySetInnerHTML={{ __html: hoverHtml }}
-            />
+            {activeTab === 'AI' ? (
+              <div className='ai-preview-empty'>
+                {aiLoading ? (
+                  <>
+                    <div className='ai-spinner' />
+                    <div>Generating your section…</div>
+                    <div className='ai-preview-hint'>This usually takes a few seconds.</div>
+                  </>
+                ) : (
+                  <>
+                    <div className='ai-preview-title'>AI-powered section generation</div>
+                    <div className='ai-preview-hint'>
+                      Type what you want on the left, then hit Generate. The section will be added to your page.
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                {hoverCss && <style>{hoverCss}</style>}
+                <div
+                  className='preview-viewport'
+                  dangerouslySetInnerHTML={{ __html: hoverHtml }}
+                />
+              </>
+            )}
           </div>
         </div>
       ) : null}

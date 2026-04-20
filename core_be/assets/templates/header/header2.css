@@ -1,0 +1,20 @@
+.header-2{ background:#fff; border-bottom:1px solid rgba(0,0,0,0.08); position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.04); 
+         .hdr-search-inner{ display:flex; align-items:center; gap:32px; padding:20px 24px; max-width:1400px; margin:0 auto; }
+        .logo{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:24px; color:#1a202c; cursor:pointer; white-space:nowrap; }
+        .logo-icon{ width:28px; height:28px; color:#667eea; }
+        .search-wrap{ flex:1; display:flex; align-items:center; position:relative;}
+        .search-icon{ position:absolute; left:16px; width:20px; height:20px; color:#a0aec0; pointer-events:none; }
+        .search-wrap input{ width:100%; padding:14px 16px 14px 48px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:#f7fafc; transition:all 0.3s ease; font-size:15px; }
+        .search-wrap input:focus{ outline:none; background:#fff; border-color:#667eea; box-shadow:0 0 0 4px rgba(102,126,234,0.1); }
+        .search-wrap input:focus ~ .search-suggestions{ opacity:1; visibility:visible; transform:translateY(0); }
+        .search-suggestions{ position:absolute; top:calc(100% + 8px); left:0; right:0; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); padding:12px; opacity:0; visibility:hidden; transform:translateY(-8px); transition:all 0.3s ease; z-index:10; }
+        .suggestion-item{ display:flex; align-items:center; gap:12px; padding:12px; border-radius:8px; cursor:pointer; transition:background 0.2s ease; }
+        .suggestion-item:hover{ background:#f7fafc; }
+        .suggestion-icon{ width:16px; height:16px; color:#a0aec0; }
+        .icons{ display:flex; align-items:center; gap:12px; }
+        .icon-btn{ padding:12px 20px; border-radius:10px; border:1px solid rgba(0,0,0,0.08); background:#fff; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:8px; position:relative; font-size:15px; font-weight:600; color:#4a5568; }
+        .icon-btn svg{ width:20px; height:20px; }
+        .icon-btn:hover{ background:#f7fafc; border-color:rgba(0,0,0,0.12); transform:translateY(-1px); }
+        .cart-badge{ position:absolute; top:-6px; right:-6px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; font-size:11px; font-weight:700; padding:2px 6px; border-radius:10px; min-width:18px; text-align:center; }
+        @media (max-width:900px){  .hdr-search-inner{ gap:16px; padding:16px 20px; }  .search-wrap{ display:none; }  .btn-label{ display:none; }  .icon-btn{ padding:10px; } }
+      }

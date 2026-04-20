@@ -1,5 +1,6 @@
 import { getUser, login, logout, register } from "./auth";
 
+import { generateSection } from "./ai";
 import {
   addSection,
   deleteNode,
@@ -8,15 +9,17 @@ import {
   getPage,
   getPageCSS,
   insertNode,
+  replaceIcon,
   updatePageCss,
 } from "./page";
+import { serveUpload, uploadImage } from "./upload";
 import { createTable, pg } from "./postgres";
 import dotenv from "dotenv";
 
 dotenv.config({ path: "../.env" });
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "http://localhost:3001",
+  "Access-Control-Allow-Origin": "http://localhost:3000",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Credentials": "true",
@@ -113,6 +116,24 @@ pg.connect().then(async () => {
       },
       "/page/:id/section/add/:section_type/:template_index/node/:node_id": {
         POST: addSection,
+      },
+
+      //! AI -------------------------
+      "/page/:id/ai/section/generate": {
+        POST: generateSection,
+      },
+
+      //! ICON -------------------------
+      "/page/:id/icon/replace/:nodeId": {
+        POST: replaceIcon,
+      },
+
+      //! UPLOAD -------------------------
+      "/upload/image": {
+        POST: uploadImage,
+      },
+      "/uploads/:filename": {
+        GET: serveUpload,
       },
     }),
     fetch(req) {

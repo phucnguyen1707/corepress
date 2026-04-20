@@ -99,3 +99,51 @@
   outline: none;
   text-align: right;
 }
+
+.text__edit_input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  outline: none;
+  font-size: 13px;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.text__edit_input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.align__group {
+  display: flex;
+  flex: 1;
+  gap: 4px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 2px;
+  background: #fff;
+}
+
+.align__button {
+  flex: 1;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 6px;
+  text-transform: capitalize;
+  color: #4a5568;
+  transition: all 0.15s ease;
+}
+
+.align__button:hover {
+  background: #f3f4f6;
+}
+
+.align__button--active {
+  background: #3b82f6;
+  color: #fff;
+}

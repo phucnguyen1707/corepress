@@ -7,6 +7,8 @@ import { SettingIcon } from '@/icons';
 import { Page } from '@/interfaces';
 
 import Typo from '../commons/Typo';
+import EditIcon from './EditIcon/EditIcon';
+import EditImage from './EditImage/EditImage';
 import EditLayout from './EditLayout/EditLayout';
 import EditText from './EditText/EditText';
 import './settingPanel.css';
@@ -30,6 +32,30 @@ export default function SettingPanel({
     if (!selectedNode) return null;
     return pageData.nodes?.[selectedNode] || null;
   }, [pageData.nodes, selectedNode]);
+
+  const findDescendantByTag = (rootId: string | null, tag: string): string | null => {
+    if (!rootId) return null;
+    const n = pageData.nodes?.[rootId];
+    if (!n) return null;
+    if (n.tag === tag) return rootId;
+    for (const childId of n.children || []) {
+      const found = findDescendantByTag(childId, tag);
+      if (found) return found;
+    }
+    return null;
+  };
+
+  const svgNodeId = useMemo(
+    () => findDescendantByTag(selectedNode, 'svg'),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedNode, pageData.nodes]
+  );
+
+  const imgNodeId = useMemo(
+    () => findDescendantByTag(selectedNode, 'img'),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedNode, pageData.nodes]
+  );
 
   const [fontSize, setFontSize] = useState('16px');
   const [fontWeight, setFontWeight] = useState('normal');
@@ -132,6 +158,23 @@ export default function SettingPanel({
           setBackgroundColor={setBackgroundColor}
           onUpdateNodeStyle={onUpdateNodeStyle}
         />
+
+        {imgNodeId && pageData.nodes[imgNodeId] && (
+          <EditImage
+            nodeData={pageData.nodes[imgNodeId]}
+            selectedNode={imgNodeId}
+            pageId={pageId}
+            onRefreshData={onRefreshData}
+          />
+        )}
+
+        {svgNodeId && (
+          <EditIcon
+            selectedNode={svgNodeId}
+            pageId={pageId}
+            onRefreshData={onRefreshData}
+          />
+        )}
 
         {node.text && (
           <EditText

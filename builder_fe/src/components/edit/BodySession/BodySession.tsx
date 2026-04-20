@@ -1,14 +1,17 @@
 'use client';
 
-import React, { JSX, ReactNode, useEffect, useState } from 'react';
+import React, { JSX, ReactNode, useEffect, useRef, useState } from 'react';
 
-import { cssPage, page } from '@/axios/page.service';
+import { cssPage, deleteNode as deleteNodeApi, editNode, page } from '@/axios/page.service';
 import Typo from '@/components/commons/Typo';
 import AddSectionModal from '@/components/modal';
+import PreviewSkeleton from '@/components/edit/BodySession/PreviewSkeleton';
 import SettingPanel from '@/components/setting';
 import {
   AddIcon,
   ArrowRightIcon,
+  EyeIcon,
+  EyeOffIcon,
   FooterSessionIcon,
   HeaderSectionIcon,
   IconSessionIcon,
@@ -18,6 +21,7 @@ import {
   SettingIcon,
   TemplateSessionIcon,
   TextSessionIcon,
+  TrashIcon,
 } from '@/icons';
 import { ContainerSessionIcon } from '@/icons/C';
 import { PromoSessionIcon } from '@/icons/P';
@@ -57,6 +61,7 @@ export default function BodySession(props: BodySessionProps) {
     raw: '',
   });
 
+  const [cssLoaded, setCssLoaded] = useState(false);
   const [activeAction, setActiveAction] = useState<ESideBarActive>(ESideBarActive.session);
   const [modalSectionType, setModalSectionType] = useState<string>('');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
@@ -64,33 +69,56 @@ export default function BodySession(props: BodySessionProps) {
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  const fetchPageData = async () => {
+  const persistTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const latestNodeRef = useRef<Record<string, Page['nodes'][string]>>({});
+
+  const fetchPageData = async (signal: { cancelled: boolean }) => {
     if (!pageInfo) return;
 
     try {
       const res = await page(pageInfo?.[0].id);
+      if (signal.cancelled) return;
       setPageData(res.data.data);
     } catch (err) {
-      console.error('Failed to load page:', err);
+      if (!signal.cancelled) console.error('Failed to load page:', err);
     }
   };
 
-  const fetchCssDataPage = async () => {
+  const fetchCssDataPage = async (signal: { cancelled: boolean }) => {
     if (!pageInfo) return;
 
     try {
       const res = await cssPage(pageInfo?.[0].id);
+      if (signal.cancelled) return;
       setCssData(res.data);
     } catch (err) {
-      console.error('Failed to load css data:', err);
+      if (!signal.cancelled) console.error('Failed to load css data:', err);
+    } finally {
+      if (!signal.cancelled) setCssLoaded(true);
     }
   };
 
   useEffect(() => {
-    fetchPageData();
-    fetchCssDataPage();
+    const signal = { cancelled: false };
+    setCssLoaded(false);
+    fetchPageData(signal);
+    fetchCssDataPage(signal);
+    return () => {
+      signal.cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageInfo]);
+
+  const refreshPageData = async () => {
+    await fetchPageData({ cancelled: false });
+  };
+
+  useEffect(() => {
+    const timers = persistTimers.current;
+    return () => {
+      Object.values(timers).forEach(t => clearTimeout(t));
+    };
+  }, []);
 
   const renderGroupedSections = () => {
     const sections = {
@@ -155,6 +183,8 @@ export default function BodySession(props: BodySessionProps) {
 
     // Case 1: Node has a name → render it + visible children container
     if (node.attribute.devName) {
+      const isHidden = (node.style as React.CSSProperties | undefined)?.display === 'none';
+
       return (
         <div
           key={rootId}
@@ -162,7 +192,7 @@ export default function BodySession(props: BodySessionProps) {
           id={rootId}
         >
           <div
-            className='tree-item'
+            className={`tree-item ${isHidden ? 'tree-item--hidden' : ''}`}
             id={node.attribute?.dataId}
             onMouseEnter={() => setHoveredNodeId(node.attribute?.dataId || null)}
             onMouseLeave={() => setHoveredNodeId(null)}
@@ -171,7 +201,10 @@ export default function BodySession(props: BodySessionProps) {
             {hasChildren && childrenNoSvgTag.length > 0 && (
               <div
                 className='icon-size'
-                onClick={() => toggleExpand(rootId)}
+                onClick={e => {
+                  e.stopPropagation();
+                  toggleExpand(rootId);
+                }}
                 style={{
                   cursor: 'pointer',
                   transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
@@ -185,6 +218,31 @@ export default function BodySession(props: BodySessionProps) {
             <div className='icon-size'>{iconsList[node.attribute?.devIcon || 'text']}</div>
 
             <Typo className='tag-name'>{node.attribute.devName}</Typo>
+
+            <div className='tree-item__actions'>
+              <button
+                type='button'
+                className='tree-item__action-btn'
+                title={isHidden ? 'Show' : 'Hide'}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleToggleHidden(rootId);
+                }}
+              >
+                {isHidden ? <EyeOffIcon color='#6b7280' /> : <EyeIcon color='#6b7280' />}
+              </button>
+              <button
+                type='button'
+                className='tree-item__action-btn tree-item__action-btn--danger'
+                title='Delete'
+                onClick={e => {
+                  e.stopPropagation();
+                  handleDeleteNode(rootId);
+                }}
+              >
+                <TrashIcon color='#ef4444' />
+              </button>
+            </div>
           </div>
 
           {isExpanded && hasChildren && <div className='tree-children'>{children}</div>}
@@ -203,6 +261,49 @@ export default function BodySession(props: BodySessionProps) {
       else newSet.add(id);
       return newSet;
     });
+  };
+
+  const handleDeleteNode = async (nodeId: string) => {
+    const id = pageInfo?.[0].id;
+    if (!id) return;
+    if (!confirm('Delete this section? This cannot be undone.')) return;
+
+    try {
+      await deleteNodeApi(id, nodeId);
+      if (selectedNode === nodeId) setSelectedNode(null);
+      await refreshPageData();
+    } catch (err) {
+      console.error('Failed to delete node:', err);
+    }
+  };
+
+  const handleToggleHidden = async (nodeId: string) => {
+    const id = pageInfo?.[0].id;
+    if (!id) return;
+
+    const targetNode = pageData.nodes[nodeId];
+    if (!targetNode) return;
+
+    const isHidden = (targetNode.style as React.CSSProperties | undefined)?.display === 'none';
+    const nextStyle: React.CSSProperties = { ...(targetNode.style || {}) };
+    if (isHidden) {
+      delete (nextStyle as Record<string, unknown>).display;
+    } else {
+      nextStyle.display = 'none';
+    }
+
+    const updatedNode = { ...targetNode, style: nextStyle };
+
+    setPageData(prev => ({
+      ...prev,
+      nodes: { ...prev.nodes, [nodeId]: updatedNode },
+    }));
+
+    try {
+      await editNode(id, nodeId, { node: updatedNode });
+    } catch (err) {
+      console.error('Failed to toggle hidden:', err);
+    }
   };
 
   const renderNode = (nodeId: string): ReactNode => {
@@ -302,22 +403,39 @@ export default function BodySession(props: BodySessionProps) {
 
   const updateNodeStyle = (nodeId: string, key: string, value: string) => {
     setPageData(prev => {
-      const updatedNodes = {
-        ...prev.nodes,
-        [nodeId]: {
-          ...prev.nodes[nodeId],
-          style: {
-            ...prev.nodes[nodeId].style,
-            [key]: value,
-          },
+      const prevNode = prev.nodes[nodeId];
+      if (!prevNode) return prev;
+
+      const updatedNode = {
+        ...prevNode,
+        style: {
+          ...prevNode.style,
+          [key]: value,
         },
       };
 
+      latestNodeRef.current[nodeId] = updatedNode;
+
       return {
         ...prev,
-        nodes: updatedNodes,
+        nodes: { ...prev.nodes, [nodeId]: updatedNode },
       };
     });
+
+    const id = pageInfo?.[0].id;
+    if (!id) return;
+
+    if (persistTimers.current[nodeId]) {
+      clearTimeout(persistTimers.current[nodeId]);
+    }
+    persistTimers.current[nodeId] = setTimeout(() => {
+      const node = latestNodeRef.current[nodeId];
+      if (!node) return;
+      editNode(id, nodeId, { node }).catch(err =>
+        console.error('Failed to persist node style:', err)
+      );
+      delete persistTimers.current[nodeId];
+    }, 600);
   };
 
   return (
@@ -346,13 +464,15 @@ export default function BodySession(props: BodySessionProps) {
           {renderGroupedSections()}
         </div>
       </div>
-      <div className='second-section'>{renderNode(pageData.bodyNode)}</div>
+      <div className='second-section'>
+        {cssLoaded ? renderNode(pageData.bodyNode) : <PreviewSkeleton />}
+      </div>
 
       <SettingPanel
         pageId={pageInfo?.[0].id}
         selectedNode={selectedNode}
         pageData={pageData}
-        onRefreshData={fetchPageData}
+        onRefreshData={refreshPageData}
         onUpdateNodeStyle={updateNodeStyle}
       />
 
@@ -361,7 +481,7 @@ export default function BodySession(props: BodySessionProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sectionType={modalSectionType}
-        onRefreshData={fetchPageData}
+        onRefreshData={refreshPageData}
       />
     </div>
   );

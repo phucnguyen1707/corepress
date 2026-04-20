@@ -336,6 +336,146 @@ export const deleteNode = async (
   });
 };
 
+// REPLACE ICON (SVG subtree)
+const ALLOWED_SVG_TAGS = new Set([
+  "svg",
+  "path",
+  "circle",
+  "rect",
+  "polyline",
+  "polygon",
+  "line",
+  "ellipse",
+  "g",
+  "defs",
+  "lineargradient",
+  "radialgradient",
+  "stop",
+  "title",
+  "desc",
+]);
+
+const sanitizeSvg = (raw: string): string => {
+  let s = raw;
+  s = s.replace(/<script[\s\S]*?<\/script>/gi, "");
+  s = s.replace(/\s+on[a-z]+\s*=\s*"[^"]*"/gi, "");
+  s = s.replace(/\s+on[a-z]+\s*=\s*'[^']*'/gi, "");
+  s = s.replace(/\s+on[a-z]+\s*=\s*[^\s>]+/gi, "");
+  s = s.replace(/javascript\s*:/gi, "");
+  return s;
+};
+
+export const replaceIcon = async (
+  req: Bun.BunRequest<"/page/:id/icon/replace/:nodeId">,
+): Promise<Response> => {
+  const user = await extractUser(req);
+  if (!user) return new Response(null, { status: 401 });
+
+  const pageId = req.params.id;
+  const nodeId = req.params.nodeId;
+
+  let body: { svg?: string };
+  try {
+    body = (await req.json()) as { svg?: string };
+  } catch {
+    return new Response("Invalid JSON", { status: 400 });
+  }
+
+  if (!body.svg || typeof body.svg !== "string" || body.svg.length > 20000) {
+    return new Response("Invalid svg payload", { status: 400 });
+  }
+
+  const trimmed = body.svg.trim();
+  if (!/^<svg[\s>]/i.test(trimmed)) {
+    return new Response("Payload must start with <svg>", { status: 400 });
+  }
+
+  const safe = sanitizeSvg(trimmed);
+  const { nodes: parsedNodes, rootNodes } = htmlToNodes(safe);
+  if (rootNodes.length !== 1) {
+    return new Response("Expected a single <svg> root", { status: 400 });
+  }
+
+  const newRoot = parsedNodes[rootNodes[0]!];
+  if (!newRoot || newRoot.tag !== "svg") {
+    return new Response("Root element must be <svg>", { status: 400 });
+  }
+
+  for (const [, node] of Object.entries(parsedNodes)) {
+    if (!ALLOWED_SVG_TAGS.has(node.tag.toLowerCase())) {
+      return new Response(`Disallowed tag: <${node.tag}>`, { status: 400 });
+    }
+  }
+
+  const [existing] = await pg`
+    SELECT data->'nodes'->${nodeId} AS node, data->'nodes' AS nodes
+    FROM pages
+    WHERE id = ${pageId} AND user_id = ${user.id};
+  `;
+  if (!existing?.node) {
+    return new Response("Node not found", { status: 404 });
+  }
+  if (existing.node.tag !== "svg") {
+    return new Response("Target node is not an svg", { status: 400 });
+  }
+
+  const allNodes = existing.nodes as Record<string, { children?: string[] }>;
+  const oldDescendants: string[] = [];
+  const collect = (id: string) => {
+    const n = allNodes[id];
+    if (!n) return;
+    for (const c of n.children || []) {
+      oldDescendants.push(c);
+      collect(c);
+    }
+  };
+  collect(nodeId);
+
+  const preservedDataId = existing.node.attribute?.dataId ?? nodeId;
+  const mergedSvgNode = {
+    ...newRoot,
+    attribute: { ...newRoot.attribute, dataId: preservedDataId },
+  };
+
+  delete parsedNodes[rootNodes[0]!];
+  const newChildNodes = parsedNodes;
+
+  try {
+    await pg.begin(async (sql) => {
+      await sql`
+        UPDATE pages
+        SET data = jsonb_set(
+          data || jsonb_build_object('nodes', data->'nodes' || ${newChildNodes}::jsonb),
+          ${`{nodes,${nodeId}}`}::text[],
+          ${mergedSvgNode}::jsonb
+        )
+        WHERE id = ${pageId} AND user_id = ${user.id};
+      `;
+
+      if (oldDescendants.length > 0) {
+        await sql`
+          UPDATE pages
+          SET data = jsonb_set(
+            data,
+            '{nodes}',
+            (
+              SELECT COALESCE(jsonb_object_agg(key, value), '{}'::jsonb)
+              FROM jsonb_each(data->'nodes')
+              WHERE key NOT IN (SELECT unnest(${sql.array(oldDescendants, "text")}))
+            )
+          )
+          WHERE id = ${pageId} AND user_id = ${user.id};
+        `;
+      }
+    });
+  } catch (err) {
+    console.error("replaceIcon failed:", err);
+    return new Response("Failed to replace icon", { status: 500 });
+  }
+
+  return new Response(null, { status: 200 });
+};
+
 // Add section
 export const addSection = async (
   req: Bun.BunRequest<"/page/:id/section/add/:section_type/:template_index/node/:node_id">,
@@ -350,53 +490,69 @@ export const addSection = async (
 
   const uniqueScopeId = `s_${nanoid(10)}`;
 
-  switch (sectionType) {
-    case "header":
-      try {
-        const html = await Bun.file(
-          `assets/templates/header/header${templateIndex}.html`,
-        ).text();
+  const allowedSections = new Set(["header", "footer", "template"]);
+  if (!allowedSections.has(sectionType)) {
+    return new Response(null, { status: 400 });
+  }
+  if (!/^\d+$/.test(templateIndex)) {
+    return new Response(null, { status: 400 });
+  }
 
-        const resultHTML = htmlToNodes(html);
-        const nodes = resultHTML.nodes;
-        const rootNodes = resultHTML.rootNodes;
+  try {
+    const [existing] = await pg`
+      SELECT data->'nodes'->${nodeId} AS node
+      FROM pages
+      WHERE id = ${pageId} AND user_id = ${user.id};
+    `;
+    if (!existing?.node) {
+      return new Response("Parent node not found", { status: 404 });
+    }
 
-        rootNodes.forEach((rootId: string) => {
-          if (nodes[rootId]) {
-            const currentClass = nodes[rootId].attribute["class"] || "";
-            nodes[rootId].attribute["class"] =
-              `${uniqueScopeId} ${currentClass}`.trim();
-          }
-        });
+    const html = await Bun.file(
+      `assets/templates/${sectionType}/${sectionType}${templateIndex}.html`,
+    ).text();
 
-        const cssText = await Bun.file(
-          `assets/templates/header/header${templateIndex}.css`,
-        ).text();
+    const resultHTML = htmlToNodes(html);
+    const nodes = resultHTML.nodes;
+    const rootNodes = resultHTML.rootNodes;
 
-        const rawCssJson = cssToJson(cssText);
+    const sectionLabel =
+      sectionType.charAt(0).toUpperCase() + sectionType.slice(1);
 
-        const scopedCssJson = scopeCss(rawCssJson, uniqueScopeId);
-
-        await pg`
-          UPDATE pages
-          SET 
-            data = jsonb_set(
-              data || jsonb_build_object('nodes', data->'nodes' || ${nodes}::jsonb),
-              array['nodes', ${nodeId}, 'children']::text[],
-              (data#>array['nodes', ${nodeId}, 'children']::text[] || ${rootNodes}::jsonb)
-            ),
-            css = css || ${scopedCssJson}::jsonb
-          WHERE id = ${pageId} AND user_id = ${user.id};`;
-      } catch (error) {
-        console.error(error);
-        return new Response("Template not found or Error processing", {
-          status: 404,
-        });
+    rootNodes.forEach((rootId: string) => {
+      if (nodes[rootId]) {
+        const currentClass = nodes[rootId].attribute["class"] || "";
+        nodes[rootId].attribute["class"] =
+          `${uniqueScopeId} ${currentClass}`.trim();
+        nodes[rootId].attribute["devGroupName"] = sectionType;
+        nodes[rootId].attribute["devName"] =
+          `${sectionLabel} ${templateIndex}`;
+        nodes[rootId].attribute["devIcon"] = sectionType;
       }
+    });
 
-      break;
-    default:
-      return new Response(null, { status: 400 });
+    const cssText = await Bun.file(
+      `assets/templates/${sectionType}/${sectionType}${templateIndex}.css`,
+    ).text();
+
+    const rawCssJson = cssToJson(cssText);
+    const scopedCssJson = scopeCss(rawCssJson, uniqueScopeId);
+
+    await pg`
+      UPDATE pages
+      SET
+        data = jsonb_set(
+          data || jsonb_build_object('nodes', data->'nodes' || ${nodes}::jsonb),
+          array['nodes', ${nodeId}, 'children']::text[],
+          (data#>array['nodes', ${nodeId}, 'children']::text[] || ${rootNodes}::jsonb)
+        ),
+        css = css || ${scopedCssJson}::jsonb
+      WHERE id = ${pageId} AND user_id = ${user.id};`;
+  } catch (error) {
+    console.error(error);
+    return new Response("Template not found or Error processing", {
+      status: 404,
+    });
   }
 
   return new Response(null, {

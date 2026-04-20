@@ -1,0 +1,11 @@
+.template-4{ padding:80px 24px; background:linear-gradient(180deg,#f8f9fa 0%,#ffffff 100%); min-height:100%; display:flex; align-items:center; justify-content:center; }
+      .template-4 .logos-section{ max-width:1400px; width:100%; margin:0 auto; }
+      .template-4 .section-header{ text-align:center; margin-bottom:60px; }
+      .template-4 .section-subtitle{ font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:#667eea; margin-bottom:12px; }
+      .template-4 .section-title{ font-size:clamp(32px,4vw,48px); font-weight:800; color:#1a202c; margin:0; }
+      .template-4 .logos-container{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px; align-items:center; justify-items:center; }
+      .template-4 .logo-item{ padding:24px 32px; background:#ffffff; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.06); transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; width:100%; max-width:240px; aspect-ratio:16/9; }
+      .template-4 .logo-item:hover{ transform:translateY(-8px); box-shadow:0 12px 40px rgba(102,126,234,0.15); }
+      .template-4 .logo-item img{ max-width:100%; max-height:60px; object-fit:contain; filter:grayscale(100%) opacity(0.6); transition:filter 0.3s ease; }
+      .template-4 .logo-item:hover img{ filter:grayscale(0%) opacity(1); }
+      @media (max-width:768px){ .template-4{ padding:60px 20px; } .template-4 .logos-container{ grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:24px; } .template-4 .logo-item{ padding:20px 24px; max-width:180px; } }

@@ -1,11 +1,13 @@
 .edit-page .body-session {
   display: flex;
   width: 100%;
+  height: calc(100% - 60px);
 }
 
 .edit-page .body-session .first-section {
-  width: 25%;
-  height: 100vh;
+  flex: 0 0 320px;
+  height: 100%;
+  min-width: 0;
   background-color: #ffffff;
   display: flex;
   overflow-y: auto;
@@ -84,11 +86,55 @@
   gap: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  position: relative;
 }
 
 .edit-page .body-session .first-section .section-wrapper .tree-item:hover {
   background-color: rgba(241, 241, 241, 1);
   border-radius: 8px;
+}
+
+.edit-page .body-session .first-section .section-wrapper .tree-item--hidden .tag-name,
+.edit-page .body-session .first-section .section-wrapper .tree-item--hidden .icon-size {
+  opacity: 0.4;
+}
+
+.tree-item__actions {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.edit-page .body-session .first-section .section-wrapper .tree-item:hover .tree-item__actions {
+  opacity: 1;
+}
+
+.edit-page .body-session .first-section .section-wrapper .tree-item--hidden .tree-item__actions {
+  opacity: 1;
+}
+
+.tree-item__action-btn {
+  width: 22px;
+  height: 22px;
+  padding: 3px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.tree-item__action-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.tree-item__action-btn--danger:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .edit-page .body-session .first-section .section-wrapper .tag-name {
@@ -101,8 +147,9 @@
 }
 
 .edit-page .body-session .second-section {
-  margin: 8px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
   background: #ffffff;
-  width: 100%;
-  height: 100%;
+  overflow: auto;
 }

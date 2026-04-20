@@ -1,0 +1,24 @@
+.template-2{ height:100%; height:100%; border-radius:24px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative; }
+.template-2 .hero-img{ position:relative; height:100%; background-image:url('https://plus.unsplash.com/premium_photo-1664202526559-e21e9c0fb46a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-size:cover; background-position:center; display:flex; align-items:flex-end; transition:transform 0.3s ease; }
+.template-2 .hero-img:hover{ transform:scale(1.02); }
+.template-2 .hero-overlay{ position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0.85) 100%); }
+.template-2 .hero-effects{ position:absolute; top:40px; right:40px; z-index:2; }
+.template-2 .floating-badge{ padding:10px 24px; background:rgba(255,255,255,0.15); backdrop-filter:blur(20px); border-radius:30px; color:#fff; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; border:1px solid rgba(255,255,255,0.3); box-shadow:0 8px 24px rgba(0,0,0,0.2); animation:float 3s ease-in-out infinite; }
+.template-2 .hero-caption{ position:relative; z-index:2; color:#fff; padding:60px; max-width:700px; }
+.template-2 .caption-tag{ display:inline-flex; align-items:center; gap:8px; padding:8px 18px; background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); border-radius:20px; font-size:13px; font-weight:600; margin-bottom:20px; border:1px solid rgba(255,255,255,0.2); }
+.template-2 .tag-icon{ width:16px; height:16px; }
+.template-2 .caption-title{ font-size:clamp(36px,5vw,56px); font-weight:900; margin:0 0 20px 0; line-height:1.1; text-shadow:0 4px 20px rgba(0,0,0,0.4); }
+.template-2 .caption-text{ font-size:18px; line-height:1.7; margin:0 0 32px 0; opacity:0.95; max-width:560px; text-shadow:0 2px 10px rgba(0,0,0,0.3); }
+.template-2 .caption-features{ display:flex; gap:16px; margin-bottom:32px; flex-wrap:wrap; }
+.template-2 .feature-badge{ display:flex; align-items:center; gap:8px; padding:8px 16px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border-radius:20px; font-size:13px; font-weight:600; border:1px solid rgba(255,255,255,0.2); }
+.template-2 .badge-icon{ width:16px; height:16px; }
+.template-2 .caption-actions{ display:flex; gap:16px; flex-wrap:wrap; }
+.template-2 .btn-primary{ display:inline-flex; align-items:center; gap:12px; padding:18px 36px; border-radius:50px; background:#fff; color:#000; border:none; font-size:16px; font-weight:700; cursor:pointer; transition:all 0.3s ease; box-shadow:0 8px 24px rgba(0,0,0,0.3); text-decoration:none; text-transform:uppercase; letter-spacing:0.05em; }
+.template-2 .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,0,0,0.4); background:#f5f5f5; }
+.template-2 .btn-arrow{ width:20px; height:20px; transition:transform 0.3s ease; }
+.template-2 .btn-primary:hover .btn-arrow{ transform:translateX(4px); }
+.template-2 .btn-ghost{ display:inline-flex; align-items:center; padding:18px 36px; border-radius:50px; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); color:#fff; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s ease; text-decoration:none; }
+.template-2 .btn-ghost:hover{ background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.6); transform:translateY(-2px); }
+@keyframes float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-10px); } }
+@media(max-width:1024px){ .template-2{ min-height:600px; border-radius:16px; } .template-2 .hero-caption{ padding:40px; } .template-2 .caption-title{ font-size:36px; } .template-2 .caption-text{ font-size:16px; } .template-2 .hero-effects{ top:24px; right:24px; } }
+@media(max-width:640px){ .template-2{ min-height:500px; border-radius:12px; } .template-2 .hero-caption{ padding:24px; } .template-2 .caption-features{ flex-direction:column; gap:12px; } .template-2 .caption-actions{ flex-direction:column; width:100%; } .template-2 .btn-primary,.template-2 .btn-ghost{ width:100%; justify-content:center; padding:16px 28px; font-size:14px; } .template-2 .floating-badge{ font-size:10px; padding:8px 16px; } }
