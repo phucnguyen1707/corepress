@@ -1,20 +1,54 @@
-.footer-2{background:linear-gradient(180deg,#0f172a 0%,#1e293b 100%);color:#e2e8f0;padding:64px 24px 32px;border-top:1px solid rgba(255,255,255,0.08);}
+.footer-2{
+        /* Tokens live on the component root (never :root - it would scope to .<scope>:root and die). */
+        /* Identity: teal (accent hue 170), cool true-neutral greys. Matches header-2 / template-2. */
+        /* Two accent steps because the ground is dark: --ftr-accent is the FILL (deep enough that
+           --ftr-accent-fg white sits on it at 5.2:1), --ftr-accent-ink is the same hue lifted so it
+           reads as a MARK on the dark bg (underline, focus ring) at 8:1. Same teal, two jobs. */
+        --ftr-bg:#0E1E1B;
+        --ftr-fg:#F1F7F5;
+        --ftr-fg-muted:#C4D3CF;
+        --ftr-fg-subtle:#9BADA9;
+        --ftr-line:#5C716C;
+        --ftr-line-strong:#6D827D;
+        --ftr-accent:#0D7B69;
+        --ftr-accent-ink:#34C6A8;
+        --ftr-accent-fg:#FFFFFF;
+        --ftr-surface:#16302B;
+        --ftr-surface-raised:#1D3B35;
+        --ftr-radius:12px;
+        --ftr-shadow:0 4px 12px rgba(0, 0, 0, 0.45);
+        --ftr-shadow-accent:0 4px 15px rgba(13, 123, 105, 0.35);
+        --ftr-shadow-accent-lg:0 6px 20px rgba(13, 123, 105, 0.50);
+        --ftr-glow-accent:0 0 0 3px rgba(52, 198, 168, 0.22);
+        --ftr-ring:0 0 0 3px var(--ftr-bg), 0 0 0 5px var(--ftr-accent-ink);
+        background:var(--ftr-bg);color:var(--ftr-fg);padding:64px 24px 32px;border-top:1px solid var(--ftr-line);}
       .footer-2 .container{max-width:1400px;margin:0 auto;}
-      .f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;margin-bottom:48px;}
-      .f-col h4{font-size:16px;font-weight:700;margin-bottom:20px;color:#fff;letter-spacing:0.5px;text-transform:uppercase;font-size:14px;}
-      .f-col ul{list-style:none;}
-      .f-col ul li{margin-bottom:12px;}
-      .f-col ul li a{color:#cbd5e1;font-size:15px;transition:all .2s ease;display:inline-block;position:relative;}
-      .f-col ul li a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:linear-gradient(90deg,#667eea,#764ba2);transition:width .3s ease;}
-      .f-col ul li a:hover{color:#fff;padding-left:8px;}
-      .f-col ul li a:hover::after{width:100%;}
-      .newsletter p{color:#94a3b8;font-size:14px;margin-bottom:16px;line-height:1.6;}
-      .input-group{display:flex;gap:8px;margin-top:16px;}
-      .footer-2 input{flex:1;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;font-size:14px;transition:all .3s ease;}
-      .footer-2 input::placeholder{color:#64748b;}
-      .footer-2 input:focus{outline:none;border-color:rgba(102,126,234,0.5);background:rgba(255,255,255,0.08);box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
-      .footer-2 button{padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:all .3s ease;white-space:nowrap;box-shadow:0 4px 15px rgba(102,126,234,0.3);}
-      .footer-2 button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,0.4);}
-      .f-bottom{padding-top:32px;border-top:1px solid rgba(255,255,255,0.1);text-align:center;}
-      .f-bottom p{color:#94a3b8;font-size:14px;font-weight:500;}
-      @media(max-width:768px){.f-grid{grid-template-columns:1fr;gap:32px;}}
+      .footer-2 .f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;margin-bottom:48px;}
+      .footer-2 .f-col h4{font-size:16px;font-weight:700;margin-bottom:20px;color:var(--ftr-fg);letter-spacing:0.5px;text-transform:uppercase;font-size:14px;}
+      .footer-2 .f-col ul{list-style:none;}
+      .footer-2 .f-col ul li{margin-bottom:12px;}
+      .footer-2 .f-col ul li a{text-decoration:none;color:var(--ftr-fg-muted);font-size:15px;transition:all .2s ease;display:inline-block;position:relative;}
+      .footer-2 .f-col ul li a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--ftr-accent-ink);transition:width .3s ease;}
+      .footer-2 .f-col ul li a:hover{color:var(--ftr-fg);padding-left:8px;}
+      .footer-2 .f-col ul li a:hover::after{width:100%;}
+      .footer-2 .f-col ul li a:focus-visible{color:var(--ftr-fg);outline:2px solid var(--ftr-accent-ink);outline-offset:3px;}
+      .footer-2 .f-col ul li a:focus-visible::after{width:100%;}
+      .footer-2 .newsletter p{color:var(--ftr-fg-subtle);font-size:14px;margin-bottom:16px;line-height:1.6;}
+      .footer-2 .input-group{display:flex;gap:8px;margin-top:16px;}
+      .footer-2 input{flex:1;padding:14px 16px;border-radius:var(--ftr-radius);border:1px solid var(--ftr-line-strong);background:var(--ftr-surface);color:var(--ftr-fg);font-size:14px;transition:all .3s ease;}
+      .footer-2 input::placeholder{color:var(--ftr-fg-subtle);opacity:1;}
+      .footer-2 input:focus{outline:none;border-color:var(--ftr-accent-ink);background:var(--ftr-surface-raised);box-shadow:var(--ftr-glow-accent);}
+      .footer-2 input:focus-visible{outline:none;border-color:var(--ftr-accent-ink);background:var(--ftr-surface-raised);box-shadow:var(--ftr-ring);}
+      /* The UA sheet hands <button> its own font (Chrome: "400 13.3333px Arial"), a margin, centred
+         text and native theming. font-size/font-weight below would otherwise land on Arial, so
+         font-family MUST be inherited explicitly. line-height is pinned to normal - the value the
+         UA font shorthand already computes, and the same one <input> gets - so the two flex items
+         in .input-group keep matching heights regardless of the page's inherited line-height. */
+      .footer-2 button{appearance:none;-webkit-appearance:none;font-family:inherit;font-size:14px;font-weight:600;line-height:normal;text-align:center;margin:0;padding:14px 28px;border-radius:var(--ftr-radius);background:var(--ftr-accent);color:var(--ftr-accent-fg);border:none;cursor:pointer;transition:all .3s ease;white-space:nowrap;box-shadow:var(--ftr-shadow-accent);}
+      .footer-2 button::-moz-focus-inner{border:0;padding:0;}
+      .footer-2 button:hover{transform:translateY(-2px);box-shadow:var(--ftr-shadow-accent-lg);}
+      .footer-2 button:focus-visible{outline:none;box-shadow:var(--ftr-ring);}
+      .footer-2 .f-bottom{padding-top:32px;border-top:1px solid var(--ftr-line);text-align:center;}
+      .footer-2 .f-bottom p{color:var(--ftr-fg-subtle);font-size:14px;font-weight:500;}
+      @media(max-width:768px){.footer-2 .f-grid{grid-template-columns:1fr;gap:32px;}}
+      @media(prefers-reduced-motion:reduce){.footer-2 .f-col ul li a{transition:none;}.footer-2 .f-col ul li a::after{transition:none;}.footer-2 input{transition:none;}.footer-2 button{transition:none;}.footer-2 button:hover{transform:none;}}

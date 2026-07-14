@@ -1,24 +1,91 @@
-.template-2{ height:100%; height:100%; border-radius:24px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative; }
-.template-2 .hero-img{ position:relative; height:100%; background-image:url('https://plus.unsplash.com/premium_photo-1664202526559-e21e9c0fb46a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-size:cover; background-position:center; display:flex; align-items:flex-end; transition:transform 0.3s ease; }
+/* ---------------------------------------------------------------------------
+   template-2 — Hero Banner. Identity: index 2, hue 170 teal (#0A6E5E).
+   Cool, clinical, trustworthy. True-neutral greys pulled a few degrees toward
+   the teal so the ink and the accent read as one family.
+
+   This is a DARK MEDIA surface: the "background" is a user-replaceable photo,
+   so no contrast claim can be made against it. Every piece of text therefore
+   sits on a layer WE control — the scrim, a glass chip, or a solid button —
+   and each of those is opaque enough that the pair still passes AA even if the
+   photo underneath is pure white (the worst case).
+
+   Tokens live on the component root. Never :root — ".<scope>:root" matches nothing.
+   --------------------------------------------------------------------------- */
+.template-2{
+  --tpl-bg:#0E1E1B;
+  --tpl-fg:#FFFFFF;
+  --tpl-fg-muted:#E3ECEA;
+  --tpl-line:rgba(226,240,236,0.30);
+  --tpl-line-strong:rgba(226,240,236,0.55);
+  --tpl-accent:#0A6E5E;
+  --tpl-accent-fg:#FFFFFF;
+  --tpl-accent-soft:#E2F0EC;
+  --tpl-surface:#FFFFFF;
+  /* Dark glass. The old white glass (rgba(255,255,255,0.15)) put white text on a
+     LIGHTENED photo — unreadable over any bright image. Dark glass at 0.62 holds
+     4.82:1 for white text even over a pure-white photo, with no scrim help. */
+  --tpl-glass:rgba(14,30,27,0.62);
+  --tpl-glass-hover:rgba(14,30,27,0.74);
+  /* The one gradient in this file, and it earns it: a photo scrim is the only
+     honest way to make a caption legible over an unknown image. It carries no
+     text of its own — it is the thing that makes the text safe. By 44% depth
+     (top of the title) it is 0.635 opaque, which is worst-case 5.11:1. */
+  --tpl-scrim:linear-gradient(to bottom, rgba(14,30,27,0) 0%, rgba(14,30,27,0.45) 30%, rgba(14,30,27,0.82) 58%, rgba(14,30,27,0.95) 100%);
+  /* The scrim above fades by PERCENTAGE of the hero, but the caption's height is set by its
+     CONTENT — on a narrow viewport the buttons stack and the caption grows until its top edge
+     reaches up into the transparent part of the scrim, where the text has no contrast guarantee
+     at all (measured: 1.58:1 for the title over a white photo). So the caption carries its own
+     floor, which cannot drift no matter how tall the hero or the caption gets. At 0.70 over a
+     worst-case pure-white photo: white 6.4:1, muted #E3ECEA 5.3:1. */
+  --tpl-scrim-floor:rgba(14,30,27,0.70);
+  --tpl-radius:24px;
+  --tpl-radius-pill:999px;
+  --tpl-shadow:0 20px 60px rgba(14,30,27,0.28);
+  --tpl-shadow-sm:0 8px 24px rgba(14,30,27,0.30);
+  --tpl-shadow-md:0 12px 32px rgba(14,30,27,0.42);
+  --tpl-shadow-badge:0 8px 24px rgba(10,110,94,0.45);
+  --tpl-text-shadow:0 2px 10px rgba(14,30,27,0.45);
+  --tpl-text-shadow-lg:0 4px 20px rgba(14,30,27,0.55);
+  --tpl-ring:0 0 0 3px var(--tpl-bg), 0 0 0 6px var(--tpl-fg);
+  height:100%; border-radius:var(--tpl-radius); overflow:hidden; box-shadow:var(--tpl-shadow); position:relative; background:var(--tpl-bg);
+}
+.template-2 .hero-img{ position:relative; height:100%; background-image:url('https://plus.unsplash.com/premium_photo-1664202526559-e21e9c0fb46a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-size:cover; background-position:center; background-color:var(--tpl-bg); display:flex; align-items:flex-end; transition:transform 0.3s ease; }
 .template-2 .hero-img:hover{ transform:scale(1.02); }
-.template-2 .hero-overlay{ position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0.85) 100%); }
+.template-2 .hero-overlay{ position:absolute; inset:0; background:var(--tpl-scrim); }
 .template-2 .hero-effects{ position:absolute; top:40px; right:40px; z-index:2; }
-.template-2 .floating-badge{ padding:10px 24px; background:rgba(255,255,255,0.15); backdrop-filter:blur(20px); border-radius:30px; color:#fff; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; border:1px solid rgba(255,255,255,0.3); box-shadow:0 8px 24px rgba(0,0,0,0.2); animation:float 3s ease-in-out infinite; }
-.template-2 .hero-caption{ position:relative; z-index:2; color:#fff; padding:60px; max-width:700px; }
-.template-2 .caption-tag{ display:inline-flex; align-items:center; gap:8px; padding:8px 18px; background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); border-radius:20px; font-size:13px; font-weight:600; margin-bottom:20px; border:1px solid rgba(255,255,255,0.2); }
+/* The one status marker in the composition, and the only accent-FILLED thing:
+   the accent says "this matters", it is not decoration. It sits at the top of
+   the hero where the scrim is ~0, so it must be solid — a translucent badge up
+   here would have no contrast guarantee at all. */
+.template-2 .floating-badge{ padding:10px 24px; background:var(--tpl-accent); border-radius:var(--tpl-radius-pill); color:var(--tpl-accent-fg); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; border:1px solid var(--tpl-accent); box-shadow:var(--tpl-shadow-badge); animation:float 3s ease-in-out infinite; }
+.template-2 .hero-caption{ position:relative; z-index:2; color:var(--tpl-fg); padding:60px; max-width:700px; }
+/* Full-bleed floor under the caption: bleeds past the caption's 700px cap (the hero clips it) and
+   fades in over the 64px above it so there is no visible edge against the photo. */
+.template-2 .hero-caption::before{ content:''; position:absolute; z-index:-1; top:-64px; bottom:0; left:0; right:-100vw; pointer-events:none; background:linear-gradient(to bottom, rgba(14,30,27,0) 0px, var(--tpl-scrim-floor) 64px, var(--tpl-scrim-floor) 100%); }
+.template-2 .caption-tag{ display:inline-flex; align-items:center; gap:8px; padding:8px 18px; background:var(--tpl-glass); backdrop-filter:blur(10px); border-radius:20px; font-size:13px; font-weight:600; margin-bottom:20px; border:1px solid var(--tpl-line); color:var(--tpl-fg); }
 .template-2 .tag-icon{ width:16px; height:16px; }
-.template-2 .caption-title{ font-size:clamp(36px,5vw,56px); font-weight:900; margin:0 0 20px 0; line-height:1.1; text-shadow:0 4px 20px rgba(0,0,0,0.4); }
-.template-2 .caption-text{ font-size:18px; line-height:1.7; margin:0 0 32px 0; opacity:0.95; max-width:560px; text-shadow:0 2px 10px rgba(0,0,0,0.3); }
+.template-2 .caption-title{ font-size:clamp(36px,5vw,56px); font-weight:900; margin:0 0 20px 0; line-height:1.1; color:var(--tpl-fg); text-shadow:var(--tpl-text-shadow-lg); }
+/* Was color:#fff + opacity:0.95 — opacity makes the rendered colour depend on
+   whatever is behind it, so the ratio could not be computed. A real token can. */
+.template-2 .caption-text{ font-size:18px; line-height:1.7; margin:0 0 32px 0; color:var(--tpl-fg-muted); max-width:560px; text-shadow:var(--tpl-text-shadow); }
 .template-2 .caption-features{ display:flex; gap:16px; margin-bottom:32px; flex-wrap:wrap; }
-.template-2 .feature-badge{ display:flex; align-items:center; gap:8px; padding:8px 16px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border-radius:20px; font-size:13px; font-weight:600; border:1px solid rgba(255,255,255,0.2); }
+.template-2 .feature-badge{ display:flex; align-items:center; gap:8px; padding:8px 16px; background:var(--tpl-glass); backdrop-filter:blur(10px); border-radius:20px; font-size:13px; font-weight:600; border:1px solid var(--tpl-line); color:var(--tpl-fg); }
 .template-2 .badge-icon{ width:16px; height:16px; }
 .template-2 .caption-actions{ display:flex; gap:16px; flex-wrap:wrap; }
-.template-2 .btn-primary{ display:inline-flex; align-items:center; gap:12px; padding:18px 36px; border-radius:50px; background:#fff; color:#000; border:none; font-size:16px; font-weight:700; cursor:pointer; transition:all 0.3s ease; box-shadow:0 8px 24px rgba(0,0,0,0.3); text-decoration:none; text-transform:uppercase; letter-spacing:0.05em; }
-.template-2 .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,0,0,0.4); background:#f5f5f5; }
+/* The primary CTA stays a solid LIGHT block and wears the accent as ink, not as
+   fill. A teal fill here would be wrong twice over: #0A6E5E against the near-opaque
+   bottom of the scrim is only 2.79:1, so the button's own edge would fail the 3:1
+   non-text rule; and a light block is the strongest possible figure on a dark photo.
+   Accent ink on white is 6.17:1 and still reads unmistakably as the action. */
+.template-2 .btn-primary{ display:inline-flex; align-items:center; gap:12px; padding:18px 36px; border-radius:50px; background:var(--tpl-surface); color:var(--tpl-accent); border:none; font-size:16px; font-weight:700; cursor:pointer; transition:all 0.3s ease; box-shadow:var(--tpl-shadow-sm); text-decoration:none; text-transform:uppercase; letter-spacing:0.05em; }
+.template-2 .btn-primary:hover{ transform:translateY(-2px); box-shadow:var(--tpl-shadow-md); background:var(--tpl-accent-soft); color:var(--tpl-accent); }
+.template-2 .btn-primary:focus-visible{ outline:2px solid transparent; outline-offset:0; box-shadow:var(--tpl-ring), var(--tpl-shadow-sm); }
 .template-2 .btn-arrow{ width:20px; height:20px; transition:transform 0.3s ease; }
 .template-2 .btn-primary:hover .btn-arrow{ transform:translateX(4px); }
-.template-2 .btn-ghost{ display:inline-flex; align-items:center; padding:18px 36px; border-radius:50px; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); color:#fff; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s ease; text-decoration:none; }
-.template-2 .btn-ghost:hover{ background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.6); transform:translateY(-2px); }
+.template-2 .btn-ghost{ display:inline-flex; align-items:center; padding:18px 36px; border-radius:50px; border:2px solid var(--tpl-line-strong); background:var(--tpl-glass); backdrop-filter:blur(10px); color:var(--tpl-fg); font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s ease; text-decoration:none; }
+.template-2 .btn-ghost:hover{ background:var(--tpl-glass-hover); border-color:var(--tpl-fg); transform:translateY(-2px); }
+.template-2 .btn-ghost:focus-visible{ outline:2px solid transparent; outline-offset:0; box-shadow:var(--tpl-ring); border-color:var(--tpl-fg); }
 @keyframes float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-10px); } }
 @media(max-width:1024px){ .template-2{ min-height:600px; border-radius:16px; } .template-2 .hero-caption{ padding:40px; } .template-2 .caption-title{ font-size:36px; } .template-2 .caption-text{ font-size:16px; } .template-2 .hero-effects{ top:24px; right:24px; } }
 @media(max-width:640px){ .template-2{ min-height:500px; border-radius:12px; } .template-2 .hero-caption{ padding:24px; } .template-2 .caption-features{ flex-direction:column; gap:12px; } .template-2 .caption-actions{ flex-direction:column; width:100%; } .template-2 .btn-primary,.template-2 .btn-ghost{ width:100%; justify-content:center; padding:16px 28px; font-size:14px; } .template-2 .floating-badge{ font-size:10px; padding:8px 16px; } }
+@media(prefers-reduced-motion:reduce){ .template-2 .hero-img{ transition:none; } .template-2 .hero-img:hover{ transform:none; } .template-2 .floating-badge{ animation:none; } .template-2 .btn-primary{ transition:none; } .template-2 .btn-primary:hover{ transform:none; } .template-2 .btn-arrow{ transition:none; } .template-2 .btn-primary:hover .btn-arrow{ transform:none; } .template-2 .btn-ghost{ transition:none; } .template-2 .btn-ghost:hover{ transform:none; } }

@@ -1,12 +1,25 @@
-.footer-3{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#e2e8f0;padding:28px 24px;border-top:1px solid rgba(255,255,255,0.1);}
+.footer-3{
+        --ftr-bg:#2A161E;
+        --ftr-fg:#F6E7EF;
+        --ftr-fg-muted:#D3B3C1;
+        --ftr-line:#94687A;
+        --ftr-accent:#F0A6C9;
+        --ftr-accent-fg:#2A161E;
+        --ftr-accent-soft:#57203C;
+        --ftr-surface:#3A222C;
+        --ftr-radius:10px;
+        --ftr-shadow:0 4px 12px rgba(240,166,201,0.18);
+        --ftr-ring:0 0 0 3px var(--ftr-bg), 0 0 0 5px var(--ftr-accent);
+        background:var(--ftr-bg);color:var(--ftr-fg);padding:28px 24px;border-top:1px solid var(--ftr-line);}
       .footer-3 .container{max-width:1400px;margin:0 auto;}
-      .f-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;}
-      .left{font-size:14px;font-weight:600;color:#cbd5e1;}
-      .payment-icons{display:flex;gap:12px;align-items:center;}
-      .pay-icon{font-size:24px;opacity:0.8;transition:all .3s ease;cursor:pointer;}
-      .pay-icon:hover{opacity:1;transform:scale(1.1);}
-      .social-links{display:flex;align-items:center;gap:12px;}
-      .follow-text{font-size:14px;color:#94a3b8;margin-right:8px;font-weight:500;}
-      .social-icon{font-size:22px;text-decoration:none;transition:all .3s ease;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);}
-      .social-icon:hover{background:rgba(102,126,234,0.2);border-color:rgba(102,126,234,0.3);transform:translateY(-3px);box-shadow:0 4px 12px rgba(102,126,234,0.2);}
-      @media(max-width:768px){.f-row{flex-direction:column;text-align:center;}}
+      .footer-3 .f-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;}
+      .footer-3 .left{font-size:14px;font-weight:600;color:var(--ftr-fg);}
+      .footer-3 .payment-icons{display:flex;gap:12px;align-items:center;}
+      .footer-3 .pay-icon{font-size:24px;opacity:0.8;transition:all .3s ease;}
+      .footer-3 .pay-icon:hover{opacity:1;}
+      .footer-3 .social-links{display:flex;align-items:center;gap:12px;}
+      .footer-3 .follow-text{font-size:14px;color:var(--ftr-fg-muted);margin-right:8px;font-weight:500;}
+      .footer-3 .social-icon{font-size:22px;text-decoration:none;color:var(--ftr-fg);transition:all .3s ease;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--ftr-radius);background:var(--ftr-surface);border:1px solid var(--ftr-line);}
+      .footer-3 .social-icon:hover{background:var(--ftr-accent-soft);border-color:var(--ftr-accent);color:var(--ftr-accent);transform:translateY(-3px);box-shadow:var(--ftr-shadow);}
+      .footer-3 .social-icon:focus-visible{outline:2px solid transparent;outline-offset:3px;background:var(--ftr-accent-soft);border-color:var(--ftr-accent);color:var(--ftr-accent);box-shadow:var(--ftr-ring);}
+      @media(max-width:768px){.footer-3 .f-row{flex-direction:column;text-align:center;}}

@@ -1,20 +1,62 @@
-.header-2{ background:#fff; border-bottom:1px solid rgba(0,0,0,0.08); position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.04); 
+.header-2{
+        /* Identity: hue 170 teal. Cool, clinical, trustworthy — crisp hairlines, tight radii,
+           true-neutral (cool-leaning) greys. Tokens live on the component root, never :root. */
+        --hdr-bg:#FFFFFF;
+        --hdr-fg:#101A19;
+        --hdr-fg-muted:#55635F;
+        --hdr-line:#D9E0DE;
+        --hdr-line-strong:#7F8D8A;
+        --hdr-accent:#0A6E5E;
+        --hdr-accent-fg:#FFFFFF;
+        --hdr-accent-soft:#E2F0EC;
+        --hdr-surface:#F1F5F4;
+        --hdr-bar-bg:#0E1E1B;
+        --hdr-bar-fg:#DCE7E4;
+        --hdr-radius:8px;
+        --hdr-radius-sm:6px;
+        --hdr-radius-pill:999px;
+        --hdr-shadow:0 1px 2px rgba(16,26,25,0.05), 0 8px 24px -18px rgba(16,26,25,0.30);
+        --hdr-shadow-lg:0 2px 6px -2px rgba(16,26,25,0.10), 0 12px 28px -12px rgba(16,26,25,0.28);
+        --hdr-shadow-badge:0 2px 6px -1px rgba(10,110,94,0.45);
+        --hdr-accent-glow:0 0 0 4px rgba(10,110,94,0.14);
+        --hdr-ring:0 0 0 3px var(--hdr-bg), 0 0 0 5px var(--hdr-accent);
+        background:var(--hdr-bg); color:var(--hdr-fg); border-bottom:1px solid var(--hdr-line); position:sticky; top:0; z-index:100; box-shadow:var(--hdr-shadow);
          .hdr-search-inner{ display:flex; align-items:center; gap:32px; padding:20px 24px; max-width:1400px; margin:0 auto; }
-        .logo{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:24px; color:#1a202c; cursor:pointer; white-space:nowrap; }
-        .logo-icon{ width:28px; height:28px; color:#667eea; }
+        /* .logo is an <a>: cancel the UA link colour + underline so it renders exactly as the old div. */
+        .logo{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:24px; color:var(--hdr-fg); text-decoration:none; cursor:pointer; white-space:nowrap; border-radius:var(--hdr-radius-sm); }
+        .logo:hover, .logo:visited, .logo:active{ color:var(--hdr-fg); text-decoration:none; }
+        .logo:focus-visible{ outline:2px solid var(--hdr-accent); outline-offset:4px; }
+        .logo-icon{ width:28px; height:28px; color:var(--hdr-accent); }
         .search-wrap{ flex:1; display:flex; align-items:center; position:relative;}
-        .search-icon{ position:absolute; left:16px; width:20px; height:20px; color:#a0aec0; pointer-events:none; }
-        .search-wrap input{ width:100%; padding:14px 16px 14px 48px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:#f7fafc; transition:all 0.3s ease; font-size:15px; }
-        .search-wrap input:focus{ outline:none; background:#fff; border-color:#667eea; box-shadow:0 0 0 4px rgba(102,126,234,0.1); }
+        .search-icon{ position:absolute; left:16px; width:20px; height:20px; color:var(--hdr-fg-muted); pointer-events:none; }
+        .search-wrap input{ width:100%; padding:14px 16px 14px 48px; border-radius:var(--hdr-radius); border:2px solid var(--hdr-line-strong); background:var(--hdr-surface); color:var(--hdr-fg); transition:all 0.3s ease; font-size:15px; }
+        .search-wrap input::placeholder{ color:var(--hdr-fg-muted); }
+        .search-wrap input:focus{ outline:none; background:var(--hdr-bg); border-color:var(--hdr-accent); box-shadow:var(--hdr-accent-glow); }
+        .search-wrap input:focus-visible{ outline:2px solid transparent; border-color:var(--hdr-accent); box-shadow:var(--hdr-accent-glow); }
         .search-wrap input:focus ~ .search-suggestions{ opacity:1; visibility:visible; transform:translateY(0); }
-        .search-suggestions{ position:absolute; top:calc(100% + 8px); left:0; right:0; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); padding:12px; opacity:0; visibility:hidden; transform:translateY(-8px); transition:all 0.3s ease; z-index:10; }
-        .suggestion-item{ display:flex; align-items:center; gap:12px; padding:12px; border-radius:8px; cursor:pointer; transition:background 0.2s ease; }
-        .suggestion-item:hover{ background:#f7fafc; }
-        .suggestion-icon{ width:16px; height:16px; color:#a0aec0; }
+        /* The suggestions are real <button>s now, so focus can land on them — and the moment it does,
+           the input is no longer :focus and the rule above would hide the panel out from under the
+           focused control. Keep the panel open for as long as focus is anywhere inside the wrap. */
+        .search-wrap:focus-within .search-suggestions{ opacity:1; visibility:visible; transform:translateY(0); }
+        .search-suggestions{ position:absolute; top:calc(100% + 8px); left:0; right:0; background:var(--hdr-bg); border:1px solid var(--hdr-line); border-radius:var(--hdr-radius); box-shadow:var(--hdr-shadow-lg); padding:12px; opacity:0; visibility:hidden; transform:translateY(-8px); transition:all 0.3s ease; z-index:10; }
+        /* .suggestion-item is a <button>: a button does not inherit the page font, and it ships with a
+           UA background, border, padding, margin and centred text. It is also not full-width the way the
+           old block-level div was, hence the explicit width + border-box. */
+        .suggestion-item{ display:flex; align-items:center; gap:12px; box-sizing:border-box; width:100%; margin:0; padding:12px; border:0; border-radius:var(--hdr-radius-sm); background:transparent; font:inherit; text-align:start; cursor:pointer; color:var(--hdr-fg); -webkit-appearance:none; appearance:none; transition:background 0.2s ease, color 0.2s ease; }
+        .suggestion-item:hover{ background:var(--hdr-accent-soft); color:var(--hdr-accent); }
+        .suggestion-item:focus-visible{ outline:2px solid var(--hdr-accent); outline-offset:-2px; background:var(--hdr-accent-soft); }
+        .suggestion-icon{ width:16px; height:16px; color:var(--hdr-fg-muted); }
+        .suggestion-item:hover .suggestion-icon{ color:var(--hdr-accent); }
         .icons{ display:flex; align-items:center; gap:12px; }
-        .icon-btn{ padding:12px 20px; border-radius:10px; border:1px solid rgba(0,0,0,0.08); background:#fff; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:8px; position:relative; font-size:15px; font-weight:600; color:#4a5568; }
+        /* .icon-btn is a <button>. `font:inherit` first (the UA font is NOT inherited), then the two
+           font longhands this component actually wants. `overflow:visible` keeps .cart-badge, which sits
+           at top:-6px/right:-6px, from being clipped by the button box. */
+        .icon-btn{ box-sizing:border-box; margin:0; padding:12px 20px; border-radius:var(--hdr-radius); border:1px solid var(--hdr-line-strong); background:var(--hdr-bg); cursor:pointer; overflow:visible; transition:all 0.2s ease; display:flex; align-items:center; gap:8px; position:relative; font:inherit; font-size:15px; font-weight:600; text-align:start; color:var(--hdr-fg-muted); -webkit-appearance:none; appearance:none; }
         .icon-btn svg{ width:20px; height:20px; }
-        .icon-btn:hover{ background:#f7fafc; border-color:rgba(0,0,0,0.12); transform:translateY(-1px); }
-        .cart-badge{ position:absolute; top:-6px; right:-6px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; font-size:11px; font-weight:700; padding:2px 6px; border-radius:10px; min-width:18px; text-align:center; }
+        .icon-btn:hover{ background:var(--hdr-surface); border-color:var(--hdr-fg-muted); color:var(--hdr-fg); transform:translateY(-1px); }
+        .icon-btn:active{ transform:translateY(0); }
+        .icon-btn:focus-visible{ outline:2px solid transparent; outline-offset:3px; color:var(--hdr-fg); border-color:var(--hdr-accent); box-shadow:var(--hdr-ring); }
+        .cart-badge{ position:absolute; top:-6px; right:-6px; background:var(--hdr-accent); color:var(--hdr-accent-fg); box-shadow:var(--hdr-shadow-badge); font-size:11px; font-weight:700; padding:2px 6px; border-radius:var(--hdr-radius-pill); min-width:18px; text-align:center; }
         @media (max-width:900px){  .hdr-search-inner{ gap:16px; padding:16px 20px; }  .search-wrap{ display:none; }  .btn-label{ display:none; }  .icon-btn{ padding:10px; } }
+        @media (prefers-reduced-motion:reduce){  .search-wrap input{ transition:none; }  .search-suggestions{ transition:none; }  .suggestion-item{ transition:none; }  .icon-btn{ transition:none; }  .icon-btn:hover{ transform:none; } }
       }

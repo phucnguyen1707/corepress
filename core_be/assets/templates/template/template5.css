@@ -1,27 +1,86 @@
-.template-5{ position:relative; height:100%; overflow:hidden; background:#000; display:flex; align-items:center; justify-content:center;border-radius:20px; }
+.template-5{
+        --tpl-bg:#10160C;
+        --tpl-fg:#F4F7EE;
+        --tpl-fg-muted:#D2DBC6;
+        --tpl-line:rgba(244,247,238,0.32);
+        --tpl-accent:#AED69A;
+        --tpl-accent-fg:#16220E;
+        --tpl-accent-hover:#C2E2AB;
+        --tpl-surface:rgba(244,247,238,0.16);
+        --tpl-scrim:rgba(16,22,12,0.78);
+        --tpl-dot-idle:rgba(244,247,238,0.55);
+        --tpl-radius:20px;
+        --tpl-radius-chip:30px;
+        --tpl-radius-pill:50px;
+        --tpl-shadow:0 8px 24px rgba(16,22,12,0.38);
+        --tpl-shadow-lg:0 12px 32px rgba(16,22,12,0.5);
+        --tpl-text-shadow:0 4px 20px rgba(16,22,12,0.45);
+        --tpl-ring:0 0 0 3px var(--tpl-bg),0 0 0 5px var(--tpl-accent);
+        position:relative; height:100%; overflow:hidden; background:var(--tpl-bg); display:flex; align-items:center; justify-content:center; border-radius:var(--tpl-radius); color:var(--tpl-fg);
+      }
       .template-5 .slideshow-container{ position:relative; width:100%; height:100%; }
       .template-5 .slide{ position:absolute; inset:0; background-size:cover; background-position:center; opacity:0; transform:scale(1.1); animation:slideAnim 15s ease-in-out infinite; }
       .template-5 .slide:nth-child(1){ animation-delay:0s; }
       .template-5 .slide:nth-child(2){ animation-delay:5s; }
       .template-5 .slide:nth-child(3){ animation-delay:10s; }
       .template-5 .slide.active{ opacity:1; transform:scale(1); }
-      .template-5 .slide-overlay{ position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.3) 100%); }
-      .template-5 .slide-content{ position:relative; z-index:2; max-width:800px; padding:80px 60px; color:#fff; animation:slideContentAnim 15s ease-in-out infinite; opacity:0; }
+      .template-5 .slide-overlay{ position:absolute; inset:0; background:var(--tpl-scrim); }
+      .template-5 .slide-content{ position:relative; z-index:2; max-width:800px; padding:80px 60px; color:var(--tpl-fg); animation:slideContentAnim 15s ease-in-out infinite; opacity:0; }
       .template-5 .slide:nth-child(1) .slide-content{ animation-delay:0s; }
       .template-5 .slide:nth-child(2) .slide-content{ animation-delay:5s; }
       .template-5 .slide:nth-child(3) .slide-content{ animation-delay:10s; }
-      .template-5 .slide-badge{ display:inline-block; padding:8px 20px; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); border-radius:30px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:20px; border:1px solid rgba(255,255,255,0.3); }
-      .template-5 .slide-title{ font-size:clamp(40px,6vw,80px); font-weight:900; line-height:1.1; margin:0 0 20px 0; text-shadow:0 4px 20px rgba(0,0,0,0.3); }
-      .template-5 .slide-description{ font-size:clamp(16px,2vw,24px); line-height:1.6; margin:0 0 32px 0; opacity:0.95; max-width:600px; }
-      .template-5 .slide-button{ padding:16px 48px; background:#fff; color:#000; border:none; border-radius:50px; font-size:16px; font-weight:700; cursor:pointer; transition:all 0.3s ease; box-shadow:0 8px 24px rgba(0,0,0,0.2); text-transform:uppercase; letter-spacing:0.05em; }
-      .template-5 .slide-button:hover{ transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,0,0,0.3); background:#f0f0f0; }
-      .template-5 .slide-indicators{ position:absolute; bottom:40px; left:50%; transform:translateX(-50%); z-index:10; display:flex; gap:12px; }
-      .template-5 .indicator{ width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,0.4); cursor:pointer; transition:all 0.3s ease; border:2px solid transparent; }
-      .template-5 .indicator.active{ background:#fff; width:40px; border-radius:6px; }
+      .template-5 .slide-badge{ display:inline-block; padding:8px 20px; background:var(--tpl-surface); color:var(--tpl-fg); backdrop-filter:blur(10px); border-radius:var(--tpl-radius-chip); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:20px; border:1px solid var(--tpl-line); }
+      .template-5 .slide-title{ font-size:clamp(40px,6vw,80px); font-weight:900; line-height:1.1; margin:0 0 20px 0; color:var(--tpl-fg); text-shadow:var(--tpl-text-shadow); }
+      .template-5 .slide-description{ font-size:clamp(16px,2vw,24px); line-height:1.6; margin:0 0 32px 0; color:var(--tpl-fg-muted); max-width:600px; }
+      .template-5 .slide-button{ display:block; margin:0; padding:16px 48px; background:var(--tpl-accent); color:var(--tpl-accent-fg); border:none; border-radius:var(--tpl-radius-pill); font-family:inherit; font-size:16px; font-weight:700; text-decoration:none; cursor:pointer; transition:all 0.3s ease; box-shadow:var(--tpl-shadow); text-transform:uppercase; letter-spacing:0.05em; }
+      .template-5 .slide-button:hover{ transform:translateY(-2px); box-shadow:var(--tpl-shadow-lg); background:var(--tpl-accent-hover); }
+      .template-5 .slide-button:active{ transform:translateY(0); }
+      .template-5 .slide-button:focus-visible{ outline:2px solid transparent; outline-offset:3px; box-shadow:var(--tpl-ring); }
+      .template-5 .slide-indicators{ position:absolute; bottom:40px; left:50%; transform:translateX(-50%); z-index:10; display:flex; align-items:center; gap:12px; }
+
+      /* The dots are <label>s wrapping a hidden radio, so they are real controls with no JS at all:
+         picking one shows that slide and stops the carousel advancing away from it. They used to be
+         <button aria-label="Go to slide 2"> that did nothing when pressed — a promise to a screen
+         reader that the markup could not keep. */
+      .template-5 .indicator{ position:relative; display:block; box-sizing:border-box; margin:0; padding:0; font:inherit; width:12px; height:12px; border-radius:50%; background:var(--tpl-dot-idle); cursor:pointer; transition:all 0.3s ease; border:2px solid transparent; }
+      .template-5 .indicator.active{ background:var(--tpl-accent); width:40px; border-radius:6px; }
       .template-5 .indicator:nth-child(1){ animation:indicatorAnim 15s ease-in-out infinite; animation-delay:0s; }
       .template-5 .indicator:nth-child(2){ animation:indicatorAnim 15s ease-in-out infinite; animation-delay:5s; }
       .template-5 .indicator:nth-child(3){ animation:indicatorAnim 15s ease-in-out infinite; animation-delay:10s; }
+
+      /* The control fills its label: invisible, but still hit-testable and keyboard-focusable. */
+      .template-5 .slide-input,.template-5 .motion-input{ position:absolute; top:0; left:0; width:100%; height:100%; margin:0; padding:0; opacity:0; cursor:pointer; }
+      .template-5 .sr-only{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+      .template-5 .indicator:has(.slide-input:focus-visible){ outline:3px solid var(--tpl-accent); outline-offset:4px; }
+      .template-5 .motion-btn:has(.motion-input:focus-visible){ outline:3px solid var(--tpl-accent); outline-offset:4px; }
+
+      /* Pause / play. WCAG 2.2.2: anything that moves on its own for more than 5s needs a way to
+         stop it. This carousel loops forever, so without this it is a Level A failure. */
+      .template-5 .motion-btn{ position:relative; display:flex; align-items:center; justify-content:center; box-sizing:border-box; width:26px; height:26px; margin-left:8px; padding:5px; border-radius:50%; background:var(--tpl-dot-idle); color:var(--tpl-bg); cursor:pointer; transition:background 0.3s ease; }
+      .template-5 .motion-btn:hover{ background:var(--tpl-accent); }
+      .template-5 .motion-btn .icon-play{ display:none; }
+      .template-5 .motion-btn:has(.motion-input:checked) .icon-pause{ display:none; }
+      .template-5 .motion-btn:has(.motion-input:checked) .icon-play{ display:block; }
+
+      /* Paused: freeze every animation, leaving whatever is on screen on screen. */
+      .template-5:has(.motion-input:checked) .slide,.template-5:has(.motion-input:checked) .slide-content,.template-5:has(.motion-input:checked) .indicator{ animation-play-state:paused; }
+
+      /* A dot was picked: the carousel stops and holds that slide. */
+      .template-5:has(.slide-input:checked) .slide,.template-5:has(.slide-input:checked) .slide-content,.template-5:has(.slide-input:checked) .indicator{ animation:none; }
+      .template-5:has(.slide-input:checked) .slide{ opacity:0; transform:none; }
+      .template-5:has(.slide-input:checked) .slide-content{ opacity:0; transform:none; }
+      .template-5:has(.slide-input:checked) .indicator{ background:var(--tpl-dot-idle); width:12px; border-radius:50%; }
+      .template-5:has(.indicator:nth-child(1) .slide-input:checked) .slide:nth-child(1),.template-5:has(.indicator:nth-child(1) .slide-input:checked) .slide:nth-child(1) .slide-content{ opacity:1; }
+      .template-5:has(.indicator:nth-child(2) .slide-input:checked) .slide:nth-child(2),.template-5:has(.indicator:nth-child(2) .slide-input:checked) .slide:nth-child(2) .slide-content{ opacity:1; }
+      .template-5:has(.indicator:nth-child(3) .slide-input:checked) .slide:nth-child(3),.template-5:has(.indicator:nth-child(3) .slide-input:checked) .slide:nth-child(3) .slide-content{ opacity:1; }
+      /* Same specificity (0,4,0) as the reset above, so this must come after it to win the tie. */
+      .template-5 .indicator:has(.slide-input:checked){ background:var(--tpl-accent); width:40px; border-radius:6px; }
       @keyframes slideAnim{ 0%{ opacity:0; transform:scale(1.1); } 2%{ opacity:1; transform:scale(1); } 31%{ opacity:1; transform:scale(1); } 33%{ opacity:0; transform:scale(1.1); } 100%{ opacity:0; transform:scale(1.1); } }
       @keyframes slideContentAnim{ 0%{ opacity:0; transform:translateY(40px); } 2%{ opacity:1; transform:translateY(0); } 31%{ opacity:1; transform:translateY(0); } 33%{ opacity:0; transform:translateY(-40px); } 100%{ opacity:0; transform:translateY(-40px); } }
-      @keyframes indicatorAnim{ 0%{ background:rgba(255,255,255,0.4); width:12px; border-radius:50%; } 2%{ background:#fff; width:40px; border-radius:6px; } 31%{ background:#fff; width:40px; border-radius:6px; } 33%{ background:rgba(255,255,255,0.4); width:12px; border-radius:50%; } 100%{ background:rgba(255,255,255,0.4); width:12px; border-radius:50%; } }
+      @keyframes indicatorAnim{ 0%{ background:var(--tpl-dot-idle); width:12px; border-radius:50%; } 2%{ background:var(--tpl-accent); width:40px; border-radius:6px; } 31%{ background:var(--tpl-accent); width:40px; border-radius:6px; } 33%{ background:var(--tpl-dot-idle); width:12px; border-radius:50%; } 100%{ background:var(--tpl-dot-idle); width:12px; border-radius:50%; } }
       @media (max-width:768px){ .template-5{ min-height:500px; } .template-5 .slide-content{ padding:40px 30px; } .template-5 .slide-description{ font-size:16px; } .template-5 .slide-button{ padding:14px 36px; font-size:14px; } }
+      @media (prefers-reduced-motion:reduce){
+        .template-5 .slide{ animation:none; }
+        .template-5 .slide-content{ animation:none; opacity:1; }
+        .template-5 .indicator:nth-child(n){ animation:none; transition:none; }
+      }

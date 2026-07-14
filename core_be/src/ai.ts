@@ -1,4 +1,12 @@
-import { cssToJson, extractUser, htmlToNodes, scopeCss } from "./utils";
+import {
+  cssToJson,
+  extractUser,
+  htmlToNodes,
+  sanitizeNodes,
+  scopeCss,
+  scopeFormNames,
+  validateSectionCss,
+} from "./utils";
 import { pg } from "./postgres";
 import { nanoid } from "nanoid";
 
@@ -18,7 +26,9 @@ const SYSTEM_PROMPT = `You are a senior web designer. Generate a single reusable
 Output rules (STRICT):
 - Return ONLY valid JSON with this exact shape: {"html": string, "css": string}.
 - HTML: a single root <div> containing the section. No <html>, <head>, <body>, <script>, <link>, <style>, or <iframe>. No event handlers (onclick, onload, etc). No javascript: URLs. Use placeholder text/images only.
-- CSS: plain CSS only. Scope all rules under the single root class you used in the HTML (e.g., .my-header .logo { ... }). No @import. No url() pointing to remote hosts except https://images.unsplash.com or data: URIs.
+- CSS: plain CSS only, and EVERY selector must start with the single root class you used in the HTML (e.g. ".my-header .logo { ... }" — never a bare ".logo { ... }", which will match nothing).
+- CSS: the only at-rules that work are @media and @keyframes. Do NOT use :root, @supports, @layer, @container, @font-face or @import — they are silently discarded. Put custom properties on your root class (".my-header { --brand: #0A6E5E; }"); children inherit them.
+- CSS: no ";" inside a declaration value, so no data: URIs. Remote images may only come from https://images.unsplash.com. For icons, inline an <svg> in the HTML using currentColor.
 - Do not include markdown fences or commentary. Only the JSON.`;
 
 const stripDangerousHtml = (html: string): string => {
@@ -157,6 +167,34 @@ export const generateSection = async (
 
     if (rootNodes.length === 0) {
       return new Response("AI returned empty HTML", { status: 502 });
+    }
+
+    // The regex pass above is a first line of defence, not the last one: it runs on the raw
+    // string and is bypassable. This runs on the PARSED tree, so what it inspects is exactly
+    // what the browser would see.
+    sanitizeNodes(nodes, rootNodes);
+    scopeFormNames(nodes, uniqueScopeId);
+
+    // The CSS pipeline discards :root, @supports, @layer, @font-face and any selector that is not
+    // rooted at the section's own class — silently, with no error. Refuse the section rather than
+    // persist CSS that will quietly do nothing.
+    const rootClassName = (nodes[rootNodes[0]!]?.attribute["class"] ?? "")
+      .split(/\s+/)
+      .filter(Boolean)[0];
+
+    if (!rootClassName) {
+      return new Response("AI section has no root class to scope its CSS to", {
+        status: 502,
+      });
+    }
+
+    const cssProblems = validateSectionCss(safeCss, `.${rootClassName}`);
+    if (cssProblems.length > 0) {
+      console.error("Rejected AI CSS:", cssProblems);
+      return new Response(
+        `AI returned CSS this pipeline cannot express:\n- ${cssProblems.join("\n- ")}`,
+        { status: 502 },
+      );
     }
 
     const sectionLabel =

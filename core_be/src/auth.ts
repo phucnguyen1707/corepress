@@ -99,6 +99,14 @@ export const login = async (req: Bun.BunRequest): Promise<Response> => {
 export const logout = async (req: Bun.BunRequest): Promise<Response> => {
   const cookie = req.cookies;
 
+  // Deleting the cookie only takes the token off THIS browser. The token itself stays valid in
+  // users.session forever, so anyone who already has a copy — a shared machine, a proxy log, a
+  // backup — stays logged in as this user. Logging out has to revoke the token, not just forget it.
+  const session = cookie.get("session");
+  if (session) {
+    await pg`UPDATE users SET session = NULL WHERE session = ${session};`.execute();
+  }
+
   cookie.delete("session");
 
   return new Response(null, {

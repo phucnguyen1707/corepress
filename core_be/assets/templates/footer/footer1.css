@@ -1,3 +1,41 @@
-.footer-1{padding:32px 24px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#e4e4e7;text-align:center;border-top:1px solid rgba(255,255,255,0.1);}
-    .footer-1 .container{max-width:1400px;margin:0 auto;}
-    .footer-1 .text{font-size:14px;font-weight:500;letter-spacing:0.3px;opacity:0.9;}
+/* Footer 1 — index 1: terracotta (hue 10) on warm cream/brown neutrals.
+   Token contract mirrors header-1's --hdr-* so header/footer/template read as one system.
+   Tokens MUST be declared on the component root: scopeCss rewrites ":root" to ".<scope>:root",
+   which matches nothing. Declared here, children inherit normally. */
+.footer-1 {
+  --ftr-bg: #2E241C;
+  --ftr-fg: #F0E6D8;
+  --ftr-fg-muted: #C6B4A2;
+  --ftr-line: #8A7362;
+  --ftr-accent: #E88672;
+  --ftr-accent-fg: #2E241C;
+  --ftr-surface: #3F3126;
+  --ftr-radius: 12px;
+  --ftr-radius-sm: 8px;
+  --ftr-shadow: 0 2px 8px -2px rgba(15, 10, 6, 0.55);
+  padding: 32px 24px;
+  background: var(--ftr-bg);
+  color: var(--ftr-fg);
+  text-align: center;
+  border-top: 1px solid var(--ftr-line);
+}
+
+.footer-1 .container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Was opacity:0.9 over a gradient — an alpha over a moving backdrop makes the real ratio
+   uncomputable. Now an explicit muted token on a flat bg: 7.54:1. */
+.footer-1 .text {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: var(--ftr-fg-muted);
+}
+
+.footer-1::selection,
+.footer-1 ::selection {
+  background: var(--ftr-accent);
+  color: var(--ftr-accent-fg);
+}

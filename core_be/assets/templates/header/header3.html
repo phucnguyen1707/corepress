@@ -1,41 +1,41 @@
-<div class="header-3" css-id="header-3" devGroupName='header' devName='Header'>
+<div class="header-3" css-id="header-3" role="banner" devGroupName='header' devName='Header'>
   <div class="hdr-stacked-top" devName='Header Main' devIcon='container'>
-    <div class="hamburger" devName='Menu Button' devIcon='icon'>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    </div>
-    <div class="logo" devName='Header Logo' devIcon='container'>
+    <details class="mobile-menu" devName='Mobile Menu' devIcon='container'>
+      <summary class="hamburger" aria-label="Menu" devName='Menu Button' devIcon='icon'>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </summary>
+      <nav class="mobile-nav" aria-label="Primary" devName='Mobile Navigation' devIcon='menu'>
+        <a href="#" class="mobile-nav-link" devName='Nav Link' devIcon='link'>Home</a>
+        <a href="#" class="mobile-nav-link" devName='Nav Link' devIcon='link'>Shop</a>
+        <a href="#" class="mobile-nav-link" devName='Nav Link' devIcon='link'>Collections</a>
+        <a href="#" class="mobile-nav-link" devName='Nav Link' devIcon='link'>About</a>
+      </nav>
+    </details>
+    <a class="logo" href="#" devName='Header Logo' devIcon='container'>
       <div class="logo-icon" devName='Logo Icon' devIcon='icon'>
-        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
         </svg>
       </div>
       <div class="logo-text" devName='Logo Text' devIcon='text'>Brand</div>
-    </div>
+    </a>
     <div class="mini-actions" devName='Header Actions' devIcon='container'>
-      <div class="icon-btn" devName='Search Icon' devIcon='icon'>
-        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button type="button" class="icon-btn" aria-label="Search" devName='Search Icon' devIcon='icon'>
+        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
           <circle cx="11" cy="11" r="8" />
           <path d="M21 21l-4.35-4.35" />
         </svg>
-      </div>
-      <div class="icon-btn cart-btn" devName='Cart Icon' devIcon='icon'>
-        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      </button>
+      <button type="button" class="icon-btn cart-btn" aria-label="Cart, 2 items" devName='Cart Icon' devIcon='icon'>
+        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
           <circle cx="9" cy="21" r="1" />
           <circle cx="20" cy="21" r="1" />
           <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
         </svg>
-        <span class="cart-badge" devName='Cart Badge' devIcon='text'>2</span>
-      </div>
+        <span class="cart-badge" aria-hidden="true" devName='Cart Badge' devIcon='text'>2</span>
+      </button>
     </div>
-  </div>
-  <div class="mobile-menu" devName='Mobile Menu' devIcon='container'>
-    <nav class="mobile-nav" devName='Mobile Navigation' devIcon='menu'>
-      <a class="mobile-nav-link" devName='Nav Link' devIcon='link'>Home</a>
-      <a class="mobile-nav-link" devName='Nav Link' devIcon='link'>Shop</a>
-      <a class="mobile-nav-link" devName='Nav Link' devIcon='link'>Collections</a>
-      <a class="mobile-nav-link" devName='Nav Link' devIcon='link'>About</a>
-    </nav>
   </div>
 </div>

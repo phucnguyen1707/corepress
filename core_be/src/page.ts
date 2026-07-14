@@ -3,6 +3,7 @@ import {
   extractUser,
   htmlToNodes,
   jsonToCss,
+  scopeFormNames,
   scopeCss,
 } from "./utils";
 import { pg } from "./postgres";
@@ -29,6 +30,7 @@ export interface PageNode {
   attribute: Record<string, string>;
   tag: string;
   children: string[];
+  text?: string;
 }
 
 export interface CssNode {
@@ -515,6 +517,8 @@ export const addSection = async (
     const resultHTML = htmlToNodes(html);
     const nodes = resultHTML.nodes;
     const rootNodes = resultHTML.rootNodes;
+
+    scopeFormNames(nodes, uniqueScopeId);
 
     const sectionLabel =
       sectionType.charAt(0).toUpperCase() + sectionType.slice(1);

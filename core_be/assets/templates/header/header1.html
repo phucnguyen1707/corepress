@@ -1,53 +1,70 @@
-<div class="header-1" css-id="header-1" devGroupName='header' devName='Header'>
-  <div class="hdr-announce">
-    <!-- Added class: announce-container -->
+<div class="header-1" css-id="header-1" role="banner" devGroupName='header' devName='Header'>
+  <div class="hdr-announce" devName='Announce Bar' devIcon='container'>
     <div class="announce-container" devName='Announce Container' devIcon='container'>
-      <div class="announce-content">
-        <div class="announce-icon" devName='Announce Icon' devIcon='icon'>
-          <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <div class="announce-content" devName='Announce Content' devIcon='container'>
+        <span class="announce-icon" devName='Announce Icon' devIcon='icon'>
+          <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M1 3h11v11H1z" />
+            <path d="M12 7h4.5L21 10.5V14h-9" />
+            <circle cx="6" cy="18" r="2" />
+            <circle cx="17" cy="18" r="2" />
           </svg>
-        </div>
-        <div devName='Announce Text' devIcon='text' class="announce-text">Free shipping on orders over $75 — Use code:
+        </span>
+        <p class="announce-text" devName='Announce Text' devIcon='text'>Free shipping on orders over $75 — use code
           <span class="announce-promo" devName='Announce Promo' devIcon='promo'>FREESHIP</span>
-        </div>
+        </p>
       </div>
-      <button class="announce-close" aria-label="Close">
-        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button type="button" class="announce-close" aria-label="Dismiss announcement" devName='Announce Close' devIcon='icon'>
+        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
           <path d="M18 6L6 18M6 6l12 12" />
         </svg>
       </button>
     </div>
   </div>
-  <div class="container hdr-inner" devName='Header Main' devIcon='container'>
-    <div class="logo" devName='Header Logo' devIcon='container'>
-      <div class="logo-icon" devName='Logo Icon' devIcon='icon'>
-        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
-      </div>
-      <div devName='Logo Text' devIcon='text' class="logo-text">Brand</div>
-    </div>
-    <nav class="nav" devName='Header Menu' devIcon='menu'>
-      <a devName='Header Text' devIcon='link' class="nav-link">Home</a>
-      <a devName='Header Text' devIcon='link' class="nav-link">Shop</a>
-      <a devName='Header Text' devIcon='link' class="nav-link">Collections</a>
-      <a devName='Header Text' devIcon='link' class="nav-link">About</a>
-    </nav>
-    <div class="hdr-actions" devName='Header Actions' devIcon='container'>
-      <div class="action-btn" devName='Search Icon' devIcon='icon'>
-        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
-      </div>
-      <div class="action-btn cart-btn" devName='Cart Icon' devIcon='icon'>
-        <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
-        </svg>
-        <span class="cart-count" devName='Cart Count' devIcon='text'>2</span>
+  <div class="hdr-bar" devName='Header Bar' devIcon='container'>
+    <div class="hdr-inner" devName='Header Main' devIcon='container'>
+      <a href="#" class="logo" devName='Header Logo' devIcon='container'>
+        <span class="logo-mark" devName='Logo Icon' devIcon='icon'>
+          <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M5 8h14l-1.2 11.2a1.6 1.6 0 0 1-1.6 1.4H7.8a1.6 1.6 0 0 1-1.6-1.4z" />
+            <path d="M9 8V6.4a3 3 0 0 1 6 0V8" />
+          </svg>
+        </span>
+        <span class="logo-text" devName='Logo Text' devIcon='text'>Brand</span>
+      </a>
+      <nav class="nav" aria-label="Primary" devName='Header Menu' devIcon='menu'>
+        <a href="#" class="nav-link is-current" aria-current="page" devName='Header Text' devIcon='link'>Home</a>
+        <a href="#" class="nav-link" devName='Header Text' devIcon='link'>Shop</a>
+        <a href="#" class="nav-link" devName='Header Text' devIcon='link'>Collections</a>
+        <a href="#" class="nav-link" devName='Header Text' devIcon='link'>About</a>
+      </nav>
+      <div class="hdr-actions" devName='Header Actions' devIcon='container'>
+        <button type="button" class="action-btn" aria-label="Search" devName='Search Button' devIcon='icon'>
+          <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" focusable="false">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3.9-3.9" />
+          </svg>
+        </button>
+        <button type="button" class="action-btn cart-btn" aria-label="Cart, 2 items" devName='Cart Button' devIcon='icon'>
+          <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M5 8h14l-1.2 11.2a1.6 1.6 0 0 1-1.6 1.4H7.8a1.6 1.6 0 0 1-1.6-1.4z" />
+            <path d="M9 8V6.4a3 3 0 0 1 6 0V8" />
+          </svg>
+          <span class="cart-count" aria-hidden="true" devName='Cart Count' devIcon='text'>2</span>
+        </button>
+        <details class="mobile-nav" devName='Mobile Menu' devIcon='menu'>
+          <summary class="action-btn menu-btn" aria-label="Menu" devName='Menu Button' devIcon='icon'>
+            <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" focusable="false">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </summary>
+          <nav class="mobile-panel" aria-label="Primary" devName='Mobile Menu Links' devIcon='menu'>
+            <a href="#" class="m-nav-link is-current" aria-current="page" devName='Header Text' devIcon='link'>Home</a>
+            <a href="#" class="m-nav-link" devName='Header Text' devIcon='link'>Shop</a>
+            <a href="#" class="m-nav-link" devName='Header Text' devIcon='link'>Collections</a>
+            <a href="#" class="m-nav-link" devName='Header Text' devIcon='link'>About</a>
+          </nav>
+        </details>
       </div>
     </div>
   </div>

@@ -306,6 +306,68 @@ export default function BodySession(props: BodySessionProps) {
     }
   };
 
+  // Attributes the builder owns. Everything else on a node is a real HTML attribute and has to
+  // reach the DOM — an <a> without its href is not a link, and a <button> without aria-label is
+  // an unlabelled control.
+  const BUILDER_ATTRS = new Set([
+    'class',
+    'style',
+    'dataId',
+    'devName',
+    'devIcon',
+    'devGroupName',
+    'css-id',
+  ]);
+  // Attributes React insists on receiving camelCased. The SVG ones matter because any element other
+  // than svg/circle/path (a <g>, say) falls through to the generic branch below, and React drops a
+  // hyphenated presentation attribute it does not recognise.
+  const REACT_PROP: Record<string, string> = {
+    tabindex: 'tabIndex',
+    for: 'htmlFor',
+    readonly: 'readOnly',
+    maxlength: 'maxLength',
+    autocomplete: 'autoComplete',
+    'stroke-width': 'strokeWidth',
+    'stroke-linecap': 'strokeLinecap',
+    'stroke-linejoin': 'strokeLinejoin',
+    'stroke-dasharray': 'strokeDasharray',
+    'stroke-dashoffset': 'strokeDashoffset',
+    'stroke-opacity': 'strokeOpacity',
+    'fill-rule': 'fillRule',
+    'fill-opacity': 'fillOpacity',
+    'clip-rule': 'clipRule',
+    'clip-path': 'clipPath',
+    'stop-color': 'stopColor',
+    'stop-opacity': 'stopOpacity',
+  };
+
+  const URL_ATTRS = new Set(['href', 'src', 'action', 'formaction']);
+  const isSafeUrl = (value: string) => {
+    const url = value.replace(/[\u0000-\u0020]/g, '').toLowerCase();
+    if (url.startsWith('#') || url.startsWith('/') || url.startsWith('./')) return true;
+    return /^(https?|mailto|tel):/.test(url);
+  };
+
+  const domAttributes = (attribute: Record<string, string>) => {
+    const out: Record<string, string> = {};
+    for (const [name, value] of Object.entries(attribute)) {
+      if (BUILDER_ATTRS.has(name)) continue;
+      // The backend sanitises on the way in, but pages saved BEFORE it did are still in the
+      // database — and this function is what finally hands an attribute to the DOM. An event
+      // handler or a javascript: URL must not get through here either.
+      if (/^on/i.test(name)) continue;
+      if (URL_ATTRS.has(name.toLowerCase()) && value && !isSafeUrl(value)) {
+        out[name] = '#';
+        continue;
+      }
+      out[REACT_PROP[name] ?? name] = value;
+    }
+    return out;
+  };
+
+  const cx = (cls: string | undefined, hovered: boolean) =>
+    [cls, hovered ? 'hovered-node' : ''].filter(Boolean).join(' ') || undefined;
+
   const renderNode = (nodeId: string): ReactNode => {
     const node = pageData.nodes[nodeId];
 
@@ -314,20 +376,10 @@ export default function BodySession(props: BodySessionProps) {
     const { tag, attribute, children, text } = node;
     const isHovered = hoveredNodeId === node.attribute.dataId;
 
-    if (text) {
-      return (
-        <>
-          <div
-            key={nodeId}
-            className={[attribute.class, isHovered ? 'hovered-node' : ''].filter(Boolean).join(' ')}
-            style={node.style || undefined}
-            data-id={node.attribute.dataId}
-          >
-            {text || 'empty value'}
-          </div>
-          {children?.map(childId => renderNode(childId))}
-        </>
-      );
+    // A run of text sitting between inline elements. It is a real node so that its ORDER relative to
+    // its siblings survives (see htmlToNodes) — but it renders as a bare string, not an element.
+    if (tag === '#text') {
+      return text ?? null;
     }
 
     if (tag === 'svg') {
@@ -335,7 +387,7 @@ export default function BodySession(props: BodySessionProps) {
         <svg
           key={nodeId}
           data-id={node.attribute.dataId}
-          className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+          className={cx(attribute.class, isHovered)}
           style={node.style || undefined}
           viewBox={attribute.viewBox || '0 0 100% 100%'}
           fill={attribute.fill || 'none'}
@@ -352,7 +404,7 @@ export default function BodySession(props: BodySessionProps) {
         <circle
           key={nodeId}
           data-id={node.attribute.dataId}
-          className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+          className={cx(attribute.class, isHovered)}
           style={node.style || undefined}
           cx={attribute.cx || ''}
           cy={attribute.cy || ''}
@@ -366,7 +418,7 @@ export default function BodySession(props: BodySessionProps) {
         <path
           key={nodeId}
           data-id={node.attribute.dataId}
-          className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+          className={cx(attribute.class, isHovered)}
           style={node.style || undefined}
           d={attribute.d || ''}
         />
@@ -380,24 +432,30 @@ export default function BodySession(props: BodySessionProps) {
           key={nodeId}
           src={attribute.value}
           alt={node.attribute.devName || 'image'}
-          className={`${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`}
+          className={cx(attribute.class, isHovered)}
           style={node.style || undefined}
         />
       );
     }
 
-    const childElements = children?.map((childId: string) => renderNode(childId));
+    const childElements = children?.map((childId: string) => renderNode(childId)) ?? [];
+
+    // Text belongs INSIDE the node, and the node keeps its own tag. This used to short-circuit
+    // any node that had text into a sibling <div>, which silently turned every <button> and
+    // <a href> carrying a label into a plain div: no keyboard focus, no role, no href — and it
+    // made every :focus-visible rule in the templates dead, because a div cannot take focus.
+    const content: ReactNode[] = text ? [text, ...childElements] : childElements;
 
     return React.createElement(
       tag,
       {
+        ...domAttributes(attribute),
         key: nodeId,
-        id: attribute.id || undefined,
         'data-id': node.attribute.dataId,
-        className: `${attribute.class || undefined} ${isHovered ? 'hovered-node' : ''}`,
+        className: cx(attribute.class, isHovered),
         style: node.style || undefined,
       },
-      childElements?.length ? childElements : null
+      content.length ? content : null
     );
   };
 

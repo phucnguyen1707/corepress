@@ -56,6 +56,15 @@ export const uploadImage = async (
   });
 };
 
+const MIME_BY_EXT: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  svg: "image/svg+xml",
+};
+
 export const serveUpload = async (
   req: Bun.BunRequest<"/uploads/:filename">,
 ): Promise<Response> => {
@@ -70,9 +79,21 @@ export const serveUpload = async (
     return new Response(null, { status: 404 });
   }
 
+  const ext = filename.split(".").pop()!.toLowerCase();
+
   return new Response(file, {
     headers: {
+      "Content-Type": MIME_BY_EXT[ext] ?? "application/octet-stream",
       "Cache-Control": "public, max-age=31536000, immutable",
+      // An SVG is a document, and a document served from this origin runs its <script> with this
+      // origin's cookies. Uploading one and getting a victim to open /uploads/x.svg would otherwise
+      // be account takeover — httpOnly does not help, because the attacker never needs to READ the
+      // cookie, only to make same-origin requests that carry it.
+      // `sandbox` (no allow-scripts) kills that, and applies only to direct navigation: an <img src>
+      // does not create a document, so real image usage is untouched.
+      "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+      // Never let the browser guess a different, more dangerous type than the one we declared.
+      "X-Content-Type-Options": "nosniff",
     },
   });
 };
