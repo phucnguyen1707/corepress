@@ -1,7 +1,10 @@
 import type { User } from "./auth";
+// Note: `CssNode` here is THIS project's JSON shape, not css-tree's AST node of the same name —
+// which is why css-tree is imported as a namespace.
 import type { CssNode, PageNode } from "./page";
 import { pg } from "./postgres";
 import { randomUUID } from "crypto";
+import * as csstree from "css-tree";
 import { parseHTML } from "linkedom";
 
 export interface HtmlToNodesResult {
@@ -124,7 +127,11 @@ export function htmlToNodes(html: string): HtmlToNodesResult {
 // @keyframes. Everything below is VALID CSS that the pipeline mangles or drops WITHOUT AN ERROR —
 // which is the worst way to fail, because the file still looks right when you open it. The section
 // generator lets a model write CSS freely, so these have to be caught at the door.
-const SURVIVES_SCOPING = /^@(media|keyframes)\b/i;
+// An at-rule survives if scopeCss can nest it inside the section's scoped selector (@media,
+// @supports, @container) or hoist it with a namespaced name (@keyframes). @layer and @font-face can
+// do neither: nesting them is invalid CSS, and hoisting them would put a global name (a layer order,
+// a font family) into a page shared by every other section.
+const SURVIVES_SCOPING = /^@(media|supports|container|keyframes)\b/i;
 
 export function validateSectionCss(css: string, rootClass: string): string[] {
   const problems: string[] = [];
@@ -140,29 +147,14 @@ export function validateSectionCss(css: string, rootClass: string): string[] {
   for (const [atRule] of source.matchAll(/@[a-z-]+/gi)) {
     if (!SURVIVES_SCOPING.test(atRule)) {
       problems.push(
-        `${atRule} does not survive scoping — the whole block is dropped. Only @media and @keyframes do.`,
+        `${atRule} does not survive scoping — the whole block is dropped. Use @media, @supports, ` +
+          "@container or @keyframes.",
       );
     }
   }
 
-  // Look for "&" only where a selector can be — a query string ("?q=80&w=2070") is not nesting.
-  const withoutValues = source
-    .replace(/url\([^)]*\)/gi, "url()")
-    .replace(/"[^"]*"|'[^']*'/g, '""');
-  if (withoutValues.includes("&")) {
-    problems.push(
-      "`&` is not understood: it survives as a literal character in the selector. Write the full selector out.",
-    );
-  }
-
-  for (const [, value] of source.matchAll(/url\(([^)]*)\)/gi)) {
-    if (value?.includes(";")) {
-      problems.push(
-        "A `;` inside a value (a data: URI, typically) is read as the end of the declaration, which " +
-          "tears it in half. Use an inline <svg> in the HTML instead.",
-      );
-    }
-  }
+  // `&` and `;`-inside-a-value (data: URIs) used to be rejected here — not because they are bad CSS,
+  // but because the hand-rolled parser mangled them. It is a real parser now, and it handles both.
 
   // The scope class only ever lands on the section's ROOT node, so a selector that does not start
   // from the root class becomes `.<scope>.f-row` — one element carrying both classes, which never
@@ -182,6 +174,93 @@ export function validateSectionCss(css: string, rootClass: string): string[] {
   }
 
   return [...new Set(problems)];
+}
+
+// A section's CSS is scoped under a unique `s_…` class that lives on that section's root node. When
+// the section is deleted the node goes but its CSS does not, unless something removes it — which is
+// this. `removedScopes` are the scope classes no surviving node still carries; every css key that
+// belongs to one of them (a `.s_….foo` selector or a `@keyframes s_…-name`) is dropped.
+export const scopeClassesOf = (classAttr: string | undefined): string[] =>
+  (classAttr ?? "").split(/\s+/).filter((c) => /^s_[\w-]+$/.test(c));
+
+// Reordering a node's children must be exactly that — a rearrangement. `candidate` is only a valid
+// new order if it is a PERMUTATION of `base`: same members, none added, dropped, or duplicated.
+// This is the guard that stops a "reorder" request from injecting a node into someone's page or
+// deleting one, so it must stay strict.
+export const isPermutationOf = (candidate: string[], base: string[]): boolean => {
+  if (candidate.length !== base.length) return false;
+  if (new Set(candidate).size !== candidate.length) return false; // no duplicates
+  const members = new Set(base);
+  return candidate.every((id) => members.has(id));
+};
+
+export function pruneOrphanedCss(
+  css: Record<string, unknown>,
+  removedScopes: Iterable<string>,
+): Record<string, unknown> {
+  const scopes = [...removedScopes];
+  if (scopes.length === 0) return css;
+
+  const belongsToRemoved = (key: string) =>
+    scopes.some(
+      (s) =>
+        key.includes(`.${s}.`) ||
+        key.includes(`.${s} `) ||
+        key.endsWith(`.${s}`) ||
+        key === `@keyframes ${s}` ||
+        key.startsWith(`@keyframes ${s}-`),
+    );
+
+  const next: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(css)) {
+    if (!belongsToRemoved(key)) next[key] = value;
+  }
+  return next;
+}
+
+// A model asked to write section-scoped CSS gets most selectors right and then writes one bare
+// `.card { … }` — and that one stray rule matches NOTHING once the section is scoped, so the whole
+// generation is rejected. But an unrooted selector has an obvious correct meaning: it is a
+// descendant of the section root. Prefixing it with the root class is exactly what scoping intends,
+// so auto-root it rather than fail the request over it. Things that CANNOT be auto-rooted (`:root`,
+// @layer, @font-face, @import) are left untouched for validateSectionCss to reject with a reason.
+export function autoRootSelectors(css: string, rootClass: string): string {
+  const root = rootClass.startsWith(".") ? rootClass : `.${rootClass}`;
+
+  const rootPart = (part: string): string => {
+    const trimmed = part.trim();
+    if (!trimmed) return trimmed;
+    // Already rooted (the root itself, or a descendant of it), or unfixable — leave it.
+    if (trimmed === root || trimmed.startsWith(`${root} `) || trimmed.startsWith(`${root}.`) ||
+        trimmed.startsWith(`${root}:`) || trimmed.startsWith(`${root}>`) ||
+        trimmed.startsWith(":root")) {
+      return trimmed;
+    }
+    return `${root} ${trimmed}`;
+  };
+
+  const walk = (node: CssNode): CssNode => {
+    const out: CssNode = {};
+    for (const [key, value] of Object.entries(node)) {
+      if (typeof value !== "object" || value === null) {
+        out[key] = value;
+        continue;
+      }
+      // Inside @media / @supports / @container the inner selectors need rooting too; @keyframes'
+      // children are keyframe stops (0%, 50%), not selectors, so leave them alone.
+      if (key.startsWith("@keyframes")) {
+        out[key] = value;
+      } else if (key.startsWith("@")) {
+        out[key] = walk(value as CssNode);
+      } else {
+        const rooted = key.split(",").map(rootPart).join(",");
+        out[rooted] = value;
+      }
+    }
+    return out;
+  };
+
+  return jsonToCss(walk(cssToJson(css)));
 }
 
 // Tags that can execute code or pull in remote resources. A section is content, never a program.
@@ -209,12 +288,15 @@ const isSafeUrl = (value: string): boolean => {
   // character up to and including the space is ignorable there, so strip them before looking at
   // the scheme. Entities are already decoded: this runs on the parsed tree, not the raw HTML.
   const url = value.replace(/[\u0000-\u0020]/g, "").toLowerCase();
-  if (url.startsWith("#") || url.startsWith("/") || url.startsWith("./")) {
-    return true;
-  }
-  // No data: URLs at all. Nothing in a template needs one, and an allowlist should never be
-  // wider than the need.
-  return /^(https?|mailto|tel):/.test(url);
+
+  // The danger is a URL carrying a SCHEME the browser will execute — javascript:, data:, vbscript:.
+  // A URL with no scheme (relative: "assets/x.png", "/about", "#faq", "//cdn/x") cannot run script,
+  // so it is safe; only a scheme has to be on the allowlist. The old check inverted this and
+  // rejected ordinary relative paths like "assets/x.png" — exactly what the exporter rewrites
+  // bundled images to, which is why a bundled <img> came out as src="#".
+  const scheme = url.match(/^([a-z][a-z0-9+.-]*):/);
+  if (!scheme) return true;
+  return ["http", "https", "mailto", "tel"].includes(scheme[1]!);
 };
 
 /**
@@ -282,66 +364,201 @@ export function scopeFormNames(
   }
 }
 
-export function cssToJson(css: string): CssNode {
-  const cleanCss = css
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\n/g, " ")
-    .replace(/\s\s+/g, " ");
+const VOID_TAGS = new Set([
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr",
+]);
 
-  const root: CssNode = {};
-  const stack: CssNode[] = [root];
-  let buffer = "";
+// The builder's own bookkeeping. It drives the layers panel; it has no business in a shipped page.
+const EDITOR_ATTRS = new Set([
+  "dataId",
+  "devName",
+  "devIcon",
+  "devGroupName",
+  "css-id",
+]);
 
-  for (let i = 0; i < cleanCss.length; i++) {
-    const char = cleanCss[i];
+const escapeText = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-    const parent = stack[stack.length - 1]!;
+const escapeAttribute = (value: string) =>
+  escapeText(value).replace(/"/g, "&quot;");
 
-    if (char === "{") {
-      const selector = buffer.trim();
-      
-      if (!parent[selector] || typeof parent[selector] !== 'object') {
-        parent[selector] = {};
-      }
+// The style panel writes to node.style, which is a REACT style object — camelCased. Serialising it
+// verbatim would emit `backgroundColor:red`, which is not a CSS property, so every edit the user made
+// by hand would silently do nothing in the exported page.
+const inlineStyle = (style: Record<string, string>) =>
+  Object.entries(style)
+    .map(([property, value]) => {
+      const cssProperty = property.replace(
+        /[A-Z]/g,
+        (char) => `-${char.toLowerCase()}`,
+      );
+      return `${cssProperty}:${value}`;
+    })
+    .join(";");
 
-      stack.push(parent[selector]);
-      
-      buffer = "";
-    } 
-    else if (char === "}") {
-      const trimmedBuffer = buffer.trim();
-      if (trimmedBuffer) {
-        const firstColon = trimmedBuffer.indexOf(":");
-        if (firstColon > -1) {
-          const key = trimmedBuffer.slice(0, firstColon).trim();
-          const value = trimmedBuffer.slice(firstColon + 1).trim();
-          parent[key] = Number.isNaN(Number(value)) ? value : Number(value);;
-        }
-      }
-      
-      if (stack.length > 1) {
-        stack.pop();
-      }
-      
-      buffer = "";
-    } 
-    else if (char === ";") {
-      const trimmedBuffer = buffer.trim();
-      const firstColon = trimmedBuffer.indexOf(":");
-      
-      if (firstColon > -1) {
-        const key = trimmedBuffer.slice(0, firstColon).trim();
-        const value = trimmedBuffer.slice(firstColon + 1).trim();
-        parent[key] = Number.isNaN(Number(value)) ? value : Number(value);;
-      }
-      
-      buffer = "";
-    } 
-    else {
-      buffer += char;
-    }
+/**
+ * Serialise the node tree back to HTML — the inverse of htmlToNodes, and the thing that makes the
+ * page shippable rather than merely editable.
+ */
+export function nodesToHtml(
+  nodes: Record<string, PageNode>,
+  rootId: string,
+): string {
+  const node = nodes[rootId];
+  if (!node) return "";
+
+  if (node.tag === "#text") return escapeText(node.text ?? "");
+
+  // The builder renders an image as `<img src={attribute.value}>` — the URL lives in `value`, not
+  // `src` — and the image panel writes both. A generic pass would ship `<img value="…">` (which no
+  // browser honours) and, for an AI-authored `<img src>`, nothing in `value` at all. Normalise to a
+  // real `src`, and give it the same alt the builder shows so the exported image is not nameless.
+  if (node.tag === "img") {
+    const url = node.attribute["value"] || node.attribute["src"] || "";
+    const src = url && isSafeUrl(url) ? url : "#";
+    const alt = node.attribute["alt"] ?? node.attribute["devName"] ?? "";
+    return `<img src="${escapeAttribute(src)}" alt="${escapeAttribute(alt)}" />`;
   }
 
+  const attributes: string[] = [];
+  for (const [name, value] of Object.entries(node.attribute)) {
+    if (EDITOR_ATTRS.has(name) || name === "style") continue;
+    // This produces the file the user hands to their visitors. The builder's live renderer already
+    // drops these, but the export baked every attribute in verbatim — so a page that looked safe in
+    // the editor could ship a stored XSS. An event handler and a javascript: URL must not survive
+    // into the distributed HTML, no matter how they got into the database.
+    if (/^on/i.test(name)) continue;
+    if (URL_ATTRS.has(name.toLowerCase()) && value && !isSafeUrl(value)) {
+      attributes.push(`${name}="#"`);
+      continue;
+    }
+    attributes.push(`${name}="${escapeAttribute(value)}"`);
+  }
+
+  const style = [
+    node.attribute["style"],
+    node.style && Object.keys(node.style).length
+      ? inlineStyle(node.style)
+      : undefined,
+  ]
+    .filter(Boolean)
+    .join(";");
+  if (style) attributes.push(`style="${escapeAttribute(style)}"`);
+
+  const open = `<${node.tag}${attributes.length ? ` ${attributes.join(" ")}` : ""}>`;
+  if (VOID_TAGS.has(node.tag)) return open;
+
+  const text = node.text ? escapeText(node.text) : "";
+  const children = node.children
+    .map((childId) => nodesToHtml(nodes, childId))
+    .join("");
+
+  return `${open}${text}${children}</${node.tag}>`;
+}
+
+// The shape stored in the database: `{ selector: { property: value, "@media …": { … } } }`. The
+// builder's style panel writes straight into these top-level selector keys (page.ts/updatePageCss),
+// so the shape is a contract — a real parser may not change it, only stop mangling it.
+//
+// It used to be a hand-rolled character scanner. It split declarations on ";" wherever it appeared,
+// which tore `url("data:image/svg+xml;base64,…")` in half and silently dropped the rest of the
+// value; it stripped comments with a regex that did not know about strings; and it could not tell a
+// selector from a value. css-tree already shipped in this project's dependencies, unused.
+const coerceValue = (value: string): string | number =>
+  Number.isNaN(Number(value)) ? value : Number(value);
+
+const readCssBlock = (
+  children: csstree.CssNode[],
+  target: CssNode,
+  depth: number,
+): void => {
+  // Cheap insurance against a pathological re-parse loop (see the Raw case below).
+  if (depth > 32) return;
+
+  for (const node of children) {
+    switch (node.type) {
+      case "Declaration": {
+        const value = csstree.generate(node.value);
+        target[node.property] = coerceValue(
+          node.important ? `${value} !important` : value,
+        );
+        break;
+      }
+
+      case "Rule": {
+        const selector = csstree.generate(node.prelude);
+        if (typeof target[selector] !== "object" || target[selector] === null) {
+          target[selector] = {};
+        }
+        readCssBlock(
+          node.block.children.toArray(),
+          target[selector] as CssNode,
+          depth + 1,
+        );
+        break;
+      }
+
+      case "Atrule": {
+        // @import and friends carry no block; they never survived scoping anyway.
+        if (!node.block) break;
+
+        const prelude = node.prelude ? csstree.generate(node.prelude) : "";
+        const key = prelude ? `@${node.name} ${prelude}` : `@${node.name}`;
+        if (typeof target[key] !== "object" || target[key] === null) {
+          target[key] = {};
+        }
+        readCssBlock(
+          node.block.children.toArray(),
+          target[key] as CssNode,
+          depth + 1,
+        );
+        break;
+      }
+
+      case "Raw": {
+        // css-tree stops reading a declaration block at the first thing that is not a declaration
+        // and hands the remainder back as Raw — which is exactly what happens with the nested CSS
+        // that headers 2-5 and the templates are written in. Parse that remainder as a stylesheet of
+        // its own and the nested rules come back.
+        const nested = csstree.parse(node.value);
+        if (nested.type !== "StyleSheet") break;
+        readCssBlock(nested.children.toArray(), target, depth + 1);
+        break;
+      }
+
+      // Comment, and anything else structural, carries no style.
+      default:
+        break;
+    }
+  }
+};
+
+export function cssToJson(css: string): CssNode {
+  const root: CssNode = {};
+
+  let ast: csstree.CssNode;
+  try {
+    ast = csstree.parse(css);
+  } catch {
+    return root;
+  }
+  if (ast.type !== "StyleSheet") return root;
+
+  readCssBlock(ast.children.toArray(), root, 0);
   return root;
 }
 
@@ -372,6 +589,10 @@ const scopeSelector = (selector: string, uniqueClass: string) =>
 
 // Properties whose value names an @keyframes rule.
 const ANIMATION_PROPS = new Set(["animation", "animation-name"]);
+
+// At-rules that CSS nesting lets us tuck inside a style rule — which is how they survive scoping.
+// @layer and @font-face cannot be nested, so they have no home here and stay rejected at the door.
+const NESTABLE_AT_RULE = /^@(media|supports|container)\b/i;
 
 export const scopeCss = (cssJson: any, uniqueClass: string) => {
   const scoped: any = {};
@@ -421,18 +642,21 @@ export const scopeCss = (cssJson: any, uniqueClass: string) => {
   });
 
   Object.keys(cssJson).forEach((key) => {
-    if (key.startsWith("@media")) {
-      // Nest the media query INSIDE each scoped selector rather than emitting a top-level
-      // "@media(...)" key. Every section's CSS is merged into one page-wide jsonb object with
-      // `css || new` (page.ts), and jsonb `||` is a SHALLOW merge — so a shared top-level
-      // "@media(max-width:640px)" key meant the last section written silently deleted every
-      // other section's rules for that breakpoint. Scoped selectors are unique per section,
-      // so bucketing under them makes the collision structurally impossible.
-      const mediaRules = cssJson[key];
-      Object.keys(mediaRules).forEach((subKey) => {
+    if (NESTABLE_AT_RULE.test(key)) {
+      // Nest the query INSIDE each scoped selector rather than emitting a top-level "@media(...)"
+      // key. Every section's CSS is merged into one page-wide jsonb object with `css || new`
+      // (page.ts), and jsonb `||` is a SHALLOW merge — so a shared top-level "@media(max-width:640px)"
+      // key meant the last section written silently deleted every other section's rules for that
+      // breakpoint. Scoped selectors are unique per section, so bucketing under them makes the
+      // collision structurally impossible.
+      //
+      // @supports rides along: CSS nesting allows it inside a style rule exactly like @media, so it
+      // gets the same treatment instead of being silently dropped as it was before.
+      const conditionalRules = cssJson[key];
+      Object.keys(conditionalRules).forEach((subKey) => {
         const bucket = bucketFor(subKey);
         if (!bucket[key] || typeof bucket[key] !== "object") bucket[key] = {};
-        Object.assign(bucket[key], rewriteAnimations(mediaRules[subKey]));
+        Object.assign(bucket[key], rewriteAnimations(conditionalRules[subKey]));
       });
     } else if (key.startsWith("@keyframes")) {
       const name = key.slice("@keyframes".length).trim();

@@ -48,7 +48,7 @@
         .mega-panel .col a:focus-visible{outline:2px solid var(--hdr-accent);outline-offset:2px;color:var(--hdr-accent);}
         .right{display:flex;gap:12px;align-items:center;}
         .icon-btn{font:inherit;margin:0;text-align:center;padding:12px 24px;border-radius:var(--hdr-radius);border:none;background:var(--hdr-accent);color:var(--hdr-accent-fg);cursor:pointer;transition:all .3s cubic-bezier(0.4,0,0.2,1);font-weight:600;font-size:14px;letter-spacing:.3px;box-shadow:var(--hdr-shadow-accent);position:relative;overflow:hidden;}
-        .icon-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:var(--hdr-sheen);transition:left .5s ease;}
+        .icon-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;background:var(--hdr-sheen);transition:left .5s ease;}
         .icon-btn:hover{background:var(--hdr-accent-strong);transform:translateY(-2px);box-shadow:var(--hdr-shadow-accent-hover);}
         .icon-btn:hover::before{left:100%;}
         .icon-btn:active{transform:translateY(0);}

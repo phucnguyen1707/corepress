@@ -1,4 +1,5 @@
 import {
+  autoRootSelectors,
   cssToJson,
   extractUser,
   htmlToNodes,
@@ -27,8 +28,8 @@ Output rules (STRICT):
 - Return ONLY valid JSON with this exact shape: {"html": string, "css": string}.
 - HTML: a single root <div> containing the section. No <html>, <head>, <body>, <script>, <link>, <style>, or <iframe>. No event handlers (onclick, onload, etc). No javascript: URLs. Use placeholder text/images only.
 - CSS: plain CSS only, and EVERY selector must start with the single root class you used in the HTML (e.g. ".my-header .logo { ... }" — never a bare ".logo { ... }", which will match nothing).
-- CSS: the only at-rules that work are @media and @keyframes. Do NOT use :root, @supports, @layer, @container, @font-face or @import — they are silently discarded. Put custom properties on your root class (".my-header { --brand: #0A6E5E; }"); children inherit them.
-- CSS: no ";" inside a declaration value, so no data: URIs. Remote images may only come from https://images.unsplash.com. For icons, inline an <svg> in the HTML using currentColor.
+- CSS: @media, @supports, @container and @keyframes all work, and so does & nesting. Do NOT use :root, @layer, @font-face or @import — those cannot be scoped to one section and are rejected. Put custom properties on your root class (".my-header { --brand: #0A6E5E; }"); children inherit them.
+- CSS: remote images may only come from https://images.unsplash.com. A data: URI is allowed, but for icons prefer an inline <svg> in the HTML using currentColor.
 - Do not include markdown fences or commentary. Only the JSON.`;
 
 const stripDangerousHtml = (html: string): string => {
@@ -188,7 +189,12 @@ export const generateSection = async (
       });
     }
 
-    const cssProblems = validateSectionCss(safeCss, `.${rootClassName}`);
+    // Forgive the model's most common mistake: a stray selector that forgot the section root. Rooting
+    // it is exactly what scoping wants, so fix it rather than reject the whole generation. Anything
+    // that genuinely cannot be scoped (:root, @layer, …) still fails validation below with a reason.
+    const rootedCss = autoRootSelectors(safeCss, `.${rootClassName}`);
+
+    const cssProblems = validateSectionCss(rootedCss, `.${rootClassName}`);
     if (cssProblems.length > 0) {
       console.error("Rejected AI CSS:", cssProblems);
       return new Response(
@@ -211,7 +217,7 @@ export const generateSection = async (
       }
     });
 
-    const rawCssJson = cssToJson(safeCss);
+    const rawCssJson = cssToJson(rootedCss);
     const scopedCssJson = scopeCss(rawCssJson, uniqueScopeId);
 
     await pg`

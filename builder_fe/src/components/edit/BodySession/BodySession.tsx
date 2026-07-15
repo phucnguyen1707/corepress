@@ -2,7 +2,13 @@
 
 import React, { JSX, ReactNode, useEffect, useRef, useState } from 'react';
 
-import { cssPage, deleteNode as deleteNodeApi, editNode, page } from '@/axios/page.service';
+import {
+  cssPage,
+  deleteNode as deleteNodeApi,
+  editNode,
+  page,
+  reorderChildren,
+} from '@/axios/page.service';
 import Typo from '@/components/commons/Typo';
 import AddSectionModal from '@/components/modal';
 import PreviewSkeleton from '@/components/edit/BodySession/PreviewSkeleton';
@@ -26,13 +32,14 @@ import {
 import { ContainerSessionIcon } from '@/icons/C';
 import { PromoSessionIcon } from '@/icons/P';
 import { CssData, ESideBarActive, Page } from '@/interfaces';
-import { UserInfoPage } from '@/interfaces/auth.interface';
 import SectionStyleInjector from '@/utils/styleInjector';
 
 import './bodySession.css';
 
 interface BodySessionProps {
-  pageInfo: UserInfoPage[] | undefined;
+  // The page currently being edited. When the user switches pages this changes, and the effects
+  // below refetch — so the same BodySession serves every page instead of being pinned to the first.
+  pageId: number | undefined;
 }
 
 const iconsList: Record<string, JSX.Element> = {
@@ -48,7 +55,7 @@ const iconsList: Record<string, JSX.Element> = {
 };
 
 export default function BodySession(props: BodySessionProps) {
-  const { pageInfo } = props;
+  const { pageId } = props;
 
   const [pageData, setPageData] = useState<Page>({
     bodyNode: '',
@@ -73,10 +80,10 @@ export default function BodySession(props: BodySessionProps) {
   const latestNodeRef = useRef<Record<string, Page['nodes'][string]>>({});
 
   const fetchPageData = async (signal: { cancelled: boolean }) => {
-    if (!pageInfo) return;
+    if (!pageId) return;
 
     try {
-      const res = await page(pageInfo?.[0].id);
+      const res = await page(pageId);
       if (signal.cancelled) return;
       setPageData(res.data.data);
     } catch (err) {
@@ -85,10 +92,10 @@ export default function BodySession(props: BodySessionProps) {
   };
 
   const fetchCssDataPage = async (signal: { cancelled: boolean }) => {
-    if (!pageInfo) return;
+    if (!pageId) return;
 
     try {
-      const res = await cssPage(pageInfo?.[0].id);
+      const res = await cssPage(pageId);
       if (signal.cancelled) return;
       setCssData(res.data);
     } catch (err) {
@@ -107,7 +114,7 @@ export default function BodySession(props: BodySessionProps) {
       signal.cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageInfo]);
+  }, [pageId]);
 
   const refreshPageData = async () => {
     await fetchPageData({ cancelled: false });
@@ -220,6 +227,44 @@ export default function BodySession(props: BodySessionProps) {
             <Typo className='tag-name'>{node.attribute.devName}</Typo>
 
             <div className='tree-item__actions'>
+              {(() => {
+                // Up/down only make sense for a section — a direct child of the body container.
+                const siblings = pageData.nodes[SECTION_PARENT]?.children ?? [];
+                const index = siblings.indexOf(rootId);
+                if (index === -1) return null;
+                return (
+                  <>
+                    <button
+                      type='button'
+                      className='tree-item__action-btn'
+                      title='Move up'
+                      disabled={index === 0}
+                      onClick={e => {
+                        e.stopPropagation();
+                        moveSection(rootId, -1);
+                      }}
+                    >
+                      <span style={{ display: 'flex', transform: 'rotate(-90deg)' }}>
+                        <ArrowRightIcon color='#6b7280' />
+                      </span>
+                    </button>
+                    <button
+                      type='button'
+                      className='tree-item__action-btn'
+                      title='Move down'
+                      disabled={index === siblings.length - 1}
+                      onClick={e => {
+                        e.stopPropagation();
+                        moveSection(rootId, 1);
+                      }}
+                    >
+                      <span style={{ display: 'flex', transform: 'rotate(90deg)' }}>
+                        <ArrowRightIcon color='#6b7280' />
+                      </span>
+                    </button>
+                  </>
+                );
+              })()}
               <button
                 type='button'
                 className='tree-item__action-btn'
@@ -263,8 +308,41 @@ export default function BodySession(props: BodySessionProps) {
     });
   };
 
+  // Sections live in the body container ('div-01'); their order in its children array IS the page
+  // order. Moving one up/down swaps it with its neighbour there.
+  const SECTION_PARENT = 'div-01';
+
+  const moveSection = async (nodeId: string, direction: -1 | 1) => {
+    const id = pageId;
+    if (!id) return;
+
+    const siblings = pageData.nodes[SECTION_PARENT]?.children ?? [];
+    const index = siblings.indexOf(nodeId);
+    const target = index + direction;
+    if (index === -1 || target < 0 || target >= siblings.length) return;
+
+    const next = [...siblings];
+    [next[index], next[target]] = [next[target]!, next[index]!];
+
+    // Update the canvas immediately, then persist. If the save fails, reload to the server's truth.
+    setPageData(prev => ({
+      ...prev,
+      nodes: {
+        ...prev.nodes,
+        [SECTION_PARENT]: { ...prev.nodes[SECTION_PARENT], children: next },
+      },
+    }));
+
+    try {
+      await reorderChildren(id, SECTION_PARENT, next);
+    } catch (err) {
+      console.error('Failed to reorder sections:', err);
+      await refreshPageData();
+    }
+  };
+
   const handleDeleteNode = async (nodeId: string) => {
-    const id = pageInfo?.[0].id;
+    const id = pageId;
     if (!id) return;
     if (!confirm('Delete this section? This cannot be undone.')) return;
 
@@ -278,7 +356,7 @@ export default function BodySession(props: BodySessionProps) {
   };
 
   const handleToggleHidden = async (nodeId: string) => {
-    const id = pageInfo?.[0].id;
+    const id = pageId;
     if (!id) return;
 
     const targetNode = pageData.nodes[nodeId];
@@ -480,7 +558,7 @@ export default function BodySession(props: BodySessionProps) {
       };
     });
 
-    const id = pageInfo?.[0].id;
+    const id = pageId;
     if (!id) return;
 
     if (persistTimers.current[nodeId]) {
@@ -527,7 +605,7 @@ export default function BodySession(props: BodySessionProps) {
       </div>
 
       <SettingPanel
-        pageId={pageInfo?.[0].id}
+        pageId={pageId}
         selectedNode={selectedNode}
         pageData={pageData}
         onRefreshData={refreshPageData}
@@ -535,7 +613,7 @@ export default function BodySession(props: BodySessionProps) {
       />
 
       <AddSectionModal
-        pageId={pageInfo?.[0].id}
+        pageId={pageId}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sectionType={modalSectionType}

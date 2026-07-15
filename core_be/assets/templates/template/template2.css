@@ -47,7 +47,7 @@
   --tpl-text-shadow:0 2px 10px rgba(14,30,27,0.45);
   --tpl-text-shadow-lg:0 4px 20px rgba(14,30,27,0.55);
   --tpl-ring:0 0 0 3px var(--tpl-bg), 0 0 0 6px var(--tpl-fg);
-  height:100%; border-radius:var(--tpl-radius); overflow:hidden; box-shadow:var(--tpl-shadow); position:relative; background:var(--tpl-bg);
+  border-radius:var(--tpl-radius); overflow:hidden; box-shadow:var(--tpl-shadow); position:relative; background:var(--tpl-bg);
 }
 .template-2 .hero-img{ position:relative; height:100%; background-image:url('https://plus.unsplash.com/premium_photo-1664202526559-e21e9c0fb46a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-size:cover; background-position:center; background-color:var(--tpl-bg); display:flex; align-items:flex-end; transition:transform 0.3s ease; }
 .template-2 .hero-img:hover{ transform:scale(1.02); }

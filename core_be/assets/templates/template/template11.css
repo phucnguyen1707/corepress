@@ -1,0 +1,297 @@
+.template-11 {
+  --tpl-bg: #FCF8F3;
+  --tpl-fg: #2E241C;
+  --tpl-fg-muted: #6B5A4E;
+  --tpl-line: #E7DBCB;
+  --tpl-accent: #B8412A;
+  --tpl-accent-fg: #FFFFFF;
+  --tpl-accent-ink: #9A3521;
+  --tpl-accent-soft: #F7E6DC;
+  --tpl-surface: #F4EDE3;
+  --tpl-field-bg: #FFFFFF;
+  --tpl-field-border: #8A7768;
+  --tpl-focus: rgba(184, 65, 42, 0.22);
+  --tpl-radius: 16px;
+  --tpl-radius-sm: 10px;
+  --tpl-radius-pill: 999px;
+  --tpl-shadow: 0 1px 2px rgba(46, 36, 28, 0.05), 0 12px 32px -16px rgba(46, 36, 28, 0.28);
+  --tpl-shadow-accent: 0 8px 24px -6px rgba(154, 53, 33, 0.45);
+  --tpl-shadow-accent-lg: 0 14px 32px -8px rgba(154, 53, 33, 0.5);
+  --tpl-ring: 0 0 0 3px var(--tpl-bg), 0 0 0 5px var(--tpl-accent);
+  position: relative;
+  padding: 96px 24px;
+  background: var(--tpl-bg);
+  color: var(--tpl-fg);
+}
+
+.template-11 .contact-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.template-11 .contact-intro {
+  max-width: 480px;
+}
+
+.template-11 .contact-badge {
+  display: inline-block;
+  padding: 8px 20px;
+  background: var(--tpl-accent-soft);
+  color: var(--tpl-accent-ink);
+  border-radius: var(--tpl-radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+  border: 1px solid var(--tpl-accent);
+}
+
+.template-11 .contact-title {
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 20px 0;
+  color: var(--tpl-fg);
+}
+
+.template-11 .contact-blurb {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--tpl-fg-muted);
+  margin: 0 0 40px 0;
+}
+
+.template-11 .contact-details {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.template-11 .contact-detail {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.template-11 .contact-detail-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--tpl-radius-pill);
+  background: var(--tpl-accent-soft);
+  color: var(--tpl-accent-ink);
+  border: 1px solid var(--tpl-accent);
+}
+
+.template-11 .contact-detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.template-11 .contact-detail-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tpl-fg-muted);
+}
+
+.template-11 .contact-detail-value {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--tpl-accent-ink);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.template-11 .contact-detail-value:hover {
+  color: var(--tpl-accent);
+  text-decoration: underline;
+}
+
+.template-11 .contact-detail-value:focus-visible {
+  outline: 2px solid var(--tpl-accent);
+  outline-offset: 3px;
+}
+
+.template-11 .contact-form {
+  background: var(--tpl-surface);
+  border: 1px solid var(--tpl-line);
+  border-radius: var(--tpl-radius);
+  padding: 40px;
+  box-shadow: var(--tpl-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.template-11 .form-heading {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 4px 0;
+  color: var(--tpl-fg);
+}
+
+.template-11 .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.template-11 .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.template-11 .form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tpl-fg);
+}
+
+.template-11 .form-input {
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  color: var(--tpl-fg);
+  background: var(--tpl-field-bg);
+  border: 1.5px solid var(--tpl-field-border);
+  border-radius: var(--tpl-radius-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.template-11 .form-input::placeholder {
+  color: var(--tpl-fg-muted);
+  opacity: 1;
+}
+
+.template-11 .form-textarea {
+  resize: vertical;
+  min-height: 128px;
+}
+
+.template-11 .form-input:hover {
+  border-color: var(--tpl-fg-muted);
+}
+
+.template-11 .form-input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 0;
+  border-color: var(--tpl-accent);
+  box-shadow: 0 0 0 3px var(--tpl-focus);
+}
+
+.template-11 .form-input:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 0;
+  border-color: var(--tpl-accent);
+  box-shadow: 0 0 0 3px var(--tpl-focus);
+}
+
+.template-11 .btn-primary {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 16px 40px;
+  border-radius: var(--tpl-radius-pill);
+  background: var(--tpl-accent);
+  color: var(--tpl-accent-fg);
+  border: none;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: var(--tpl-shadow-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.template-11 .btn-primary:hover {
+  background: var(--tpl-accent-ink);
+  transform: translateY(-2px);
+  box-shadow: var(--tpl-shadow-accent-lg);
+}
+
+.template-11 .btn-primary:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 0;
+  box-shadow: var(--tpl-ring);
+}
+
+.template-11 .form-note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--tpl-fg-muted);
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .template-11 {
+    padding: 72px 24px;
+  }
+
+  .template-11 .contact-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .template-11 .contact-intro {
+    max-width: 640px;
+  }
+}
+
+@media (max-width: 600px) {
+  .template-11 {
+    padding: 56px 20px;
+  }
+
+  .template-11 .contact-blurb {
+    margin-bottom: 32px;
+  }
+
+  .template-11 .contact-form {
+    padding: 28px 22px;
+  }
+
+  .template-11 .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .template-11 .btn-primary {
+    align-self: stretch;
+    text-align: center;
+    padding: 15px 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .template-11 .contact-detail-value,
+  .template-11 .form-input,
+  .template-11 .btn-primary {
+    transition: none;
+  }
+
+  .template-11 .btn-primary:hover {
+    transform: none;
+  }
+}

@@ -11,7 +11,7 @@
         --tpl-radius:8px;
         --tpl-shadow:0 8px 32px rgba(20,10,14,0.45);
         --tpl-ring:0 0 0 3px var(--tpl-bg), 0 0 0 5px var(--tpl-accent-on-dark);
-        position:relative; height:100%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--tpl-bg); color:var(--tpl-fg);
+        position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--tpl-bg); color:var(--tpl-fg);
       }
       .template-3 .marquee-bg{ position:absolute; inset:0; background-image:repeating-linear-gradient(135deg,var(--tpl-texture) 0px,var(--tpl-texture) 3px,transparent 3px,transparent 16px); opacity:0.15; filter:blur(2px); }
       .template-3 .marquee-container{ position:relative; width:100%; overflow:hidden; background:var(--tpl-surface); padding:40px 0; box-shadow:var(--tpl-shadow), inset 0 1px 0 var(--tpl-line), inset 0 -1px 0 var(--tpl-line); }

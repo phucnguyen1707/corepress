@@ -1,0 +1,171 @@
+.edit-page .page-switcher {
+  position: relative;
+}
+
+.edit-page .page-switcher__current {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #343434;
+  cursor: pointer;
+  font: inherit;
+  max-width: 220px;
+}
+
+.edit-page .page-switcher__current:hover {
+  border-color: #343434;
+}
+
+.edit-page .page-switcher__current:focus-visible {
+  outline: 2px solid #343434;
+  outline-offset: 2px;
+}
+
+.edit-page .page-switcher__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-page .page-switcher__count {
+  flex: none;
+  min-width: 18px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: #efefef;
+  color: #6b6b6b;
+  font-size: 12px;
+  text-align: center;
+}
+
+.edit-page .page-switcher__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  width: 280px;
+  padding: 8px;
+  border: 1px solid #e4e4e4;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.edit-page .page-switcher__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.edit-page .page-switcher__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.edit-page .page-switcher__item.is-active {
+  background: #f4f4f5;
+}
+
+.edit-page .page-switcher__pick {
+  flex: 1;
+  text-align: left;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  color: #343434;
+  cursor: pointer;
+  font: inherit;
+  border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-page .page-switcher__item.is-active .page-switcher__pick {
+  font-weight: 600;
+}
+
+.edit-page .page-switcher__rename {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #343434;
+  border-radius: 6px;
+  font: inherit;
+  color: #343434;
+}
+
+.edit-page .page-switcher__actions {
+  display: flex;
+  gap: 2px;
+  flex: none;
+}
+
+.edit-page .page-switcher__action {
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  color: #6b6b6b;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.edit-page .page-switcher__action:hover {
+  background: #ececec;
+  color: #343434;
+}
+
+.edit-page .page-switcher__action--danger:hover {
+  background: #f7ebe8;
+  color: #b3402c;
+}
+
+.edit-page .page-switcher__action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.edit-page .page-switcher__action:focus-visible,
+.edit-page .page-switcher__pick:focus-visible,
+.edit-page .page-switcher__add:focus-visible {
+  outline: 2px solid #343434;
+  outline-offset: 1px;
+}
+
+.edit-page .page-switcher__error {
+  margin: 8px 4px 4px;
+  color: #b3402c;
+  font-size: 13px;
+}
+
+.edit-page .page-switcher__add {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px 12px;
+  border: 1px dashed #cfcfcf;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #343434;
+  cursor: pointer;
+  font: inherit;
+}
+
+.edit-page .page-switcher__add:hover:not(:disabled) {
+  border-color: #343434;
+  border-style: solid;
+}
+
+.edit-page .page-switcher__add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

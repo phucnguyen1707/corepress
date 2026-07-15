@@ -2,10 +2,15 @@ import {
   cssToJson,
   extractUser,
   htmlToNodes,
+  isPermutationOf,
   jsonToCss,
+  pruneOrphanedCss,
+  sanitizeNodes,
+  scopeClassesOf,
   scopeFormNames,
   scopeCss,
 } from "./utils";
+import { makeInitialPageData } from "./constant";
 import { pg } from "./postgres";
 import { nanoid } from "nanoid";
 
@@ -31,6 +36,9 @@ export interface PageNode {
   tag: string;
   children: string[];
   text?: string;
+  // Written by the builder's style panel (BodySession.updateNodeStyle) and persisted through
+  // editNode. It is a React style object, so its keys are camelCased — see nodesToHtml.
+  style?: Record<string, string>;
 }
 
 export interface CssNode {
@@ -46,6 +54,115 @@ interface EditNodeRequest {
 }
 
 //! CONTROLLER -----------------------------------------------------------------------------
+
+const MAX_PAGES_PER_USER = 50;
+
+// A page name shows up in the page switcher, the browser tab of the exported site, and its filename.
+// Keep it to something a person would type, and never empty.
+const cleanPageName = (raw: unknown): string | null => {
+  if (typeof raw !== "string") return null;
+  const name = raw.trim().replace(/\s+/g, " ").slice(0, 80);
+  return name.length > 0 ? name : null;
+};
+
+// LIST PAGES
+export const listPages = async (req: Bun.BunRequest): Promise<Response> => {
+  const user = await extractUser(req);
+  if (!user) return new Response(null, { status: 401 });
+
+  const pages = await pg`
+    SELECT id, name FROM pages WHERE user_id = ${user.id} ORDER BY id;
+  `;
+
+  return new Response(JSON.stringify({ pages }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+};
+
+// CREATE PAGE
+export const createPage = async (req: Bun.BunRequest): Promise<Response> => {
+  const user = await extractUser(req);
+  if (!user) return new Response(null, { status: 401 });
+
+  const body = await req.json().catch(() => ({}));
+  const name = cleanPageName((body as { name?: unknown }).name) ?? "New Page";
+
+  const [{ count }] = await pg`
+    SELECT COUNT(*)::int AS count FROM pages WHERE user_id = ${user.id};
+  `;
+  if (count >= MAX_PAGES_PER_USER) {
+    return new Response("Page limit reached", { status: 409 });
+  }
+
+  const [page] = await pg`
+    INSERT INTO pages (name, user_id, data)
+    VALUES (${name}, ${user.id}, ${makeInitialPageData()})
+    RETURNING id, name;
+  `;
+
+  return new Response(JSON.stringify(page), {
+    status: 201,
+    headers: { "Content-Type": "application/json" },
+  });
+};
+
+// RENAME PAGE
+export const renamePage = async (
+  req: Bun.BunRequest<"/page/:id/rename">,
+): Promise<Response> => {
+  const user = await extractUser(req);
+  if (!user) return new Response(null, { status: 401 });
+
+  const pageId = req.params.id;
+  const body = await req.json().catch(() => ({}));
+  const name = cleanPageName((body as { name?: unknown }).name);
+  if (!name) return new Response("A page name is required", { status: 400 });
+
+  const [page] = await pg`
+    UPDATE pages SET name = ${name}
+    WHERE id = ${pageId} AND user_id = ${user.id}
+    RETURNING id, name;
+  `;
+  if (!page) return new Response(null, { status: 404 });
+
+  return new Response(JSON.stringify(page), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+};
+
+// DELETE PAGE
+export const deletePageById = async (
+  req: Bun.BunRequest<"/page/:id">,
+): Promise<Response> => {
+  const user = await extractUser(req);
+  if (!user) return new Response(null, { status: 401 });
+
+  const pageId = req.params.id;
+
+  return await pg.begin(async (tx) => {
+    // Establish ownership FIRST. A page that is not this user's must read as 404 whether or not it
+    // exists — otherwise the "last page" check below would answer questions about someone else's
+    // account (B trying to delete A's page would get a confusing 409 instead of a flat 404).
+    const [target] = await tx`
+      SELECT id FROM pages WHERE id = ${pageId} AND user_id = ${user.id};
+    `;
+    if (!target) return new Response(null, { status: 404 });
+
+    // Deleting a user's last page leaves them with an empty builder and nothing to edit or export —
+    // a broken state, not an intended one. Refuse it, and let the client offer to reset instead.
+    const [{ count }] = await tx`
+      SELECT COUNT(*)::int AS count FROM pages WHERE user_id = ${user.id};
+    `;
+    if (count <= 1) {
+      return new Response("Cannot delete your only page", { status: 409 });
+    }
+
+    await tx`DELETE FROM pages WHERE id = ${pageId} AND user_id = ${user.id};`;
+    return new Response(null, { status: 200 });
+  });
+};
 
 // GET PAGE
 export const getPage = async (
@@ -163,6 +280,51 @@ export const updatePageCss = async (
   }
 };
 
+// REORDER a node's children (move sections up/down)
+export const reorderChildren = async (
+  req: Bun.BunRequest<"/page/:id/node/:parentId/reorder">,
+): Promise<Response> => {
+  const user = await extractUser(req);
+  if (!user) return new Response(null, { status: 401 });
+
+  const pageId = req.params.id;
+  const parentId = req.params.parentId;
+
+  const body = await req.json().catch(() => null);
+  const requested = (body as { children?: unknown })?.children;
+  if (!Array.isArray(requested) || !requested.every((c) => typeof c === "string")) {
+    return new Response("children must be an array of node ids", { status: 400 });
+  }
+
+  const [page] = await pg`
+    SELECT data->'nodes'->${parentId}->'children' AS children
+    FROM pages
+    WHERE id = ${pageId} AND user_id = ${user.id};
+  `;
+  if (!page?.children) return new Response("Parent node not found", { status: 404 });
+
+  // A reorder is a rearrangement, not a way to inject or delete nodes — the new order must be a
+  // permutation of the current children. Anything else is a client bug or an attack, refused rather
+  // than allowed to corrupt the tree.
+  if (!isPermutationOf(requested, page.children)) {
+    return new Response("children must be a permutation of the existing children", {
+      status: 409,
+    });
+  }
+
+  await pg`
+    UPDATE pages
+    SET data = jsonb_set(
+      data,
+      ${`{nodes,${parentId},children}`}::text[],
+      ${requested}::jsonb
+    )
+    WHERE id = ${pageId} AND user_id = ${user.id};
+  `;
+
+  return new Response(null, { status: 200 });
+};
+
 // GET NODE
 export const getNode = async (
   req: Bun.BunRequest<"/page/:id/node/:nodeId">,
@@ -277,13 +439,13 @@ export const deleteNode = async (
   const nodeId = req.params.nodeId;
 
   const [page] = await pg`
-    SELECT data FROM pages
+    SELECT data, css FROM pages
     WHERE id = ${pageId} AND user_id = ${user.id};
   `;
 
   if (!page) return new Response(null, { status: 404 });
 
-  const nodes = page.data.nodes;
+  const nodes = page.data.nodes as Record<string, PageNode>;
   if (!nodes[nodeId]) return new Response(null, { status: 404 });
 
   const collectDescendants = (id: string, acc: Set<string>) => {
@@ -300,9 +462,29 @@ export const deleteNode = async (
   collectDescendants(nodeId, toDelete);
   const allIds = Array.from(toDelete);
 
+  // Deleting a section removes its node but used to LEAVE its scoped CSS in page.css forever — dead
+  // weight that grows with every add/delete and bloats every export. Drop the CSS for any scope
+  // class the deleted subtree carried that no SURVIVING node still uses.
+  const removedScopes = new Set<string>();
+  for (const id of allIds) {
+    for (const s of scopeClassesOf(nodes[id]?.attribute?.["class"])) {
+      removedScopes.add(s);
+    }
+  }
+  for (const [id, node] of Object.entries(nodes)) {
+    if (toDelete.has(id)) continue;
+    for (const s of scopeClassesOf(node.attribute?.["class"])) removedScopes.delete(s);
+  }
+
+  const nextCss = pruneOrphanedCss(
+    (page.css ?? {}) as Record<string, unknown>,
+    removedScopes,
+  );
+
   await pg`
     UPDATE pages
-    SET data = jsonb_set(
+    SET css = ${nextCss}::jsonb,
+        data = jsonb_set(
       data,
       '{nodes}',
       (
@@ -397,6 +579,12 @@ export const replaceIcon = async (
   if (rootNodes.length !== 1) {
     return new Response("Expected a single <svg> root", { status: 400 });
   }
+
+  // The regex pass above guards attributes, and a regex over raw markup is bypassable (an entity-
+  // encoded "javascript&#58;" slips past it, then the parser decodes it). Sanitise the PARSED tree
+  // too — it strips event handlers and neutralises unsafe URLs on exactly the tags/attributes the
+  // browser will see, which is what actually matters.
+  sanitizeNodes(parsedNodes, rootNodes);
 
   const newRoot = parsedNodes[rootNodes[0]!];
   if (!newRoot || newRoot.tag !== "svg") {

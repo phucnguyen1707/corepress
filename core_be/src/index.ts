@@ -3,15 +3,22 @@ import { getUser, login, logout, register } from "./auth";
 import { generateSection } from "./ai";
 import {
   addSection,
+  createPage,
   deleteNode,
+  deletePageById,
   editNode,
   getNode,
   getPage,
   getPageCSS,
   insertNode,
+  listPages,
+  reorderChildren,
+  renamePage,
   replaceIcon,
   updatePageCss,
 } from "./page";
+import { exportSite } from "./export";
+import { listTemplates } from "./templates";
 import { serveUpload, uploadImage } from "./upload";
 import { createTable, pg } from "./postgres";
 import dotenv from "dotenv";
@@ -20,7 +27,7 @@ dotenv.config({ path: "../.env" });
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "http://localhost:3000",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Credentials": "true",
 };
@@ -93,8 +100,18 @@ pg.connect().then(async () => {
       },
 
       //! PAGE -------------------------
+      "/pages": {
+        GET: listPages,
+      },
+      "/page": {
+        POST: createPage,
+      },
       "/page/:id": {
         GET: getPage,
+        DELETE: deletePageById,
+      },
+      "/page/:id/rename": {
+        PATCH: renamePage,
       },
       "/page/:id/css": {
         GET: getPageCSS,
@@ -107,6 +124,9 @@ pg.connect().then(async () => {
       },
       "/page/:id/node/insert/:parentId": {
         POST: insertNode,
+      },
+      "/page/:id/node/:parentId/reorder": {
+        PATCH: reorderChildren,
       },
       "/page/:id/node/edit/:nodeId": {
         POST: editNode,
@@ -129,6 +149,12 @@ pg.connect().then(async () => {
       },
 
       //! UPLOAD -------------------------
+      "/templates": {
+        GET: listTemplates,
+      },
+      "/site/export": {
+        GET: exportSite,
+      },
       "/upload/image": {
         POST: uploadImage,
       },

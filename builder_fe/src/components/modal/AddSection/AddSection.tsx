@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { addSection, aiGenerateSection } from '@/axios/page.service';
+import { addSection, aiGenerateSection, getTemplates } from '@/axios/page.service';
 import Switch from '@/components/commons/Switch';
-import { allSections } from '@/utils/mockupData';
+import { SectionMeta, allSections } from '@/utils/mockupData';
 
 import './addSection.css';
 
@@ -14,15 +14,9 @@ interface AddSectionModalInterface {
   onRefreshData: () => Promise<void>;
 }
 
-export interface SectionInterface {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  icon: React.ReactNode;
-  html: string;
-  css: string;
-}
+// The preview HTML/CSS for a section, keyed by its id (`${kind}-${index}`). Fetched from the backend
+// so it is the SAME source the insert reads — the preview can no longer drift from what you get.
+type PreviewMap = Record<string, { html: string; css: string }>;
 
 const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshData }: AddSectionModalInterface) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,9 +26,32 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
   const [hoverHtml, setHoverHtml] = useState('');
   const [hoverCss, setHoverCss] = useState('');
 
+  const [previews, setPreviews] = useState<PreviewMap>({});
+
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
+
+  // Load the real section files once the modal is first opened, and key them by `${kind}-${index}`.
+  useEffect(() => {
+    if (!isOpen || Object.keys(previews).length) return;
+    let cancelled = false;
+    getTemplates()
+      .then(res => {
+        if (cancelled) return;
+        const map: PreviewMap = {};
+        for (const [kind, assets] of Object.entries(res.data)) {
+          for (const asset of assets) {
+            map[`${kind}-${asset.index}`] = { html: asset.html, css: asset.css };
+          }
+        }
+        setPreviews(map);
+      })
+      .catch(err => console.error('Failed to load section previews:', err));
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, previews]);
 
   const sections = allSections[sectionType.toLocaleLowerCase()] || [];
 
@@ -43,13 +60,19 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
     return section.name.toLowerCase().includes(keyword) || section.description.toLowerCase().includes(keyword);
   });
 
-  const groupedSections = filteredSections.reduce<Record<string, SectionInterface[]>>((acc, section) => {
+  const groupedSections = filteredSections.reduce<Record<string, SectionMeta[]>>((acc, section) => {
     if (!acc[section.category]) acc[section.category] = [];
     acc[section.category].push(section);
     return acc;
   }, {});
 
-  const handleAddSection = async (section: SectionInterface) => {
+  const showPreview = (section: SectionMeta) => {
+    const preview = previews[section.id];
+    setHoverHtml(preview?.html ?? '');
+    setHoverCss(preview?.css ?? '');
+  };
+
+  const handleAddSection = async (section: SectionMeta) => {
     if (isAdding) return;
 
     setIsAdding(true);
@@ -140,10 +163,8 @@ const AddSectionModal = ({ isOpen, onClose, sectionType, pageId = 0, onRefreshDa
                         <button
                           key={section.id}
                           className='section-item'
-                          onMouseEnter={() => {
-                            setHoverHtml(section.html);
-                            setHoverCss(section.css);
-                          }}
+                          onMouseEnter={() => showPreview(section)}
+                          onFocus={() => showPreview(section)}
                           onClick={() => handleAddSection(section)}
                         >
                           <span className='section-icon'>{section.icon}</span>

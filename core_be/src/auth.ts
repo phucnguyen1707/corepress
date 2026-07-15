@@ -1,4 +1,4 @@
-import { INITIAL_PAGE_DATA } from "./constant";
+import { makeInitialPageData } from "./constant";
 import { extractUser } from "./utils";
 import { pg } from "./postgres";
 import * as csstree from "css-tree";
@@ -33,14 +33,7 @@ export const register = async (req: Bun.BunRequest): Promise<Response> => {
 
   const hashPassword = await Bun.password.hash(password);
 
-  const html_id = crypto.randomUUID();
-  const body_id = crypto.randomUUID();
-
-  const pageData = JSON.parse(
-    JSON.stringify({ ...INITIAL_PAGE_DATA })
-      .replaceAll("placeholder-html-id", html_id)
-      .replaceAll("placeholder-body-id", body_id),
-  );
+  const pageData = makeInitialPageData();
 
   await pg.begin(async (tx) => {
     const [user] = await tx`

@@ -1,0 +1,208 @@
+.template-8 {
+  --tpl-bg: #FCF8F3;
+  --tpl-fg: #2E241C;
+  --tpl-fg-muted: #6B5A4E;
+  --tpl-line: #E7DBCB;
+  --tpl-accent: #B8412A;
+  --tpl-accent-fg: #FFFFFF;
+  --tpl-accent-ink: #9A3521;
+  --tpl-accent-soft: #F7E6DC;
+  --tpl-surface: #F4EDE3;
+  --tpl-radius: 16px;
+  --tpl-radius-pill: 999px;
+  --tpl-shadow: 0 1px 2px rgba(46, 36, 28, 0.05), 0 12px 32px -16px rgba(46, 36, 28, 0.28);
+  --tpl-shadow-lift: 0 2px 4px rgba(46, 36, 28, 0.06), 0 22px 48px -20px rgba(46, 36, 28, 0.4);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--tpl-surface);
+  color: var(--tpl-fg);
+  padding: 88px 24px;
+}
+
+.template-8 .container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.template-8 .reviews-head {
+  max-width: 640px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+
+.template-8 .reviews-eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tpl-accent-ink);
+  margin-bottom: 16px;
+}
+
+.template-8 .reviews-title {
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  color: var(--tpl-fg);
+}
+
+.template-8 .reviews-subtitle {
+  font-size: 18px;
+  line-height: 1.65;
+  margin: 0;
+  color: var(--tpl-fg-muted);
+}
+
+.template-8 .reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.template-8 .review-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 32px;
+  background: var(--tpl-bg);
+  border: 1px solid var(--tpl-line);
+  border-radius: var(--tpl-radius);
+  box-shadow: var(--tpl-shadow);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.template-8 .review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--tpl-shadow-lift);
+  border-color: var(--tpl-accent-soft);
+}
+
+.template-8 .review-mark {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  width: 40px;
+  height: 40px;
+  color: var(--tpl-accent);
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.template-8 .review-stars {
+  display: inline-flex;
+  gap: 3px;
+  color: var(--tpl-accent);
+  margin-bottom: 20px;
+}
+
+.template-8 .review-stars svg {
+  display: block;
+}
+
+.template-8 .review-quote {
+  position: relative;
+  margin: 0 0 28px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--tpl-fg);
+  quotes: "\201C" "\201D";
+}
+
+.template-8 .review-quote::before {
+  content: open-quote;
+}
+
+.template-8 .review-quote::after {
+  content: close-quote;
+}
+
+.template-8 .review-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--tpl-line);
+}
+
+.template-8 .review-avatar {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--tpl-radius-pill);
+  overflow: hidden;
+}
+
+.template-8 .review-avatar svg {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+
+.template-8 .avatar-bg {
+  fill: var(--tpl-accent-soft);
+}
+
+.template-8 .avatar-initials {
+  fill: var(--tpl-accent-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.template-8 .review-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.template-8 .review-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--tpl-fg);
+}
+
+.template-8 .review-role {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--tpl-fg-muted);
+}
+
+@media (max-width: 900px) {
+  .template-8 .reviews-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .template-8 {
+    padding: 56px 20px;
+  }
+
+  .template-8 .reviews-head {
+    margin-bottom: 40px;
+  }
+
+  .template-8 .review-card {
+    padding: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .template-8 .review-card {
+    transition: none;
+  }
+
+  .template-8 .review-card:hover {
+    transform: none;
+  }
+}
